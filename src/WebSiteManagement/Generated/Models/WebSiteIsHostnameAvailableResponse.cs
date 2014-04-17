@@ -26,14 +26,14 @@ using Microsoft.WindowsAzure;
 namespace Microsoft.WindowsAzure.Management.WebSites.Models
 {
     /// <summary>
-    /// The Is Hostname Available operation response.
+    /// The Is Hostname Available Web Site operation response.
     /// </summary>
     public partial class WebSiteIsHostnameAvailableResponse : OperationResponse
     {
         private bool _isAvailable;
         
         /// <summary>
-        /// Indicates if the site name is available.
+        /// Optional. Indicates if the site name is available.
         /// </summary>
         public bool IsAvailable
         {

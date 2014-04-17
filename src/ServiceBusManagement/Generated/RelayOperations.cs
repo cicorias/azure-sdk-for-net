@@ -67,10 +67,10 @@ namespace Microsoft.WindowsAzure.Management.ServiceBus
         /// Gets the set of connection strings for a relay.
         /// </summary>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='relayName'>
-        /// The relay name.
+        /// Required. The relay name.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -103,7 +103,18 @@ namespace Microsoft.WindowsAzure.Management.ServiceBus
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/servicebus/namespaces/" + namespaceName + "/Relays/" + relayName + "/ConnectionDetails";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/servicebus/namespaces/" + namespaceName.Trim() + "/Relays/" + relayName.Trim() + "/ConnectionDetails";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -155,9 +166,9 @@ namespace Microsoft.WindowsAzure.Management.ServiceBus
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement feedElement = responseDoc.Element(XName.Get("feed", "http://www.w3.org/2005/Atom"));
-                    if (feedElement != null)
+                    if (feedElement != null && feedElement.IsEmpty == false)
                     {
-                        if (feedElement != null)
+                        if (feedElement != null && feedElement.IsEmpty == false)
                         {
                             foreach (XElement entriesElement in feedElement.Elements(XName.Get("entry", "http://www.w3.org/2005/Atom")))
                             {
@@ -165,38 +176,38 @@ namespace Microsoft.WindowsAzure.Management.ServiceBus
                                 result.ConnectionDetails.Add(entryInstance);
                                 
                                 XElement contentElement = entriesElement.Element(XName.Get("content", "http://www.w3.org/2005/Atom"));
-                                if (contentElement != null)
+                                if (contentElement != null && contentElement.IsEmpty == false)
                                 {
                                     XElement connectionDetailElement = contentElement.Element(XName.Get("ConnectionDetail", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect"));
-                                    if (connectionDetailElement != null)
+                                    if (connectionDetailElement != null && connectionDetailElement.IsEmpty == false)
                                     {
                                         XElement keyNameElement = connectionDetailElement.Element(XName.Get("KeyName", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect"));
-                                        if (keyNameElement != null)
+                                        if (keyNameElement != null && keyNameElement.IsEmpty == false)
                                         {
                                             string keyNameInstance = keyNameElement.Value;
                                             entryInstance.KeyName = keyNameInstance;
                                         }
                                         
                                         XElement connectionStringElement = connectionDetailElement.Element(XName.Get("ConnectionString", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect"));
-                                        if (connectionStringElement != null)
+                                        if (connectionStringElement != null && connectionStringElement.IsEmpty == false)
                                         {
                                             string connectionStringInstance = connectionStringElement.Value;
                                             entryInstance.ConnectionString = connectionStringInstance;
                                         }
                                         
                                         XElement authorizationTypeElement = connectionDetailElement.Element(XName.Get("AuthorizationType", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect"));
-                                        if (authorizationTypeElement != null)
+                                        if (authorizationTypeElement != null && authorizationTypeElement.IsEmpty == false)
                                         {
                                             string authorizationTypeInstance = authorizationTypeElement.Value;
                                             entryInstance.AuthorizationType = authorizationTypeInstance;
                                         }
                                         
                                         XElement rightsSequenceElement = connectionDetailElement.Element(XName.Get("Rights", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect"));
-                                        if (rightsSequenceElement != null)
+                                        if (rightsSequenceElement != null && rightsSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement rightsElement in rightsSequenceElement.Elements(XName.Get("AccessRights", "http://schemas.microsoft.com/netservices/2010/10/servicebus/connect")))
                                             {
-                                                entryInstance.Rights.Add((AccessRight)Enum.Parse(typeof(AccessRight), rightsElement.Value, false));
+                                                entryInstance.Rights.Add(((AccessRight)Enum.Parse(typeof(AccessRight), rightsElement.Value, true)));
                                             }
                                         }
                                     }

@@ -39,28 +39,19 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a Create Job operation.
+        /// Required. Parameters specifying the job definition for a Create Job
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Job operation response.
         /// </returns>
         public static JobCreateResponse Create(this IJobOperations operations, JobCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IJobOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -71,7 +62,8 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a Create Job operation.
+        /// Required. Parameters specifying the job definition for a Create Job
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Job operation response.
@@ -89,32 +81,22 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to create or update.
+        /// Required. Id of the job to create or update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a CreateOrUpdate Job
-        /// operation.
+        /// Required. Parameters specifying the job definition for a
+        /// CreateOrUpdate Job operation.
         /// </param>
         /// <returns>
         /// The CreateOrUpdate Job operation response.
         /// </returns>
         public static JobCreateOrUpdateResponse CreateOrUpdate(this IJobOperations operations, string jobId, JobCreateOrUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateOrUpdateAsync(jobId, parameters).Result;
+                return ((IJobOperations)s).CreateOrUpdateAsync(jobId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -125,11 +107,11 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to create or update.
+        /// Required. Id of the job to create or update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a CreateOrUpdate Job
-        /// operation.
+        /// Required. Parameters specifying the job definition for a
+        /// CreateOrUpdate Job operation.
         /// </param>
         /// <returns>
         /// The CreateOrUpdate Job operation response.
@@ -146,7 +128,7 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to delete.
+        /// Required. Id of the job to delete.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -154,21 +136,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IJobOperations operations, string jobId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(jobId).Result;
+                return ((IJobOperations)s).DeleteAsync(jobId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -178,7 +150,7 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to delete.
+        /// Required. Id of the job to delete.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -196,28 +168,18 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get.
+        /// Required. Id of the job to get.
         /// </param>
         /// <returns>
         /// The Get Job operation response.
         /// </returns>
         public static JobGetResponse Get(this IJobOperations operations, string jobId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(jobId).Result;
+                return ((IJobOperations)s).GetAsync(jobId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -227,7 +189,7 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get.
+        /// Required. Id of the job to get.
         /// </param>
         /// <returns>
         /// The Get Job operation response.
@@ -244,31 +206,21 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History operation.
+        /// Required. Parameters supplied to the Get Job History operation.
         /// </param>
         /// <returns>
         /// The Get Job History operation response.
         /// </returns>
         public static JobGetHistoryResponse GetHistory(this IJobOperations operations, string jobId, JobGetHistoryParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetHistoryAsync(jobId, parameters).Result;
+                return ((IJobOperations)s).GetHistoryAsync(jobId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -278,10 +230,10 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History operation.
+        /// Required. Parameters supplied to the Get Job History operation.
         /// </param>
         /// <returns>
         /// The Get Job History operation response.
@@ -298,31 +250,22 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History With Filter operation.
+        /// Required. Parameters supplied to the Get Job History With Filter
+        /// operation.
         /// </param>
         /// <returns>
         /// The Get Job History operation response.
         /// </returns>
         public static JobGetHistoryResponse GetHistoryWithFilter(this IJobOperations operations, string jobId, JobGetHistoryWithFilterParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetHistoryWithFilterAsync(jobId, parameters).Result;
+                return ((IJobOperations)s).GetHistoryWithFilterAsync(jobId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -332,10 +275,11 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History With Filter operation.
+        /// Required. Parameters supplied to the Get Job History With Filter
+        /// operation.
         /// </param>
         /// <returns>
         /// The Get Job History operation response.
@@ -352,28 +296,18 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs operation.
+        /// Required. Parameters supplied to the List Jobs operation.
         /// </param>
         /// <returns>
         /// The List Jobs operation response.
         /// </returns>
         public static JobListResponse List(this IJobOperations operations, JobListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(parameters).Result;
+                return ((IJobOperations)s).ListAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -383,7 +317,7 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs operation.
+        /// Required. Parameters supplied to the List Jobs operation.
         /// </param>
         /// <returns>
         /// The List Jobs operation response.
@@ -401,28 +335,19 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs with filter operation.
+        /// Required. Parameters supplied to the List Jobs with filter
+        /// operation.
         /// </param>
         /// <returns>
         /// The List Jobs operation response.
         /// </returns>
         public static JobListResponse ListWithFilter(this IJobOperations operations, JobListWithFilterParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListWithFilterAsync(parameters).Result;
+                return ((IJobOperations)s).ListWithFilterAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -433,7 +358,8 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs with filter operation.
+        /// Required. Parameters supplied to the List Jobs with filter
+        /// operation.
         /// </param>
         /// <returns>
         /// The List Jobs operation response.
@@ -450,28 +376,18 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Jobs State operation.
+        /// Required. Parameters supplied to the Update Jobs State operation.
         /// </param>
         /// <returns>
         /// The Update Jobs State operation response.
         /// </returns>
         public static JobCollectionJobsUpdateStateResponse UpdateJobCollectionState(this IJobOperations operations, PatchJobCollectionJobsUpdateStateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateJobCollectionStateAsync(parameters).Result;
+                return ((IJobOperations)s).UpdateJobCollectionStateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -481,7 +397,7 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Jobs State operation.
+        /// Required. Parameters supplied to the Update Jobs State operation.
         /// </param>
         /// <returns>
         /// The Update Jobs State operation response.
@@ -498,31 +414,21 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to update.
+        /// Required. Id of the job to update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Job State operation.
+        /// Required. Parameters supplied to the Update Job State operation.
         /// </param>
         /// <returns>
         /// The Update Job State operation response.
         /// </returns>
         public static JobUpdateStateResponse UpdateState(this IJobOperations operations, string jobId, JobUpdateStateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateStateAsync(jobId, parameters).Result;
+                return ((IJobOperations)s).UpdateStateAsync(jobId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -532,10 +438,10 @@ namespace Microsoft.WindowsAzure
         /// Reference to the Microsoft.WindowsAzure.Scheduler.IJobOperations.
         /// </param>
         /// <param name='jobId'>
-        /// Id of the job to update.
+        /// Required. Id of the job to update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Job State operation.
+        /// Required. Parameters supplied to the Update Job State operation.
         /// </param>
         /// <returns>
         /// The Update Job State operation response.

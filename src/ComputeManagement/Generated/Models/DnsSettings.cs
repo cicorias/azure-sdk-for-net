@@ -27,15 +27,15 @@ using Microsoft.WindowsAzure.Management.Compute.Models;
 namespace Microsoft.WindowsAzure.Management.Compute.Models
 {
     /// <summary>
-    /// The custom DNS settings that are specified for deployment.
+    /// The custom DNS settings that are specified for the deployment.
     /// </summary>
     public partial class DnsSettings
     {
         private IList<DnsServer> _dnsServers;
         
         /// <summary>
-        /// Contains a collection of objects that define the DNS server
-        /// settings.
+        /// Optional. Contains a collection of objects that define the DNS
+        /// server settings.
         /// </summary>
         public IList<DnsServer> DnsServers
         {

@@ -26,8 +26,8 @@ using Microsoft.WindowsAzure.Management.Compute.Models;
 namespace Microsoft.WindowsAzure.Management.Compute.Models
 {
     /// <summary>
-    /// Optional.  Contains properties that specify a domain to which the
-    /// virtual machine will be joined. This element is only used with the
+    /// Contains properties that specify a domain to which the virtual machine
+    /// will be joined. This element is only used with the
     /// WindowsProvisioningConfiguration set.
     /// </summary>
     public partial class DomainJoinSettings
@@ -62,8 +62,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         /// (LDAP) X 500-distinguished name of the organizational unit (OU) in
         /// which the computer account is created. This account is in Active
         /// Directory on a domain controller in the domain to which the
-        /// computer is being joined.  Example:
-        /// OU=MyOu,OU=MyParentOu,DC=example.com,DC=MyCompany,DC=com
+        /// computer is being joined. Example:
+        /// OU=MyOu,OU=MyParentOu,DC=example.com,DC=MyCompany,DC=com.
         /// </summary>
         public string LdapMachineObjectOU
         {
@@ -74,7 +74,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DomainJoinProvisioning _provisioning;
         
         /// <summary>
-        /// Additional information for domain join provisioning.
+        /// Optional. Additional information for domain join provisioning.
         /// </summary>
         public DomainJoinProvisioning Provisioning
         {

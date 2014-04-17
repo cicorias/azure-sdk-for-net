@@ -22,19 +22,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Management.Network.Models;
 
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
-    /// The response structure for the Server List operation.
+    /// The response structure for the Network Operations List operation.
     /// </summary>
     public partial class NetworkListResponse : OperationResponse, IEnumerable<NetworkListResponse.VirtualNetworkSite>
     {
         private IList<NetworkListResponse.VirtualNetworkSite> _virtualNetworkSites;
         
+        /// <summary>
+        /// Optional.
+        /// </summary>
         public IList<NetworkListResponse.VirtualNetworkSite> VirtualNetworkSites
         {
             get { return this._virtualNetworkSites; }
@@ -70,7 +72,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<string> _addressPrefixes;
             
             /// <summary>
-            /// Address spaces, in CIDR format in the virtual network
+            /// Optional. Address spaces, in CIDR format in the virtual network.
             /// </summary>
             public IList<string> AddressPrefixes
             {
@@ -96,6 +98,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         {
             private LocalNetworkConnectionType _type;
             
+            /// <summary>
+            /// Optional.
+            /// </summary>
             public LocalNetworkConnectionType Type
             {
                 get { return this._type; }
@@ -115,7 +120,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _address;
             
             /// <summary>
-            /// The IPv4 address of the DNS server.
+            /// Optional. The IPv4 address of the DNS server.
             /// </summary>
             public string Address
             {
@@ -126,7 +131,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _name;
             
             /// <summary>
-            /// The name of the DNS server.
+            /// Optional. The name of the DNS server.
             /// </summary>
             public string Name
             {
@@ -151,7 +156,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private GatewayProfile _profile;
             
             /// <summary>
-            /// The gateway connection size.
+            /// Optional. The gateway connection size.
             /// </summary>
             public GatewayProfile Profile
             {
@@ -162,8 +167,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<NetworkListResponse.LocalNetworkSite> _sites;
             
             /// <summary>
-            /// The list of local network sites that the virtual network can
-            /// connect to.
+            /// Optional. The list of local network sites that the virtual
+            /// network can connect to.
             /// </summary>
             public IList<NetworkListResponse.LocalNetworkSite> Sites
             {
@@ -174,9 +179,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private NetworkListResponse.VPNClientAddressPool _vPNClientAddressPool;
             
             /// <summary>
-            /// The VPNClientAddressPool reserves a pool of IP addresses for
-            /// VPN clients. This object is used for point-to-site
-            /// connectivity.
+            /// Optional. The VPN Client Address Pool reserves a pool of IP
+            /// addresses for VPN clients. This object is used for
+            /// point-to-site connectivity.
             /// </summary>
             public NetworkListResponse.VPNClientAddressPool VPNClientAddressPool
             {
@@ -201,7 +206,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private NetworkListResponse.AddressSpace _addressSpace;
             
             /// <summary>
-            /// The address space of the local network site.
+            /// Optional. The address space of the local network site.
             /// </summary>
             public NetworkListResponse.AddressSpace AddressSpace
             {
@@ -212,7 +217,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<NetworkListResponse.Connection> _connections;
             
             /// <summary>
-            /// Specifies the types of connections to the local network site.
+            /// Optional. Specifies the types of connections to the local
+            /// network site.
             /// </summary>
             public IList<NetworkListResponse.Connection> Connections
             {
@@ -223,7 +229,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _name;
             
             /// <summary>
-            /// The name of the local network site.
+            /// Optional. The name of the local network site.
             /// </summary>
             public string Name
             {
@@ -234,7 +240,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _vpnGatewayAddress;
             
             /// <summary>
-            /// The IPv4 address of the local network site.
+            /// Optional. The IPv4 address of the local network site.
             /// </summary>
             public string VpnGatewayAddress
             {
@@ -256,8 +262,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _addressPrefix;
             
             /// <summary>
-            /// Represents an address space, in CIDR format that defines the
-            /// subnet
+            /// Optional. Represents an address space, in CIDR format that
+            /// defines the subnet.
             /// </summary>
             public string AddressPrefix
             {
@@ -268,7 +274,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _name;
             
             /// <summary>
-            /// Name for the subnet.
+            /// Optional. Name of the subnet.
             /// </summary>
             public string Name
             {
@@ -294,9 +300,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private NetworkListResponse.AddressSpace _addressSpace;
             
             /// <summary>
-            /// The list of network address spaces for a virtual network site.
-            /// This represents the overall network space contained within the
-            /// virtual network site.
+            /// Optional. The list of network address spaces for a virtual
+            /// network site. This represents the overall network space
+            /// contained within the virtual network site.
             /// </summary>
             public NetworkListResponse.AddressSpace AddressSpace
             {
@@ -307,8 +313,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _affinityGroup;
             
             /// <summary>
-            /// An affinity group, which indirectly refers to the location
-            /// where the virtual network exists.
+            /// Optional. An affinity group, which indirectly refers to the
+            /// location where the virtual network exists.
             /// </summary>
             public string AffinityGroup
             {
@@ -319,8 +325,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<NetworkListResponse.DnsServer> _dnsServers;
             
             /// <summary>
-            /// The list of on DNS Servers associated with the virtual network
-            /// site.
+            /// Optional. The list of available DNS Servers associated with the
+            /// virtual network site.
             /// </summary>
             public IList<NetworkListResponse.DnsServer> DnsServers
             {
@@ -331,9 +337,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private NetworkListResponse.Gateway _gateway;
             
             /// <summary>
-            /// Gateway that contains a list of Local Network Sites which
-            /// enables the Virtual network site to communicate with a
-            /// customer’s on premise networks.
+            /// Optional. The gateway that contains a list of Local Network
+            /// Sites which enable the Virtual Network Site to communicate
+            /// with a customer’s on-premise networks.
             /// </summary>
             public NetworkListResponse.Gateway Gateway
             {
@@ -344,8 +350,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _id;
             
             /// <summary>
-            /// A unique string identifier that represents the virtual network
-            /// site.
+            /// Optional. A unique string identifier that represents the
+            /// virtual network site.
             /// </summary>
             public string Id
             {
@@ -356,7 +362,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _label;
             
             /// <summary>
-            /// The friendly identifier of the site.
+            /// Optional. The friendly identifier for the site.
             /// </summary>
             public string Label
             {
@@ -367,7 +373,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _name;
             
             /// <summary>
-            /// Name of the virtual network site.
+            /// Optional. Name of the virtual network site.
             /// </summary>
             public string Name
             {
@@ -378,8 +384,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _state;
             
             /// <summary>
-            /// Current status of the virtual network. (Created, Creating,
-            /// Updating, Deleting, Unavailable)
+            /// Optional. Current status of the virtual network. (Created,
+            /// Creating, Updating, Deleting, or Unavailable.)
             /// </summary>
             public string State
             {
@@ -390,9 +396,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<NetworkListResponse.Subnet> _subnets;
             
             /// <summary>
-            /// The list of network subnets for a virtual network site. All
-            /// network subnets must be contained within the overall virtual
-            /// network address spaces.
+            /// Optional. The list of network subnets for a virtual network
+            /// site. All network subnets must be contained within the overall
+            /// virtual network address spaces.
             /// </summary>
             public IList<NetworkListResponse.Subnet> Subnets
             {
@@ -411,7 +417,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         }
         
         /// <summary>
-        /// The VPNClientAddressPool reserves a pool of IP addresses for VPN
+        /// The VPN Client Address Pool reserves a pool of IP addresses for VPN
         /// clients. This object is used for point-to-site connectivity.
         /// </summary>
         public partial class VPNClientAddressPool
@@ -419,7 +425,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private IList<string> _addressPrefixes;
             
             /// <summary>
-            /// The CIDR identifiers that identify addresses in the pool.
+            /// Optional. The CIDR identifiers that identify addresses in the
+            /// pool.
             /// </summary>
             public IList<string> AddressPrefixes
             {

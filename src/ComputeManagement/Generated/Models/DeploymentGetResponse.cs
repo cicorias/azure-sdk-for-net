@@ -35,7 +35,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _configuration;
         
         /// <summary>
-        /// The configuration file of the deployment.
+        /// Optional. The configuration file of the deployment.
         /// </summary>
         public string Configuration
         {
@@ -46,7 +46,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DateTime _createdTime;
         
         /// <summary>
-        /// The time that the deployment was created.
+        /// Optional. The time that the deployment was created.
         /// </summary>
         public DateTime CreatedTime
         {
@@ -57,7 +57,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DeploymentSlot _deploymentSlot;
         
         /// <summary>
-        /// The deployment environment in which this deployment is running.
+        /// Optional. The deployment environment in which this deployment is
+        /// running.
         /// </summary>
         public DeploymentSlot DeploymentSlot
         {
@@ -68,7 +69,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DnsSettings _dnsSettings;
         
         /// <summary>
-        /// The custom DNS settings that are specified for deployment.
+        /// Optional. The custom DNS settings that are specified for deployment.
         /// </summary>
         public DnsSettings DnsSettings
         {
@@ -80,15 +81,15 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         
         /// <summary>
         /// Optional. Represents the name of an extended cloud service
-        /// property. Each extended property must have both a defined name and
+        /// property. Each extended property must have a defined name and a
         /// value. You can have a maximum of 50 extended property name and
-        /// value pairs.  The maximum length of the Name element is 64
+        /// value pairs.  The maximum length of the name element is 64
         /// characters, only alphanumeric characters and underscores are valid
         /// in the name, and it must start with a letter. Attempting to use
         /// other characters, starting with a non-letter character, or
         /// entering a name that is identical to that of another extended
-        /// property owned by the same service, will result in a status code
-        /// 400 (Bad Request) error.  Each extended property value has a
+        /// property owned by the same service will result in a status code
+        /// 400 (Bad Request) error. Each extended property value has a
         /// maximum length of 255 characters.
         /// </summary>
         public IDictionary<string, string> ExtendedProperties
@@ -100,7 +101,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private ExtensionConfiguration _extensionConfiguration;
         
         /// <summary>
-        /// Represents an extension that is added to the cloud service.
+        /// Optional. Represents an extension that is added to the cloud
+        /// service.
         /// </summary>
         public ExtensionConfiguration ExtensionConfiguration
         {
@@ -111,8 +113,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _label;
         
         /// <summary>
-        /// The user supplied name of the deployment. This name can be used
-        /// identify the deployment for tracking purposes.
+        /// Optional. The user-supplied name of the deployment. This name can
+        /// be used identify the deployment for tracking purposes.
         /// </summary>
         public string Label
         {
@@ -123,7 +125,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DateTime _lastModifiedTime;
         
         /// <summary>
-        /// The last time that the deployment was modified.
+        /// Optional. The last time that the deployment was modified.
         /// </summary>
         public DateTime LastModifiedTime
         {
@@ -134,9 +136,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private bool _locked;
         
         /// <summary>
-        /// Indicates whether the deployment is locked for new write
-        /// operations. True if the deployment is locked because an existing
-        /// operation is updating the deployment; otherwise false.
+        /// Optional. Indicates whether the deployment is locked for new write
+        /// operations because an existing operation is updating the
+        /// deployment.
         /// </summary>
         public bool Locked
         {
@@ -146,6 +148,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         
         private string _name;
         
+        /// <summary>
+        /// Optional.
+        /// </summary>
         public string Name
         {
             get { return this._name; }
@@ -155,8 +160,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private PersistentVMDowntime _persistentVMDowntime;
         
         /// <summary>
-        /// Specifies information about when the virtual machine has been
-        /// started and stopped.
+        /// Optional. Specifies information about when the virtual machine has
+        /// been started and stopped.
         /// </summary>
         public PersistentVMDowntime PersistentVMDowntime
         {
@@ -167,7 +172,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _privateId;
         
         /// <summary>
-        /// The unique identifier for this deployment.
+        /// Optional. The unique identifier for this deployment.
         /// </summary>
         public string PrivateId
         {
@@ -178,8 +183,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _reservedIPName;
         
         /// <summary>
-        /// Preview Only. The name of the Reserved IP that the deployment
-        /// belongs to.
+        /// Optional. Preview Only. The name of the Reserved IP that the
+        /// deployment belongs to.
         /// </summary>
         public string ReservedIPName
         {
@@ -190,7 +195,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<RoleInstance> _roleInstances;
         
         /// <summary>
-        /// The list of role instances in the deployment.
+        /// Optional. The list of role instances in the deployment.
         /// </summary>
         public IList<RoleInstance> RoleInstances
         {
@@ -201,7 +206,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<Role> _roles;
         
         /// <summary>
-        /// The list of roles in the deployment.
+        /// Optional. The list of roles in the deployment.
         /// </summary>
         public IList<Role> Roles
         {
@@ -212,9 +217,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private bool _rollbackAllowed;
         
         /// <summary>
-        /// Indicates whether the Rollback Update Or Upgrade operation is
-        /// allowed at this time. True if the operation is allowed; otherwise
-        /// false.
+        /// Optional. Indicates whether the Rollback Update Or Upgrade
+        /// operation is allowed at this time.
         /// </summary>
         public bool RollbackAllowed
         {
@@ -225,8 +229,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _sdkVersion;
         
         /// <summary>
-        /// The version of the Windows Azure SDK that was used to generate the
-        /// .cspkg that created this deployment.  The first two numerical
+        /// Optional. The version of the Azure SDK that was used to generate
+        /// the .cspkg that created this deployment. The first two numerical
         /// components of the returned version represent the version of the
         /// SDK used to create the package.
         /// </summary>
@@ -239,7 +243,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private DeploymentStatus _status;
         
         /// <summary>
-        /// The status of the deployment.
+        /// Optional. The status of the deployment.
         /// </summary>
         public DeploymentStatus Status
         {
@@ -250,7 +254,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private int _upgradeDomainCount;
         
         /// <summary>
-        /// The number of upgrade domains available to this cloud service.
+        /// Optional. The number of upgrade domains available to this cloud
+        /// service.
         /// </summary>
         public int UpgradeDomainCount
         {
@@ -261,7 +266,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private UpgradeStatus _upgradeStatus;
         
         /// <summary>
-        /// Specifies information about an update occurring on the deployment.
+        /// Optional. Information about an update occurring on the deployment.
         /// </summary>
         public UpgradeStatus UpgradeStatus
         {
@@ -272,9 +277,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private Uri _uri;
         
         /// <summary>
-        /// The URL used to access the hosted service. For example, if the
-        /// service name is MyService you could access the access the service
-        /// by calling: http://MyService.cloudapp.net
+        /// Optional. The URL used to access the hosted service. For example,
+        /// if the service name is MyService you could access the access the
+        /// service by calling: http://MyService.cloudapp.net.
         /// </summary>
         public Uri Uri
         {
@@ -285,7 +290,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<VirtualIPAddress> _virtualIPAddresses;
         
         /// <summary>
-        /// The virtual IP addresses that are specified for thedeployment.
+        /// Optional. The virtual IP addresses that are specified for the
+        /// deployment.
         /// </summary>
         public IList<VirtualIPAddress> VirtualIPAddresses
         {
@@ -296,8 +302,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _virtualNetworkName;
         
         /// <summary>
-        /// The name of the Virtual Network that the virtual machine connects
-        /// to.
+        /// Optional. The name of the Virtual Network that the virtual machine
+        /// connects to.
         /// </summary>
         public string VirtualNetworkName
         {

@@ -25,7 +25,7 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
-    /// The vendor, platform, and os family ofthe requested device
+    /// The vendor, platform, and OS family of the requested device
     /// configuration script.
     /// </summary>
     public partial class GatewayGetDeviceConfigurationScriptParameters
@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         private string _oSFamily;
         
         /// <summary>
-        /// The device OS Family.
+        /// Optional. The device OS family.
         /// </summary>
         public string OSFamily
         {
@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         private string _platform;
         
         /// <summary>
-        /// The device platform.
+        /// Optional. The device platform.
         /// </summary>
         public string Platform
         {
@@ -55,7 +55,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         private string _vendor;
         
         /// <summary>
-        /// The name of the device vendor.
+        /// Optional. The name of the device vendor.
         /// </summary>
         public string Vendor
         {

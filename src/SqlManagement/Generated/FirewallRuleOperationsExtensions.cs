@@ -49,33 +49,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL database server to which this rule will be
-        /// applied.
+        /// Required. The name of the SQL database server to which this rule
+        /// will be applied.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Create Firewall Rule operation.
+        /// Required. Parameters for the Create Firewall Rule operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the firewall rule create response.
         /// </returns>
         public static FirewallRuleCreateResponse Create(this IFirewallRuleOperations operations, string serverName, FirewallRuleCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(serverName, parameters).Result;
+                return ((IFirewallRuleOperations)s).CreateAsync(serverName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -89,15 +78,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL database server to which this rule will be
-        /// applied.
+        /// Required. The name of the SQL database server to which this rule
+        /// will be applied.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Create Firewall Rule operation.
+        /// Required. Parameters for the Create Firewall Rule operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the firewall rule create response.
         /// </returns>
         public static Task<FirewallRuleCreateResponse> CreateAsync(this IFirewallRuleOperations operations, string serverName, FirewallRuleCreateParameters parameters)
         {
@@ -115,11 +103,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server that will be have new firewall rule applied
-        /// to it.
+        /// Required. The name of the server that will be have new firewall
+        /// rule applied to it.
         /// </param>
         /// <param name='ruleName'>
-        /// The name of the new firewall rule.
+        /// Required. The name of the new firewall rule.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -127,21 +115,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IFirewallRuleOperations operations, string serverName, string ruleName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(serverName, ruleName).Result;
+                return ((IFirewallRuleOperations)s).DeleteAsync(serverName, ruleName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -155,11 +133,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server that will be have new firewall rule applied
-        /// to it.
+        /// Required. The name of the server that will be have new firewall
+        /// rule applied to it.
         /// </param>
         /// <param name='ruleName'>
-        /// The name of the new firewall rule.
+        /// Required. The name of the new firewall rule.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -181,29 +159,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server for which the call is being made.
+        /// Required. The name of the server for which the call is being made.
+        /// </param>
+        /// <param name='ruleName'>
+        /// Required. The name of the rule for which the call is being made.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
         /// request ID.
         /// </returns>
-        public static FirewallRuleListResponse List(this IFirewallRuleOperations operations, string serverName)
+        public static FirewallRuleGetResponse Get(this IFirewallRuleOperations operations, string serverName, string ruleName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(serverName).Result;
+                return ((IFirewallRuleOperations)s).GetAsync(serverName, ruleName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -217,7 +188,58 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server for which the call is being made.
+        /// Required. The name of the server for which the call is being made.
+        /// </param>
+        /// <param name='ruleName'>
+        /// Required. The name of the rule for which the call is being made.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public static Task<FirewallRuleGetResponse> GetAsync(this IFirewallRuleOperations operations, string serverName, string ruleName)
+        {
+            return operations.GetAsync(serverName, ruleName, CancellationToken.None);
+        }
+        
+        /// <summary>
+        /// Returns a list of all the server-level firewall rules for a SQL
+        /// Database server that belongs to a subscription.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/gg715278.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
+        /// </param>
+        /// <param name='serverName'>
+        /// Required. The name of the server for which the call is being made.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public static FirewallRuleListResponse List(this IFirewallRuleOperations operations, string serverName)
+        {
+            return Task.Factory.StartNew((object s) => 
+            {
+                return ((IFirewallRuleOperations)s).ListAsync(serverName);
+            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+        }
+        
+        /// <summary>
+        /// Returns a list of all the server-level firewall rules for a SQL
+        /// Database server that belongs to a subscription.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/gg715278.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
+        /// </param>
+        /// <param name='serverName'>
+        /// Required. The name of the server for which the call is being made.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -239,36 +261,25 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL database server to which this rule will be
-        /// applied.
+        /// Required. The name of the SQL database server to which this rule
+        /// will be applied.
         /// </param>
         /// <param name='ruleName'>
-        /// The name of the firewall rule to be updated.
+        /// Required. The name of the firewall rule to be updated.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Update Firewall Rule operation.
+        /// Required. Parameters for the Update Firewall Rule operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the firewall rule update response.
         /// </returns>
         public static FirewallRuleUpdateResponse Update(this IFirewallRuleOperations operations, string serverName, string ruleName, FirewallRuleUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(serverName, ruleName, parameters).Result;
+                return ((IFirewallRuleOperations)s).UpdateAsync(serverName, ruleName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -282,18 +293,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IFirewallRuleOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL database server to which this rule will be
-        /// applied.
+        /// Required. The name of the SQL database server to which this rule
+        /// will be applied.
         /// </param>
         /// <param name='ruleName'>
-        /// The name of the firewall rule to be updated.
+        /// Required. The name of the firewall rule to be updated.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Update Firewall Rule operation.
+        /// Required. Parameters for the Update Firewall Rule operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the firewall rule update response.
         /// </returns>
         public static Task<FirewallRuleUpdateResponse> UpdateAsync(this IFirewallRuleOperations operations, string serverName, string ruleName, FirewallRuleUpdateParameters parameters)
         {

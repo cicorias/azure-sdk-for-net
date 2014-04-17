@@ -45,10 +45,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServiceObjectiveOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <param name='serviceObjectiveId'>
-        /// The Id of the Service Objective to be obtained.
+        /// Required. The Id of the Service Objective to be obtained.
         /// </param>
         /// <returns>
         /// Response containing the service objective for a given server and
@@ -56,21 +56,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServiceObjectiveGetResponse Get(this IServiceObjectiveOperations operations, string serverName, string serviceObjectiveId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serverName, serviceObjectiveId).Result;
+                return ((IServiceObjectiveOperations)s).GetAsync(serverName, serviceObjectiveId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -81,10 +71,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServiceObjectiveOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <param name='serviceObjectiveId'>
-        /// The Id of the Service Objective to be obtained.
+        /// Required. The Id of the Service Objective to be obtained.
         /// </param>
         /// <returns>
         /// Response containing the service objective for a given server and
@@ -104,7 +94,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServiceObjectiveOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the database server to be queried.
+        /// Required. The name of the database server to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of service objective for a given
@@ -112,21 +102,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServiceObjectiveListResponse List(this IServiceObjectiveOperations operations, string serverName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(serverName).Result;
+                return ((IServiceObjectiveOperations)s).ListAsync(serverName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -138,7 +118,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServiceObjectiveOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the database server to be queried.
+        /// Required. The name of the database server to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of service objective for a given

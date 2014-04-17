@@ -37,8 +37,8 @@ using Microsoft.WindowsAzure.Management.Compute.Models;
 namespace Microsoft.WindowsAzure.Management.Compute
 {
     /// <summary>
-    /// Operations for determining the version of the Windows Azure Guest
-    /// Operating System on which your service is running.  (see
+    /// Operations for determining the version of the Azure Guest Operating
+    /// System on which your service is running.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ff684169.aspx for
     /// more information)
     /// </summary>
@@ -71,11 +71,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// guest operating system that are currently available in Windows
         /// Azure. The 2010-10-28 version of List Operating Systems also
         /// indicates what family an operating system version belongs to.
-        /// Currently Windows Azure supports two operating system families:
-        /// the Windows Azure guest operating system that is substantially
-        /// compatible with Windows Server 2008 SP2, and the Windows Azure
+        /// Currently Azure supports two operating system families: the Azure
         /// guest operating system that is substantially compatible with
-        /// Windows Server 2008 R2.  (see
+        /// Windows Server 2008 SP2, and the Azure guest operating system that
+        /// is substantially compatible with Windows Server 2008 R2.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ff684168.aspx
         /// for more information)
         /// </summary>
@@ -100,7 +99,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/operatingsystems";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/operatingsystems";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -111,7 +121,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -152,7 +162,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement operatingSystemsSequenceElement = responseDoc.Element(XName.Get("OperatingSystems", "http://schemas.microsoft.com/windowsazure"));
-                    if (operatingSystemsSequenceElement != null)
+                    if (operatingSystemsSequenceElement != null && operatingSystemsSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement operatingSystemsElement in operatingSystemsSequenceElement.Elements(XName.Get("OperatingSystem", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -160,42 +170,42 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             result.OperatingSystems.Add(operatingSystemInstance);
                             
                             XElement versionElement = operatingSystemsElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
-                            if (versionElement != null)
+                            if (versionElement != null && versionElement.IsEmpty == false)
                             {
                                 string versionInstance = versionElement.Value;
                                 operatingSystemInstance.Version = versionInstance;
                             }
                             
                             XElement labelElement = operatingSystemsElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                            if (labelElement != null)
+                            if (labelElement != null && labelElement.IsEmpty == false)
                             {
                                 string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                                 operatingSystemInstance.Label = labelInstance;
                             }
                             
                             XElement isDefaultElement = operatingSystemsElement.Element(XName.Get("IsDefault", "http://schemas.microsoft.com/windowsazure"));
-                            if (isDefaultElement != null)
+                            if (isDefaultElement != null && isDefaultElement.IsEmpty == false)
                             {
                                 bool isDefaultInstance = bool.Parse(isDefaultElement.Value);
                                 operatingSystemInstance.IsDefault = isDefaultInstance;
                             }
                             
                             XElement isActiveElement = operatingSystemsElement.Element(XName.Get("IsActive", "http://schemas.microsoft.com/windowsazure"));
-                            if (isActiveElement != null)
+                            if (isActiveElement != null && isActiveElement.IsEmpty == false)
                             {
                                 bool isActiveInstance = bool.Parse(isActiveElement.Value);
                                 operatingSystemInstance.IsActive = isActiveInstance;
                             }
                             
                             XElement familyElement = operatingSystemsElement.Element(XName.Get("Family", "http://schemas.microsoft.com/windowsazure"));
-                            if (familyElement != null)
+                            if (familyElement != null && familyElement.IsEmpty == false)
                             {
                                 int familyInstance = int.Parse(familyElement.Value, CultureInfo.InvariantCulture);
                                 operatingSystemInstance.Family = familyInstance;
                             }
                             
                             XElement familyLabelElement = operatingSystemsElement.Element(XName.Get("FamilyLabel", "http://schemas.microsoft.com/windowsazure"));
-                            if (familyLabelElement != null)
+                            if (familyLabelElement != null && familyLabelElement.IsEmpty == false)
                             {
                                 string familyLabelInstance = TypeConversion.FromBase64String(familyLabelElement.Value);
                                 operatingSystemInstance.FamilyLabel = familyLabelInstance;
@@ -234,12 +244,12 @@ namespace Microsoft.WindowsAzure.Management.Compute
         
         /// <summary>
         /// The List OS Families operation lists the guest operating system
-        /// families available in Windows Azure, and also lists the operating
-        /// system versions available for each family. Currently Windows Azure
-        /// supports two operating system families: the Windows Azure guest
-        /// operating system that is substantially compatible with Windows
-        /// Server 2008 SP2, and the Windows Azure guest operating system that
-        /// is substantially compatible with Windows Server 2008 R2.  (see
+        /// families available in Azure, and also lists the operating system
+        /// versions available for each family. Currently Azure supports two
+        /// operating system families: the Azure guest operating system that
+        /// is substantially compatible with Windows Server 2008 SP2, and the
+        /// Azure guest operating system that is substantially compatible with
+        /// Windows Server 2008 R2.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441291.aspx
         /// for more information)
         /// </summary>
@@ -264,7 +274,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/operatingsystemfamilies";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/operatingsystemfamilies";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -275,7 +296,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -316,7 +337,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement operatingSystemFamiliesSequenceElement = responseDoc.Element(XName.Get("OperatingSystemFamilies", "http://schemas.microsoft.com/windowsazure"));
-                    if (operatingSystemFamiliesSequenceElement != null)
+                    if (operatingSystemFamiliesSequenceElement != null && operatingSystemFamiliesSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement operatingSystemFamiliesElement in operatingSystemFamiliesSequenceElement.Elements(XName.Get("OperatingSystemFamily", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -324,21 +345,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             result.OperatingSystemFamilies.Add(operatingSystemFamilyInstance);
                             
                             XElement nameElement = operatingSystemFamiliesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 int nameInstance = int.Parse(nameElement.Value, CultureInfo.InvariantCulture);
                                 operatingSystemFamilyInstance.Name = nameInstance;
                             }
                             
                             XElement labelElement = operatingSystemFamiliesElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                            if (labelElement != null)
+                            if (labelElement != null && labelElement.IsEmpty == false)
                             {
                                 string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                                 operatingSystemFamilyInstance.Label = labelInstance;
                             }
                             
                             XElement operatingSystemsSequenceElement = operatingSystemFamiliesElement.Element(XName.Get("OperatingSystems", "http://schemas.microsoft.com/windowsazure"));
-                            if (operatingSystemsSequenceElement != null)
+                            if (operatingSystemsSequenceElement != null && operatingSystemsSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement operatingSystemsElement in operatingSystemsSequenceElement.Elements(XName.Get("OperatingSystem", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -346,28 +367,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     operatingSystemFamilyInstance.OperatingSystems.Add(operatingSystemInstance);
                                     
                                     XElement versionElement = operatingSystemsElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
-                                    if (versionElement != null)
+                                    if (versionElement != null && versionElement.IsEmpty == false)
                                     {
                                         string versionInstance = versionElement.Value;
                                         operatingSystemInstance.Version = versionInstance;
                                     }
                                     
                                     XElement labelElement2 = operatingSystemsElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                                    if (labelElement2 != null)
+                                    if (labelElement2 != null && labelElement2.IsEmpty == false)
                                     {
                                         string labelInstance2 = TypeConversion.FromBase64String(labelElement2.Value);
                                         operatingSystemInstance.Label = labelInstance2;
                                     }
                                     
                                     XElement isDefaultElement = operatingSystemsElement.Element(XName.Get("IsDefault", "http://schemas.microsoft.com/windowsazure"));
-                                    if (isDefaultElement != null)
+                                    if (isDefaultElement != null && isDefaultElement.IsEmpty == false)
                                     {
                                         bool isDefaultInstance = bool.Parse(isDefaultElement.Value);
                                         operatingSystemInstance.IsDefault = isDefaultInstance;
                                     }
                                     
                                     XElement isActiveElement = operatingSystemsElement.Element(XName.Get("IsActive", "http://schemas.microsoft.com/windowsazure"));
-                                    if (isActiveElement != null)
+                                    if (isActiveElement != null && isActiveElement.IsEmpty == false)
                                     {
                                         bool isActiveInstance = bool.Parse(isActiveElement.Value);
                                         operatingSystemInstance.IsActive = isActiveInstance;

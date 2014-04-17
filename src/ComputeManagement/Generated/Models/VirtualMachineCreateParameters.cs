@@ -36,9 +36,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         /// <summary>
         /// Optional. Specifies the name of an availability set to which to add
         /// the virtual machine. This value controls the virtual machine
-        /// allocation in the Windows Azure environment. Virtual machines
-        /// specified in the same availability set are allocated to different
-        /// nodes to maximize availability.
+        /// allocation in the Azure environment. Virtual machines specified in
+        /// the same availability set are allocated to different nodes to
+        /// maximize availability.
         /// </summary>
         public string AvailabilitySetName
         {
@@ -49,8 +49,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<ConfigurationSet> _configurationSets;
         
         /// <summary>
-        /// Contains the collection of configuration sets that contain system
-        /// and application configuration settings.
+        /// Optional. Contains the collection of configuration sets that
+        /// contain system and application configuration settings.
         /// </summary>
         public IList<ConfigurationSet> ConfigurationSets
         {
@@ -61,8 +61,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<DataVirtualHardDisk> _dataVirtualHardDisks;
         
         /// <summary>
-        /// Contains the parameters Windows Azure used to create the data disk
-        /// for the virtual machine.
+        /// Optional. Contains the parameters Azure used to create the data
+        /// disk for the virtual machine.
         /// </summary>
         public IList<DataVirtualHardDisk> DataVirtualHardDisks
         {
@@ -73,8 +73,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private OSVirtualHardDisk _oSVirtualHardDisk;
         
         /// <summary>
-        /// Contains the parameters Windows Azure used to create the operating
-        /// system disk for the virtual machine.
+        /// Optional. Contains the parameters Azure used to create the
+        /// operating system disk for the virtual machine.
         /// </summary>
         public OSVirtualHardDisk OSVirtualHardDisk
         {
@@ -86,8 +86,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         
         /// <summary>
         /// Optional. Indicates whether the WindowsAzureGuestAgent service is
-        /// installed on the Virtual Machine. To run a resource extension in
-        /// aVirtual Machine, this service must be installed.
+        /// installed on the Virtual Machine. To run a resource extension in a
+        /// Virtual Machine, this service must be installed.
         /// </summary>
         public bool? ProvisionGuestAgent
         {
@@ -123,12 +123,28 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _roleSize;
         
         /// <summary>
-        /// The size of the virtual machine.
+        /// Optional. The size of the virtual machine.
         /// </summary>
         public string RoleSize
         {
             get { return this._roleSize; }
             set { this._roleSize = value; }
+        }
+        
+        private string _vMImageName;
+        
+        /// <summary>
+        /// Optional. Name of the VMImage from which this Role is to be
+        /// created. If the OSDisk in the VMImage was Specialized, then no
+        /// WindowsProvisioningConfigurationSet or
+        /// LinuxProvisioningConfigurationSet should be provided. No
+        /// OSVirtualHardDisk or DataVirtualHardDisk should be specified when
+        /// using this argument.
+        /// </summary>
+        public string VMImageName
+        {
+            get { return this._vMImageName; }
+            set { this._vMImageName = value; }
         }
         
         /// <summary>

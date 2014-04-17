@@ -66,7 +66,7 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// Gets a deployment for a website.
         /// </summary>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -94,8 +94,18 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/deployments/").ToString() + deploymentId + "?";
-            url = url + "version=2";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/api/deployments/" + deploymentId.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -143,7 +153,11 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new DeploymentGetResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -153,134 +167,309 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             deploymentInstance.Id = idInstance;
                         }
                         
                         JToken statusValue = responseDoc["status"];
                         if (statusValue != null && statusValue.Type != JTokenType.Null)
                         {
-                            DeployStatus statusInstance = (DeployStatus)Enum.Parse(typeof(DeployStatus), (string)statusValue, false);
+                            DeployStatus statusInstance = ((DeployStatus)Enum.Parse(typeof(DeployStatus), ((string)statusValue), true));
                             deploymentInstance.Status = statusInstance;
                         }
                         
                         JToken statusTextValue = responseDoc["status_text"];
                         if (statusTextValue != null && statusTextValue.Type != JTokenType.Null)
                         {
-                            string statusTextInstance = (string)statusTextValue;
+                            string statusTextInstance = ((string)statusTextValue);
                             deploymentInstance.StatusText = statusTextInstance;
                         }
                         
                         JToken authorEmailValue = responseDoc["author_email"];
                         if (authorEmailValue != null && authorEmailValue.Type != JTokenType.Null)
                         {
-                            string authorEmailInstance = (string)authorEmailValue;
+                            string authorEmailInstance = ((string)authorEmailValue);
                             deploymentInstance.AuthorEmail = authorEmailInstance;
                         }
                         
                         JToken authorValue = responseDoc["author"];
                         if (authorValue != null && authorValue.Type != JTokenType.Null)
                         {
-                            string authorInstance = (string)authorValue;
+                            string authorInstance = ((string)authorValue);
                             deploymentInstance.Author = authorInstance;
                         }
                         
                         JToken deployerValue = responseDoc["deployer"];
                         if (deployerValue != null && deployerValue.Type != JTokenType.Null)
                         {
-                            string deployerInstance = (string)deployerValue;
+                            string deployerInstance = ((string)deployerValue);
                             deploymentInstance.Deployer = deployerInstance;
                         }
                         
                         JToken messageValue = responseDoc["message"];
                         if (messageValue != null && messageValue.Type != JTokenType.Null)
                         {
-                            string messageInstance = (string)messageValue;
+                            string messageInstance = ((string)messageValue);
                             deploymentInstance.Message = messageInstance;
                         }
                         
                         JToken progressValue = responseDoc["progress"];
                         if (progressValue != null && progressValue.Type != JTokenType.Null)
                         {
-                            string progressInstance = (string)progressValue;
+                            string progressInstance = ((string)progressValue);
                             deploymentInstance.Progress = progressInstance;
                         }
                         
                         JToken receivedTimeValue = responseDoc["received_time"];
                         if (receivedTimeValue != null && receivedTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime receivedTimeInstance = (DateTime)receivedTimeValue;
+                            DateTime receivedTimeInstance = ((DateTime)receivedTimeValue);
                             deploymentInstance.ReceivedTime = receivedTimeInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["start_time"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             deploymentInstance.StartTime = startTimeInstance;
                         }
                         
                         JToken endTimeValue = responseDoc["end_time"];
                         if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime endTimeInstance = (DateTime)endTimeValue;
+                            DateTime endTimeInstance = ((DateTime)endTimeValue);
                             deploymentInstance.EndTime = endTimeInstance;
                         }
                         
                         JToken lastSuccessEndTimeValue = responseDoc["last_success_end_time"];
                         if (lastSuccessEndTimeValue != null && lastSuccessEndTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime lastSuccessEndTimeInstance = (DateTime)lastSuccessEndTimeValue;
+                            DateTime lastSuccessEndTimeInstance = ((DateTime)lastSuccessEndTimeValue);
                             deploymentInstance.LastSuccessEndTime = lastSuccessEndTimeInstance;
                         }
                         
                         JToken completeValue = responseDoc["complete"];
                         if (completeValue != null && completeValue.Type != JTokenType.Null)
                         {
-                            bool completeInstance = (bool)completeValue;
+                            bool completeInstance = ((bool)completeValue);
                             deploymentInstance.Complete = completeInstance;
                         }
                         
                         JToken activeValue = responseDoc["active"];
                         if (activeValue != null && activeValue.Type != JTokenType.Null)
                         {
-                            bool activeInstance = (bool)activeValue;
+                            bool activeInstance = ((bool)activeValue);
                             deploymentInstance.Active = activeInstance;
                         }
                         
                         JToken isTempValue = responseDoc["is_temp"];
                         if (isTempValue != null && isTempValue.Type != JTokenType.Null)
                         {
-                            bool isTempInstance = (bool)isTempValue;
+                            bool isTempInstance = ((bool)isTempValue);
                             deploymentInstance.IsTemp = isTempInstance;
                         }
                         
                         JToken isReadonlyValue = responseDoc["is_readonly"];
                         if (isReadonlyValue != null && isReadonlyValue.Type != JTokenType.Null)
                         {
-                            bool isReadonlyInstance = (bool)isReadonlyValue;
+                            bool isReadonlyInstance = ((bool)isReadonlyValue);
                             deploymentInstance.IsReadOnly = isReadonlyInstance;
                         }
                         
                         JToken urlValue = responseDoc["url"];
                         if (urlValue != null && urlValue.Type != JTokenType.Null)
                         {
-                            Uri urlInstance = TypeConversion.TryParseUri((string)urlValue);
+                            Uri urlInstance = TypeConversion.TryParseUri(((string)urlValue));
                             deploymentInstance.Url = urlInstance;
                         }
                         
                         JToken logUrlValue = responseDoc["log_url"];
                         if (logUrlValue != null && logUrlValue.Type != JTokenType.Null)
                         {
-                            Uri logUrlInstance = TypeConversion.TryParseUri((string)logUrlValue);
+                            Uri logUrlInstance = TypeConversion.TryParseUri(((string)logUrlValue));
                             deploymentInstance.LogUrl = logUrlInstance;
                         }
                         
                         JToken siteNameValue = responseDoc["site_name"];
                         if (siteNameValue != null && siteNameValue.Type != JTokenType.Null)
                         {
-                            string siteNameInstance = (string)siteNameValue;
+                            string siteNameInstance = ((string)siteNameValue);
                             deploymentInstance.SiteName = siteNameInstance;
+                        }
+                    }
+                    
+                    result.StatusCode = statusCode;
+                    if (httpResponse.Headers.Contains("x-ms-request-id"))
+                    {
+                        result.RequestId = httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                    }
+                    
+                    if (shouldTrace)
+                    {
+                        Tracing.Exit(invocationId, result);
+                    }
+                    return result;
+                }
+                finally
+                {
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (httpRequest != null)
+                {
+                    httpRequest.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Gets a deployment log for a website.
+        /// </summary>
+        /// <param name='deploymentId'>
+        /// Required. The deployment identifier.
+        /// </param>
+        /// <param name='deploymentLogId'>
+        /// Required. The deployment log identifier.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// The get log for a deployments operation response.
+        /// </returns>
+        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.WebSitesExtensions.Models.DeploymentGetLogResponse> GetLogAsync(string deploymentId, string deploymentLogId, CancellationToken cancellationToken)
+        {
+            // Validate
+            if (deploymentId == null)
+            {
+                throw new ArgumentNullException("deploymentId");
+            }
+            if (deploymentLogId == null)
+            {
+                throw new ArgumentNullException("deploymentLogId");
+            }
+            
+            // Tracing
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("deploymentId", deploymentId);
+                tracingParameters.Add("deploymentLogId", deploymentLogId);
+                Tracing.Enter(invocationId, this, "GetLogAsync", tracingParameters);
+            }
+            
+            // Construct URL
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/api/deployments/" + deploymentId.Trim() + "/log/" + deploymentLogId.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
+            
+            // Create HTTP transport objects
+            HttpRequestMessage httpRequest = null;
+            try
+            {
+                httpRequest = new HttpRequestMessage();
+                httpRequest.Method = HttpMethod.Get;
+                httpRequest.RequestUri = new Uri(url);
+                
+                // Set Headers
+                
+                // Set Credentials
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                
+                // Send Request
+                HttpResponseMessage httpResponse = null;
+                try
+                {
+                    if (shouldTrace)
+                    {
+                        Tracing.SendRequest(invocationId, httpRequest);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    httpResponse = await this.Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                    if (shouldTrace)
+                    {
+                        Tracing.ReceiveResponse(invocationId, httpResponse);
+                    }
+                    HttpStatusCode statusCode = httpResponse.StatusCode;
+                    if (statusCode != HttpStatusCode.OK)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        CloudException ex = CloudException.Create(httpRequest, null, httpResponse, await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false), CloudExceptionType.Json);
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    
+                    // Create Result
+                    DeploymentGetLogResponse result = null;
+                    // Deserialize Response
+                    cancellationToken.ThrowIfCancellationRequested();
+                    string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    result = new DeploymentGetLogResponse();
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
+                    
+                    if (responseDoc != null && responseDoc.Type != JTokenType.Null)
+                    {
+                        DeploymentLog logInstance = new DeploymentLog();
+                        result.Log = logInstance;
+                        
+                        JToken logTimeValue = responseDoc["log_time"];
+                        if (logTimeValue != null && logTimeValue.Type != JTokenType.Null)
+                        {
+                            DateTime logTimeInstance = ((DateTime)logTimeValue);
+                            logInstance.LogTime = logTimeInstance;
+                        }
+                        
+                        JToken idValue = responseDoc["id"];
+                        if (idValue != null && idValue.Type != JTokenType.Null)
+                        {
+                            string idInstance = ((string)idValue);
+                            logInstance.Id = idInstance;
+                        }
+                        
+                        JToken messageValue = responseDoc["message"];
+                        if (messageValue != null && messageValue.Type != JTokenType.Null)
+                        {
+                            string messageInstance = ((string)messageValue);
+                            logInstance.Message = messageInstance;
+                        }
+                        
+                        JToken typeValue = responseDoc["type"];
+                        if (typeValue != null && typeValue.Type != JTokenType.Null)
+                        {
+                            LogEntryType typeInstance = ((LogEntryType)Enum.Parse(typeof(LogEntryType), ((string)typeValue), true));
+                            logInstance.Type = typeInstance;
+                        }
+                        
+                        JToken detailsUrlValue = responseDoc["details_url"];
+                        if (detailsUrlValue != null && detailsUrlValue.Type != JTokenType.Null)
+                        {
+                            string detailsUrlInstance = ((string)detailsUrlValue);
+                            logInstance.DetailsUrl = detailsUrlInstance;
                         }
                     }
                     
@@ -317,7 +506,7 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// List the deployments for a website.
         /// </summary>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -341,16 +530,26 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/deployments/").ToString() + "?";
-            url = url + "version=2";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/api/deployments/";
             if (parameters != null && parameters.Top != null)
             {
-                url = url + "&$top=" + Uri.EscapeUriString(parameters.Top);
+                url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.Trim());
             }
             if (parameters != null && parameters.OrderBy != null)
             {
-                url = url + "&$orderBy=" + Uri.EscapeUriString(parameters.OrderBy);
+                url = url + "&$orderBy=" + Uri.EscapeUriString(parameters.OrderBy.Trim());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -398,14 +597,18 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new DeploymentListResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken deploymentsArray = responseDoc;
                         if (deploymentsArray != null && deploymentsArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken deploymentsValue in (JArray)deploymentsArray)
+                            foreach (JToken deploymentsValue in ((JArray)deploymentsArray))
                             {
                                 Deployment deploymentInstance = new Deployment();
                                 result.Deployments.Add(deploymentInstance);
@@ -413,133 +616,133 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                                 JToken idValue = deploymentsValue["id"];
                                 if (idValue != null && idValue.Type != JTokenType.Null)
                                 {
-                                    string idInstance = (string)idValue;
+                                    string idInstance = ((string)idValue);
                                     deploymentInstance.Id = idInstance;
                                 }
                                 
                                 JToken statusValue = deploymentsValue["status"];
                                 if (statusValue != null && statusValue.Type != JTokenType.Null)
                                 {
-                                    DeployStatus statusInstance = (DeployStatus)Enum.Parse(typeof(DeployStatus), (string)statusValue, false);
+                                    DeployStatus statusInstance = ((DeployStatus)Enum.Parse(typeof(DeployStatus), ((string)statusValue), true));
                                     deploymentInstance.Status = statusInstance;
                                 }
                                 
                                 JToken statusTextValue = deploymentsValue["status_text"];
                                 if (statusTextValue != null && statusTextValue.Type != JTokenType.Null)
                                 {
-                                    string statusTextInstance = (string)statusTextValue;
+                                    string statusTextInstance = ((string)statusTextValue);
                                     deploymentInstance.StatusText = statusTextInstance;
                                 }
                                 
                                 JToken authorEmailValue = deploymentsValue["author_email"];
                                 if (authorEmailValue != null && authorEmailValue.Type != JTokenType.Null)
                                 {
-                                    string authorEmailInstance = (string)authorEmailValue;
+                                    string authorEmailInstance = ((string)authorEmailValue);
                                     deploymentInstance.AuthorEmail = authorEmailInstance;
                                 }
                                 
                                 JToken authorValue = deploymentsValue["author"];
                                 if (authorValue != null && authorValue.Type != JTokenType.Null)
                                 {
-                                    string authorInstance = (string)authorValue;
+                                    string authorInstance = ((string)authorValue);
                                     deploymentInstance.Author = authorInstance;
                                 }
                                 
                                 JToken deployerValue = deploymentsValue["deployer"];
                                 if (deployerValue != null && deployerValue.Type != JTokenType.Null)
                                 {
-                                    string deployerInstance = (string)deployerValue;
+                                    string deployerInstance = ((string)deployerValue);
                                     deploymentInstance.Deployer = deployerInstance;
                                 }
                                 
                                 JToken messageValue = deploymentsValue["message"];
                                 if (messageValue != null && messageValue.Type != JTokenType.Null)
                                 {
-                                    string messageInstance = (string)messageValue;
+                                    string messageInstance = ((string)messageValue);
                                     deploymentInstance.Message = messageInstance;
                                 }
                                 
                                 JToken progressValue = deploymentsValue["progress"];
                                 if (progressValue != null && progressValue.Type != JTokenType.Null)
                                 {
-                                    string progressInstance = (string)progressValue;
+                                    string progressInstance = ((string)progressValue);
                                     deploymentInstance.Progress = progressInstance;
                                 }
                                 
                                 JToken receivedTimeValue = deploymentsValue["received_time"];
                                 if (receivedTimeValue != null && receivedTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime receivedTimeInstance = (DateTime)receivedTimeValue;
+                                    DateTime receivedTimeInstance = ((DateTime)receivedTimeValue);
                                     deploymentInstance.ReceivedTime = receivedTimeInstance;
                                 }
                                 
                                 JToken startTimeValue = deploymentsValue["start_time"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     deploymentInstance.StartTime = startTimeInstance;
                                 }
                                 
                                 JToken endTimeValue = deploymentsValue["end_time"];
                                 if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime endTimeInstance = (DateTime)endTimeValue;
+                                    DateTime endTimeInstance = ((DateTime)endTimeValue);
                                     deploymentInstance.EndTime = endTimeInstance;
                                 }
                                 
                                 JToken lastSuccessEndTimeValue = deploymentsValue["last_success_end_time"];
                                 if (lastSuccessEndTimeValue != null && lastSuccessEndTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime lastSuccessEndTimeInstance = (DateTime)lastSuccessEndTimeValue;
+                                    DateTime lastSuccessEndTimeInstance = ((DateTime)lastSuccessEndTimeValue);
                                     deploymentInstance.LastSuccessEndTime = lastSuccessEndTimeInstance;
                                 }
                                 
                                 JToken completeValue = deploymentsValue["complete"];
                                 if (completeValue != null && completeValue.Type != JTokenType.Null)
                                 {
-                                    bool completeInstance = (bool)completeValue;
+                                    bool completeInstance = ((bool)completeValue);
                                     deploymentInstance.Complete = completeInstance;
                                 }
                                 
                                 JToken activeValue = deploymentsValue["active"];
                                 if (activeValue != null && activeValue.Type != JTokenType.Null)
                                 {
-                                    bool activeInstance = (bool)activeValue;
+                                    bool activeInstance = ((bool)activeValue);
                                     deploymentInstance.Active = activeInstance;
                                 }
                                 
                                 JToken isTempValue = deploymentsValue["is_temp"];
                                 if (isTempValue != null && isTempValue.Type != JTokenType.Null)
                                 {
-                                    bool isTempInstance = (bool)isTempValue;
+                                    bool isTempInstance = ((bool)isTempValue);
                                     deploymentInstance.IsTemp = isTempInstance;
                                 }
                                 
                                 JToken isReadonlyValue = deploymentsValue["is_readonly"];
                                 if (isReadonlyValue != null && isReadonlyValue.Type != JTokenType.Null)
                                 {
-                                    bool isReadonlyInstance = (bool)isReadonlyValue;
+                                    bool isReadonlyInstance = ((bool)isReadonlyValue);
                                     deploymentInstance.IsReadOnly = isReadonlyInstance;
                                 }
                                 
                                 JToken urlValue = deploymentsValue["url"];
                                 if (urlValue != null && urlValue.Type != JTokenType.Null)
                                 {
-                                    Uri urlInstance = TypeConversion.TryParseUri((string)urlValue);
+                                    Uri urlInstance = TypeConversion.TryParseUri(((string)urlValue));
                                     deploymentInstance.Url = urlInstance;
                                 }
                                 
                                 JToken logUrlValue = deploymentsValue["log_url"];
                                 if (logUrlValue != null && logUrlValue.Type != JTokenType.Null)
                                 {
-                                    Uri logUrlInstance = TypeConversion.TryParseUri((string)logUrlValue);
+                                    Uri logUrlInstance = TypeConversion.TryParseUri(((string)logUrlValue));
                                     deploymentInstance.LogUrl = logUrlInstance;
                                 }
                                 
                                 JToken siteNameValue = deploymentsValue["site_name"];
                                 if (siteNameValue != null && siteNameValue.Type != JTokenType.Null)
                                 {
-                                    string siteNameInstance = (string)siteNameValue;
+                                    string siteNameInstance = ((string)siteNameValue);
                                     deploymentInstance.SiteName = siteNameInstance;
                                 }
                             }
@@ -579,10 +782,10 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// List the logs for a deployment for a website.
         /// </summary>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -611,16 +814,26 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/deployments/").ToString() + "?";
-            url = url + "version=2";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/api/deployments/" + deploymentId.Trim() + "/log";
             if (parameters != null && parameters.Top != null)
             {
-                url = url + "&$top=" + Uri.EscapeUriString(parameters.Top);
+                url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.Trim());
             }
             if (parameters != null && parameters.OrderBy != null)
             {
-                url = url + "&$orderBy=" + Uri.EscapeUriString(parameters.OrderBy);
+                url = url + "&$orderBy=" + Uri.EscapeUriString(parameters.OrderBy.Trim());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -668,149 +881,55 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new DeploymentListLogsResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
-                        JToken deploymentsArray = responseDoc;
-                        if (deploymentsArray != null && deploymentsArray.Type != JTokenType.Null)
+                        JToken logsArray = responseDoc;
+                        if (logsArray != null && logsArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken deploymentsValue in (JArray)deploymentsArray)
+                            foreach (JToken logsValue in ((JArray)logsArray))
                             {
-                                Deployment deploymentInstance = new Deployment();
-                                result.Deployments.Add(deploymentInstance);
+                                DeploymentLog deploymentLogInstance = new DeploymentLog();
+                                result.Logs.Add(deploymentLogInstance);
                                 
-                                JToken idValue = deploymentsValue["id"];
+                                JToken logTimeValue = logsValue["log_time"];
+                                if (logTimeValue != null && logTimeValue.Type != JTokenType.Null)
+                                {
+                                    DateTime logTimeInstance = ((DateTime)logTimeValue);
+                                    deploymentLogInstance.LogTime = logTimeInstance;
+                                }
+                                
+                                JToken idValue = logsValue["id"];
                                 if (idValue != null && idValue.Type != JTokenType.Null)
                                 {
-                                    string idInstance = (string)idValue;
-                                    deploymentInstance.Id = idInstance;
+                                    string idInstance = ((string)idValue);
+                                    deploymentLogInstance.Id = idInstance;
                                 }
                                 
-                                JToken statusValue = deploymentsValue["status"];
-                                if (statusValue != null && statusValue.Type != JTokenType.Null)
-                                {
-                                    DeployStatus statusInstance = (DeployStatus)Enum.Parse(typeof(DeployStatus), (string)statusValue, false);
-                                    deploymentInstance.Status = statusInstance;
-                                }
-                                
-                                JToken statusTextValue = deploymentsValue["status_text"];
-                                if (statusTextValue != null && statusTextValue.Type != JTokenType.Null)
-                                {
-                                    string statusTextInstance = (string)statusTextValue;
-                                    deploymentInstance.StatusText = statusTextInstance;
-                                }
-                                
-                                JToken authorEmailValue = deploymentsValue["author_email"];
-                                if (authorEmailValue != null && authorEmailValue.Type != JTokenType.Null)
-                                {
-                                    string authorEmailInstance = (string)authorEmailValue;
-                                    deploymentInstance.AuthorEmail = authorEmailInstance;
-                                }
-                                
-                                JToken authorValue = deploymentsValue["author"];
-                                if (authorValue != null && authorValue.Type != JTokenType.Null)
-                                {
-                                    string authorInstance = (string)authorValue;
-                                    deploymentInstance.Author = authorInstance;
-                                }
-                                
-                                JToken deployerValue = deploymentsValue["deployer"];
-                                if (deployerValue != null && deployerValue.Type != JTokenType.Null)
-                                {
-                                    string deployerInstance = (string)deployerValue;
-                                    deploymentInstance.Deployer = deployerInstance;
-                                }
-                                
-                                JToken messageValue = deploymentsValue["message"];
+                                JToken messageValue = logsValue["message"];
                                 if (messageValue != null && messageValue.Type != JTokenType.Null)
                                 {
-                                    string messageInstance = (string)messageValue;
-                                    deploymentInstance.Message = messageInstance;
+                                    string messageInstance = ((string)messageValue);
+                                    deploymentLogInstance.Message = messageInstance;
                                 }
                                 
-                                JToken progressValue = deploymentsValue["progress"];
-                                if (progressValue != null && progressValue.Type != JTokenType.Null)
+                                JToken typeValue = logsValue["type"];
+                                if (typeValue != null && typeValue.Type != JTokenType.Null)
                                 {
-                                    string progressInstance = (string)progressValue;
-                                    deploymentInstance.Progress = progressInstance;
+                                    LogEntryType typeInstance = ((LogEntryType)Enum.Parse(typeof(LogEntryType), ((string)typeValue), true));
+                                    deploymentLogInstance.Type = typeInstance;
                                 }
                                 
-                                JToken receivedTimeValue = deploymentsValue["received_time"];
-                                if (receivedTimeValue != null && receivedTimeValue.Type != JTokenType.Null)
+                                JToken detailsUrlValue = logsValue["details_url"];
+                                if (detailsUrlValue != null && detailsUrlValue.Type != JTokenType.Null)
                                 {
-                                    DateTime receivedTimeInstance = (DateTime)receivedTimeValue;
-                                    deploymentInstance.ReceivedTime = receivedTimeInstance;
-                                }
-                                
-                                JToken startTimeValue = deploymentsValue["start_time"];
-                                if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
-                                {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
-                                    deploymentInstance.StartTime = startTimeInstance;
-                                }
-                                
-                                JToken endTimeValue = deploymentsValue["end_time"];
-                                if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
-                                {
-                                    DateTime endTimeInstance = (DateTime)endTimeValue;
-                                    deploymentInstance.EndTime = endTimeInstance;
-                                }
-                                
-                                JToken lastSuccessEndTimeValue = deploymentsValue["last_success_end_time"];
-                                if (lastSuccessEndTimeValue != null && lastSuccessEndTimeValue.Type != JTokenType.Null)
-                                {
-                                    DateTime lastSuccessEndTimeInstance = (DateTime)lastSuccessEndTimeValue;
-                                    deploymentInstance.LastSuccessEndTime = lastSuccessEndTimeInstance;
-                                }
-                                
-                                JToken completeValue = deploymentsValue["complete"];
-                                if (completeValue != null && completeValue.Type != JTokenType.Null)
-                                {
-                                    bool completeInstance = (bool)completeValue;
-                                    deploymentInstance.Complete = completeInstance;
-                                }
-                                
-                                JToken activeValue = deploymentsValue["active"];
-                                if (activeValue != null && activeValue.Type != JTokenType.Null)
-                                {
-                                    bool activeInstance = (bool)activeValue;
-                                    deploymentInstance.Active = activeInstance;
-                                }
-                                
-                                JToken isTempValue = deploymentsValue["is_temp"];
-                                if (isTempValue != null && isTempValue.Type != JTokenType.Null)
-                                {
-                                    bool isTempInstance = (bool)isTempValue;
-                                    deploymentInstance.IsTemp = isTempInstance;
-                                }
-                                
-                                JToken isReadonlyValue = deploymentsValue["is_readonly"];
-                                if (isReadonlyValue != null && isReadonlyValue.Type != JTokenType.Null)
-                                {
-                                    bool isReadonlyInstance = (bool)isReadonlyValue;
-                                    deploymentInstance.IsReadOnly = isReadonlyInstance;
-                                }
-                                
-                                JToken urlValue = deploymentsValue["url"];
-                                if (urlValue != null && urlValue.Type != JTokenType.Null)
-                                {
-                                    Uri urlInstance = TypeConversion.TryParseUri((string)urlValue);
-                                    deploymentInstance.Url = urlInstance;
-                                }
-                                
-                                JToken logUrlValue = deploymentsValue["log_url"];
-                                if (logUrlValue != null && logUrlValue.Type != JTokenType.Null)
-                                {
-                                    Uri logUrlInstance = TypeConversion.TryParseUri((string)logUrlValue);
-                                    deploymentInstance.LogUrl = logUrlInstance;
-                                }
-                                
-                                JToken siteNameValue = deploymentsValue["site_name"];
-                                if (siteNameValue != null && siteNameValue.Type != JTokenType.Null)
-                                {
-                                    string siteNameInstance = (string)siteNameValue;
-                                    deploymentInstance.SiteName = siteNameInstance;
+                                    string detailsUrlInstance = ((string)detailsUrlValue);
+                                    deploymentLogInstance.DetailsUrl = detailsUrlInstance;
                                 }
                             }
                         }
@@ -849,7 +968,7 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// Redeploys a specific website deployment.
         /// </summary>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -857,7 +976,7 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// <returns>
         /// The deployment information operation response.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.WebSitesExtensions.Models.DeploymentUpdateResponse> ReployAsync(string deploymentId, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.WebSitesExtensions.Models.DeploymentUpdateResponse> RedeployAsync(string deploymentId, CancellationToken cancellationToken)
         {
             // Validate
             if (deploymentId == null)
@@ -873,12 +992,22 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                 invocationId = Tracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("deploymentId", deploymentId);
-                Tracing.Enter(invocationId, this, "ReployAsync", tracingParameters);
+                Tracing.Enter(invocationId, this, "RedeployAsync", tracingParameters);
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/deployments/").ToString() + deploymentId + "?";
-            url = url + "version=2";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/api/deployments/" + deploymentId.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -926,7 +1055,11 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new DeploymentUpdateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -936,133 +1069,133 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             deploymentInstance.Id = idInstance;
                         }
                         
                         JToken statusValue = responseDoc["status"];
                         if (statusValue != null && statusValue.Type != JTokenType.Null)
                         {
-                            DeployStatus statusInstance = (DeployStatus)Enum.Parse(typeof(DeployStatus), (string)statusValue, false);
+                            DeployStatus statusInstance = ((DeployStatus)Enum.Parse(typeof(DeployStatus), ((string)statusValue), true));
                             deploymentInstance.Status = statusInstance;
                         }
                         
                         JToken statusTextValue = responseDoc["status_text"];
                         if (statusTextValue != null && statusTextValue.Type != JTokenType.Null)
                         {
-                            string statusTextInstance = (string)statusTextValue;
+                            string statusTextInstance = ((string)statusTextValue);
                             deploymentInstance.StatusText = statusTextInstance;
                         }
                         
                         JToken authorEmailValue = responseDoc["author_email"];
                         if (authorEmailValue != null && authorEmailValue.Type != JTokenType.Null)
                         {
-                            string authorEmailInstance = (string)authorEmailValue;
+                            string authorEmailInstance = ((string)authorEmailValue);
                             deploymentInstance.AuthorEmail = authorEmailInstance;
                         }
                         
                         JToken authorValue = responseDoc["author"];
                         if (authorValue != null && authorValue.Type != JTokenType.Null)
                         {
-                            string authorInstance = (string)authorValue;
+                            string authorInstance = ((string)authorValue);
                             deploymentInstance.Author = authorInstance;
                         }
                         
                         JToken deployerValue = responseDoc["deployer"];
                         if (deployerValue != null && deployerValue.Type != JTokenType.Null)
                         {
-                            string deployerInstance = (string)deployerValue;
+                            string deployerInstance = ((string)deployerValue);
                             deploymentInstance.Deployer = deployerInstance;
                         }
                         
                         JToken messageValue = responseDoc["message"];
                         if (messageValue != null && messageValue.Type != JTokenType.Null)
                         {
-                            string messageInstance = (string)messageValue;
+                            string messageInstance = ((string)messageValue);
                             deploymentInstance.Message = messageInstance;
                         }
                         
                         JToken progressValue = responseDoc["progress"];
                         if (progressValue != null && progressValue.Type != JTokenType.Null)
                         {
-                            string progressInstance = (string)progressValue;
+                            string progressInstance = ((string)progressValue);
                             deploymentInstance.Progress = progressInstance;
                         }
                         
                         JToken receivedTimeValue = responseDoc["received_time"];
                         if (receivedTimeValue != null && receivedTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime receivedTimeInstance = (DateTime)receivedTimeValue;
+                            DateTime receivedTimeInstance = ((DateTime)receivedTimeValue);
                             deploymentInstance.ReceivedTime = receivedTimeInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["start_time"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             deploymentInstance.StartTime = startTimeInstance;
                         }
                         
                         JToken endTimeValue = responseDoc["end_time"];
                         if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime endTimeInstance = (DateTime)endTimeValue;
+                            DateTime endTimeInstance = ((DateTime)endTimeValue);
                             deploymentInstance.EndTime = endTimeInstance;
                         }
                         
                         JToken lastSuccessEndTimeValue = responseDoc["last_success_end_time"];
                         if (lastSuccessEndTimeValue != null && lastSuccessEndTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime lastSuccessEndTimeInstance = (DateTime)lastSuccessEndTimeValue;
+                            DateTime lastSuccessEndTimeInstance = ((DateTime)lastSuccessEndTimeValue);
                             deploymentInstance.LastSuccessEndTime = lastSuccessEndTimeInstance;
                         }
                         
                         JToken completeValue = responseDoc["complete"];
                         if (completeValue != null && completeValue.Type != JTokenType.Null)
                         {
-                            bool completeInstance = (bool)completeValue;
+                            bool completeInstance = ((bool)completeValue);
                             deploymentInstance.Complete = completeInstance;
                         }
                         
                         JToken activeValue = responseDoc["active"];
                         if (activeValue != null && activeValue.Type != JTokenType.Null)
                         {
-                            bool activeInstance = (bool)activeValue;
+                            bool activeInstance = ((bool)activeValue);
                             deploymentInstance.Active = activeInstance;
                         }
                         
                         JToken isTempValue = responseDoc["is_temp"];
                         if (isTempValue != null && isTempValue.Type != JTokenType.Null)
                         {
-                            bool isTempInstance = (bool)isTempValue;
+                            bool isTempInstance = ((bool)isTempValue);
                             deploymentInstance.IsTemp = isTempInstance;
                         }
                         
                         JToken isReadonlyValue = responseDoc["is_readonly"];
                         if (isReadonlyValue != null && isReadonlyValue.Type != JTokenType.Null)
                         {
-                            bool isReadonlyInstance = (bool)isReadonlyValue;
+                            bool isReadonlyInstance = ((bool)isReadonlyValue);
                             deploymentInstance.IsReadOnly = isReadonlyInstance;
                         }
                         
                         JToken urlValue = responseDoc["url"];
                         if (urlValue != null && urlValue.Type != JTokenType.Null)
                         {
-                            Uri urlInstance = TypeConversion.TryParseUri((string)urlValue);
+                            Uri urlInstance = TypeConversion.TryParseUri(((string)urlValue));
                             deploymentInstance.Url = urlInstance;
                         }
                         
                         JToken logUrlValue = responseDoc["log_url"];
                         if (logUrlValue != null && logUrlValue.Type != JTokenType.Null)
                         {
-                            Uri logUrlInstance = TypeConversion.TryParseUri((string)logUrlValue);
+                            Uri logUrlInstance = TypeConversion.TryParseUri(((string)logUrlValue));
                             deploymentInstance.LogUrl = logUrlInstance;
                         }
                         
                         JToken siteNameValue = responseDoc["site_name"];
                         if (siteNameValue != null && siteNameValue.Type != JTokenType.Null)
                         {
-                            string siteNameInstance = (string)siteNameValue;
+                            string siteNameInstance = ((string)siteNameValue);
                             deploymentInstance.SiteName = siteNameInstance;
                         }
                     }

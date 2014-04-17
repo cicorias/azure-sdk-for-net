@@ -41,8 +41,7 @@ namespace Microsoft.WindowsAzure.Management
     /// <summary>
     /// You can use management certificates, which are also known as
     /// subscription certificates, to authenticate clients attempting to
-    /// connect to resources associated with your Windows Azure subscription.
-    /// (see
+    /// connect to resources associated with your Azure subscription.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154124.aspx for
     /// more information)
     /// </summary>
@@ -72,16 +71,17 @@ namespace Microsoft.WindowsAzure.Management
         }
         
         /// <summary>
-        /// The Add Management Certificate operation adds a certificate to the
-        /// list of management certificates. Management certificates, which
-        /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
+        /// The Create Management Certificate operation adds a certificate to
+        /// the list of management certificates. Management certificates,
+        /// which are also known as subscription certificates, authenticate
+        /// clients attempting to connect to resources associated with your
         /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154123.aspx
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Management Certificate operation.
+        /// Required. Parameters supplied to the Create Management Certificate
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -110,7 +110,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/certificates";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/certificates";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -222,12 +233,12 @@ namespace Microsoft.WindowsAzure.Management
         /// from the list of management certificates. Management certificates,
         /// which are also known as subscription certificates, authenticate
         /// clients attempting to connect to resources associated with your
-        /// Windows Azure subscription.  (see
+        /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154127.aspx
         /// for more information)
         /// </summary>
         /// <param name='thumbprint'>
-        /// the thumbprint value of the certificate to delete.
+        /// Required. The thumbprint value of the certificate to delete.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -256,7 +267,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/certificates/" + thumbprint;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/certificates/" + thumbprint.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -336,13 +358,13 @@ namespace Microsoft.WindowsAzure.Management
         /// about the management certificate with the specified thumbprint.
         /// Management certificates, which are also known as subscription
         /// certificates, authenticate clients attempting to connect to
-        /// resources associated with your Windows Azure subscription.  (see
+        /// resources associated with your Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154131.aspx
         /// for more information)
         /// </summary>
         /// <param name='thumbprint'>
-        /// The thumbprint value of the certificate to retrieve information
-        /// about.
+        /// Required. The thumbprint value of the certificate to retrieve
+        /// information about.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -370,7 +392,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/certificates/" + thumbprint;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/certificates/" + thumbprint.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -422,31 +455,31 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement subscriptionCertificateElement = responseDoc.Element(XName.Get("SubscriptionCertificate", "http://schemas.microsoft.com/windowsazure"));
-                    if (subscriptionCertificateElement != null)
+                    if (subscriptionCertificateElement != null && subscriptionCertificateElement.IsEmpty == false)
                     {
                         XElement subscriptionCertificatePublicKeyElement = subscriptionCertificateElement.Element(XName.Get("SubscriptionCertificatePublicKey", "http://schemas.microsoft.com/windowsazure"));
-                        if (subscriptionCertificatePublicKeyElement != null)
+                        if (subscriptionCertificatePublicKeyElement != null && subscriptionCertificatePublicKeyElement.IsEmpty == false)
                         {
                             byte[] subscriptionCertificatePublicKeyInstance = Convert.FromBase64String(subscriptionCertificatePublicKeyElement.Value);
                             result.PublicKey = subscriptionCertificatePublicKeyInstance;
                         }
                         
                         XElement subscriptionCertificateThumbprintElement = subscriptionCertificateElement.Element(XName.Get("SubscriptionCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                        if (subscriptionCertificateThumbprintElement != null)
+                        if (subscriptionCertificateThumbprintElement != null && subscriptionCertificateThumbprintElement.IsEmpty == false)
                         {
                             string subscriptionCertificateThumbprintInstance = subscriptionCertificateThumbprintElement.Value;
                             result.Thumbprint = subscriptionCertificateThumbprintInstance;
                         }
                         
                         XElement subscriptionCertificateDataElement = subscriptionCertificateElement.Element(XName.Get("SubscriptionCertificateData", "http://schemas.microsoft.com/windowsazure"));
-                        if (subscriptionCertificateDataElement != null)
+                        if (subscriptionCertificateDataElement != null && subscriptionCertificateDataElement.IsEmpty == false)
                         {
                             byte[] subscriptionCertificateDataInstance = Convert.FromBase64String(subscriptionCertificateDataElement.Value);
                             result.Data = subscriptionCertificateDataInstance;
                         }
                         
                         XElement createdElement = subscriptionCertificateElement.Element(XName.Get("Created", "http://schemas.microsoft.com/windowsazure"));
-                        if (createdElement != null)
+                        if (createdElement != null && createdElement.IsEmpty == false)
                         {
                             DateTime createdInstance = DateTime.Parse(createdElement.Value, CultureInfo.InvariantCulture);
                             result.Created = createdInstance;
@@ -487,8 +520,8 @@ namespace Microsoft.WindowsAzure.Management
         /// information about all of the management certificates associated
         /// with the specified subscription. Management certificates, which
         /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
-        /// Azure subscription.  (see
+        /// attempting to connect to resources associated with your Azure
+        /// subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154105.aspx
         /// for more information)
         /// </summary>
@@ -513,7 +546,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/certificates";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/certificates";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -565,7 +609,7 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement subscriptionCertificatesSequenceElement = responseDoc.Element(XName.Get("SubscriptionCertificates", "http://schemas.microsoft.com/windowsazure"));
-                    if (subscriptionCertificatesSequenceElement != null)
+                    if (subscriptionCertificatesSequenceElement != null && subscriptionCertificatesSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement subscriptionCertificatesElement in subscriptionCertificatesSequenceElement.Elements(XName.Get("SubscriptionCertificate", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -573,28 +617,28 @@ namespace Microsoft.WindowsAzure.Management
                             result.SubscriptionCertificates.Add(subscriptionCertificateInstance);
                             
                             XElement subscriptionCertificatePublicKeyElement = subscriptionCertificatesElement.Element(XName.Get("SubscriptionCertificatePublicKey", "http://schemas.microsoft.com/windowsazure"));
-                            if (subscriptionCertificatePublicKeyElement != null)
+                            if (subscriptionCertificatePublicKeyElement != null && subscriptionCertificatePublicKeyElement.IsEmpty == false)
                             {
                                 byte[] subscriptionCertificatePublicKeyInstance = Convert.FromBase64String(subscriptionCertificatePublicKeyElement.Value);
                                 subscriptionCertificateInstance.PublicKey = subscriptionCertificatePublicKeyInstance;
                             }
                             
                             XElement subscriptionCertificateThumbprintElement = subscriptionCertificatesElement.Element(XName.Get("SubscriptionCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                            if (subscriptionCertificateThumbprintElement != null)
+                            if (subscriptionCertificateThumbprintElement != null && subscriptionCertificateThumbprintElement.IsEmpty == false)
                             {
                                 string subscriptionCertificateThumbprintInstance = subscriptionCertificateThumbprintElement.Value;
                                 subscriptionCertificateInstance.Thumbprint = subscriptionCertificateThumbprintInstance;
                             }
                             
                             XElement subscriptionCertificateDataElement = subscriptionCertificatesElement.Element(XName.Get("SubscriptionCertificateData", "http://schemas.microsoft.com/windowsazure"));
-                            if (subscriptionCertificateDataElement != null)
+                            if (subscriptionCertificateDataElement != null && subscriptionCertificateDataElement.IsEmpty == false)
                             {
                                 byte[] subscriptionCertificateDataInstance = Convert.FromBase64String(subscriptionCertificateDataElement.Value);
                                 subscriptionCertificateInstance.Data = subscriptionCertificateDataInstance;
                             }
                             
                             XElement createdElement = subscriptionCertificatesElement.Element(XName.Get("Created", "http://schemas.microsoft.com/windowsazure"));
-                            if (createdElement != null)
+                            if (createdElement != null && createdElement.IsEmpty == false)
                             {
                                 DateTime createdInstance = DateTime.Parse(createdElement.Value, CultureInfo.InvariantCulture);
                                 subscriptionCertificateInstance.Created = createdInstance;

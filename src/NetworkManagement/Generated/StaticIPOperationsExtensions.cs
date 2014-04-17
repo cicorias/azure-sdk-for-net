@@ -21,7 +21,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Management.Network;
@@ -31,7 +30,7 @@ namespace Microsoft.WindowsAzure
 {
     /// <summary>
     /// The Service Management API includes operations for managing the virtual
-    /// networks your subscription.  (see
+    /// networks for your subscription.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157182.aspx for
     /// more information)
     /// </summary>
@@ -45,33 +44,23 @@ namespace Microsoft.WindowsAzure
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IStaticIPOperations.
         /// </param>
-        /// <param name='virtualNetworkName'>
-        /// The name of the virtual network.
+        /// <param name='networkName'>
+        /// Required. The name of the virtual network.
         /// </param>
         /// <param name='ipAddress'>
-        /// The address of the static IP.
+        /// Required. The address of the static IP.
         /// </param>
         /// <returns>
         /// A response that indicates the availability of a static IP address,
-        /// and if not, provide a list of suggestions.
+        /// and if not, provides a list of suggestions.
         /// </returns>
-        public static NetworkStaticIPAvailabilityResponse Check(this IStaticIPOperations operations, string virtualNetworkName, string ipAddress)
+        public static NetworkStaticIPAvailabilityResponse Check(this IStaticIPOperations operations, string networkName, string ipAddress)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CheckAsync(virtualNetworkName, ipAddress).Result;
+                return ((IStaticIPOperations)s).CheckAsync(networkName, ipAddress);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -82,19 +71,19 @@ namespace Microsoft.WindowsAzure
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IStaticIPOperations.
         /// </param>
-        /// <param name='virtualNetworkName'>
-        /// The name of the virtual network.
+        /// <param name='networkName'>
+        /// Required. The name of the virtual network.
         /// </param>
         /// <param name='ipAddress'>
-        /// The address of the static IP.
+        /// Required. The address of the static IP.
         /// </param>
         /// <returns>
         /// A response that indicates the availability of a static IP address,
-        /// and if not, provide a list of suggestions.
+        /// and if not, provides a list of suggestions.
         /// </returns>
-        public static Task<NetworkStaticIPAvailabilityResponse> CheckAsync(this IStaticIPOperations operations, string virtualNetworkName, string ipAddress)
+        public static Task<NetworkStaticIPAvailabilityResponse> CheckAsync(this IStaticIPOperations operations, string networkName, string ipAddress)
         {
-            return operations.CheckAsync(virtualNetworkName, ipAddress, CancellationToken.None);
+            return operations.CheckAsync(networkName, ipAddress, CancellationToken.None);
         }
     }
 }

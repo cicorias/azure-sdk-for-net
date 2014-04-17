@@ -26,15 +26,15 @@ using Microsoft.WindowsAzure;
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
-    /// A standard storage response including an HTTP status code and request
-    /// ID.
+    /// Response to the Get Client Root Certificate operation.
     /// </summary>
     public partial class ClientRootCertificateGetResponse : OperationResponse
     {
         private string _certificate;
         
         /// <summary>
-        /// The current client root certificate for the network gateway.
+        /// Optional. The current client root certificate for the network
+        /// gateway.
         /// </summary>
         public string Certificate
         {

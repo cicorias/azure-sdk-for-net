@@ -74,11 +74,12 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// for more information)
         /// </summary>
         /// <param name='serverName'>
-        /// The server that will have the change made to the administrative
-        /// user.
+        /// Required. The server that will have the change made to the
+        /// administrative user.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Manage Administrator Password operation.
+        /// Required. Parameters for the Manage Administrator Password
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -116,7 +117,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers/" + serverName + "?op=ResetPassword";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers/" + serverName.Trim() + "?op=ResetPassword";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -210,7 +222,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Server operation.
+        /// Required. Parameters supplied to the Create Server operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -250,7 +262,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -325,7 +348,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement serverNameElement = responseDoc.Element(XName.Get("ServerName", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                    if (serverNameElement != null)
+                    if (serverNameElement != null && serverNameElement.IsEmpty == false)
                     {
                         result.ServerName = serverNameElement.Value;
                     }
@@ -365,7 +388,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// for more information)
         /// </summary>
         /// <param name='serverName'>
-        /// The name of the server to be deleted.
+        /// Required. The name of the server to be deleted.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -394,7 +417,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers/" + serverName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers/" + serverName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -496,7 +530,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -548,36 +593,36 @@ namespace Microsoft.WindowsAzure.Management.Sql
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement serversSequenceElement = responseDoc.Element(XName.Get("Servers", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                    if (serversSequenceElement != null)
+                    if (serversSequenceElement != null && serversSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement serversElement in serversSequenceElement.Elements(XName.Get("Server", "http://schemas.microsoft.com/sqlazure/2010/12/")))
                         {
-                            ServerListResponse.Server serverInstance = new ServerListResponse.Server();
+                            Server serverInstance = new Server();
                             result.Servers.Add(serverInstance);
                             
                             XElement nameElement = serversElement.Element(XName.Get("Name", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 string nameInstance = nameElement.Value;
                                 serverInstance.Name = nameInstance;
                             }
                             
                             XElement administratorLoginElement = serversElement.Element(XName.Get("AdministratorLogin", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                            if (administratorLoginElement != null)
+                            if (administratorLoginElement != null && administratorLoginElement.IsEmpty == false)
                             {
                                 string administratorLoginInstance = administratorLoginElement.Value;
                                 serverInstance.AdministratorUserName = administratorLoginInstance;
                             }
                             
                             XElement locationElement = serversElement.Element(XName.Get("Location", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                            if (locationElement != null)
+                            if (locationElement != null && locationElement.IsEmpty == false)
                             {
                                 string locationInstance = locationElement.Value;
                                 serverInstance.Location = locationInstance;
                             }
                             
                             XElement featuresSequenceElement = serversElement.Element(XName.Get("Features", "http://schemas.microsoft.com/sqlazure/2010/12/"));
-                            if (featuresSequenceElement != null)
+                            if (featuresSequenceElement != null && featuresSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement featuresElement in featuresSequenceElement.Elements(XName.Get("Feature", "http://schemas.microsoft.com/sqlazure/2010/12/")))
                                 {

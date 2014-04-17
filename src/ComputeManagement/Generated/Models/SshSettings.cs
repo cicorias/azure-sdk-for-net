@@ -27,8 +27,8 @@ using Microsoft.WindowsAzure.Management.Compute.Models;
 namespace Microsoft.WindowsAzure.Management.Compute.Models
 {
     /// <summary>
-    /// Optional. Specifies the SSH public keys and key pairs to populate in
-    /// the image during provisioning. This element is only used with the
+    /// Specifies the SSH public keys and key pairs to populate in the image
+    /// during provisioning. This element is only used with the
     /// LinuxProvisioningConfiguration set.
     /// </summary>
     public partial class SshSettings
@@ -36,7 +36,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<SshSettingKeyPair> _keyPairs;
         
         /// <summary>
-        /// Optional. Specifies the collection of SSH public keys.
+        /// Optional. Specifies the collection of SSH key pairs.
         /// </summary>
         public IList<SshSettingKeyPair> KeyPairs
         {

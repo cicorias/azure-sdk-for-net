@@ -44,10 +44,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='notificationHubName'>
-        /// The notification hub name.
+        /// Required. The notification hub name.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and
@@ -55,21 +55,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServiceBusNotificationHubResponse Get(this INotificationHubOperations operations, string namespaceName, string notificationHubName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(namespaceName, notificationHubName).Result;
+                return ((INotificationHubOperations)s).GetAsync(namespaceName, notificationHubName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -80,10 +70,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='notificationHubName'>
-        /// The notification hub name.
+        /// Required. The notification hub name.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and
@@ -102,31 +92,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='notificationHubName'>
-        /// The notification hub name.
+        /// Required. The notification hub name.
         /// </param>
         /// <returns>
         /// The set of connection details for a service bus entity.
         /// </returns>
         public static ServiceBusConnectionDetailsResponse GetConnectionDetails(this INotificationHubOperations operations, string namespaceName, string notificationHubName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetConnectionDetailsAsync(namespaceName, notificationHubName).Result;
+                return ((INotificationHubOperations)s).GetConnectionDetailsAsync(namespaceName, notificationHubName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -137,10 +117,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='notificationHubName'>
-        /// The notification hub name.
+        /// Required. The notification hub name.
         /// </param>
         /// <returns>
         /// The set of connection details for a service bus entity.
@@ -158,7 +138,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and
@@ -166,21 +146,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServiceBusNotificationHubsResponse List(this INotificationHubOperations operations, string namespaceName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(namespaceName).Result;
+                return ((INotificationHubOperations)s).ListAsync(namespaceName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -191,7 +161,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.INotificationHubOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and

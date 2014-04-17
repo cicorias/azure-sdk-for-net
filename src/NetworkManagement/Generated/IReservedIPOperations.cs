@@ -28,14 +28,18 @@ using Microsoft.WindowsAzure.Management.Network.Models;
 
 namespace Microsoft.WindowsAzure.Management.Network
 {
+    /// <summary>
+    /// The Network Management API includes operations for managing the
+    /// reserved IPs for your subscription.
+    /// </summary>
     public partial interface IReservedIPOperations
     {
         /// <summary>
-        /// Preview Only. The Create Reserved IP operation creates a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Creating Reserved IP operation creates a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Parameters supplied to the Begin Creating Reserved IP operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -44,18 +48,18 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        Task<VirtualNetworkOperationStatusResponse> BeginCreatingAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken);
+        Task<OperationStatusResponse> BeginCreatingAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken);
         
         /// <summary>
-        /// Preview Only. The Delete Reserved IP operation removes a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Deleting Reserved IP operation removes a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='ipName'>
         /// The name of the reserved IP.
@@ -74,7 +78,7 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// the subscription.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Parameters supplied to the Create Reserved IP operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -83,14 +87,14 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        Task<VirtualNetworkOperationStatusResponse> CreateAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken);
+        Task<OperationStatusResponse> CreateAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken);
         
         /// <summary>
         /// The Delete Reserved IP operation removes a reserved IP from your
@@ -106,18 +110,18 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        Task<VirtualNetworkOperationStatusResponse> DeleteAsync(string ipName, CancellationToken cancellationToken);
+        Task<OperationStatusResponse> DeleteAsync(string ipName, CancellationToken cancellationToken);
         
         /// <summary>
         /// Preview Only. The Get Reserved IP operation retrieves the details
-        /// for virtual IP reserved for the subscription.
+        /// for the virtual IP reserved for the subscription.
         /// </summary>
         /// <param name='ipName'>
         /// The name of the reserved IP to retrieve.
@@ -131,14 +135,14 @@ namespace Microsoft.WindowsAzure.Management.Network
         Task<NetworkReservedIPGetResponse> GetAsync(string ipName, CancellationToken cancellationToken);
         
         /// <summary>
-        /// Preview Only. The List Reserved IP operation retrieves the virtual
-        /// IPs reserved for the subscription.
+        /// Preview Only. The List Reserved IP operation retrieves all of the
+        /// virtual IPs reserved for the subscription.
         /// </summary>
         /// <param name='cancellationToken'>
         /// Cancellation token.
         /// </param>
         /// <returns>
-        /// Preview Only. The response structure for the Server List operation
+        /// Preview Only. The response structure for the Server List operation.
         /// </returns>
         Task<NetworkReservedIPListResponse> ListAsync(CancellationToken cancellationToken);
     }

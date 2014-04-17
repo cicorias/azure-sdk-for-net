@@ -27,14 +27,15 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
     /// The configuration script returned from the get device configuration
-    /// script request.
+    /// script operation.
     /// </summary>
     public partial class GatewayGetDeviceConfigurationScriptResponse : OperationResponse
     {
         private string _configurationScript;
         
         /// <summary>
-        /// The requested configuration script for the local network device.
+        /// Optional. The requested configuration script for the local network
+        /// device.
         /// </summary>
         public string ConfigurationScript
         {

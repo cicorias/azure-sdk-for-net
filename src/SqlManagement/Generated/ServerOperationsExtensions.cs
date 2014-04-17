@@ -49,11 +49,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The server that will have the change made to the administrative
-        /// user.
+        /// Required. The server that will have the change made to the
+        /// administrative user.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Manage Administrator Password operation.
+        /// Required. Parameters for the Manage Administrator Password
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -61,21 +62,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse ChangeAdministratorPassword(this IServerOperations operations, string serverName, ServerChangeAdministratorPasswordParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ChangeAdministratorPasswordAsync(serverName, parameters).Result;
+                return ((IServerOperations)s).ChangeAdministratorPasswordAsync(serverName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -89,11 +80,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The server that will have the change made to the administrative
-        /// user.
+        /// Required. The server that will have the change made to the
+        /// administrative user.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters for the Manage Administrator Password operation.
+        /// Required. Parameters for the Manage Administrator Password
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -114,28 +106,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Server operation.
+        /// Required. Parameters supplied to the Create Server operation.
         /// </param>
         /// <returns>
         /// The response returned from the Create Server operation.
         /// </returns>
         public static ServerCreateResponse Create(this IServerOperations operations, ServerCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IServerOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -148,7 +130,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Server operation.
+        /// Required. Parameters supplied to the Create Server operation.
         /// </param>
         /// <returns>
         /// The response returned from the Create Server operation.
@@ -168,7 +150,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server to be deleted.
+        /// Required. The name of the server to be deleted.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -176,21 +158,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IServerOperations operations, string serverName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(serverName).Result;
+                return ((IServerOperations)s).DeleteAsync(serverName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -203,7 +175,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IServerOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server to be deleted.
+        /// Required. The name of the server to be deleted.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -229,21 +201,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServerListResponse List(this IServerOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IServerOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>

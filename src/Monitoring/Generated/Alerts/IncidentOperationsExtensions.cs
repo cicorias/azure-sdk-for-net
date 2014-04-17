@@ -35,28 +35,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Alerts.IIncidentOperations.
         /// </param>
         /// <param name='incidentId'>
-        /// The id of the incident to retrieve.
+        /// Required. The id of the incident to retrieve.
         /// </param>
         /// <returns>
         /// The Get Incident operation response.
         /// </returns>
         public static IncidentGetResponse Get(this IIncidentOperations operations, string incidentId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(incidentId).Result;
+                return ((IIncidentOperations)s).GetAsync(incidentId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -64,7 +54,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Alerts.IIncidentOperations.
         /// </param>
         /// <param name='incidentId'>
-        /// The id of the incident to retrieve.
+        /// Required. The id of the incident to retrieve.
         /// </param>
         /// <returns>
         /// The Get Incident operation response.
@@ -83,21 +73,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static IncidentListResponse ListActiveForSubscription(this IIncidentOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListActiveForSubscriptionAsync().Result;
+                return ((IIncidentOperations)s).ListActiveForSubscriptionAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -117,31 +97,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Alerts.IIncidentOperations.
         /// </param>
         /// <param name='ruleId'>
-        /// The rule id.
+        /// Required. The rule id.
         /// </param>
         /// <param name='isActive'>
-        /// A boolean to retrieve only active or resolved incidents.
+        /// Required. A boolean to retrieve only active or resolved incidents.
         /// </param>
         /// <returns>
         /// The List incidents operation response.
         /// </returns>
         public static IncidentListResponse ListForRule(this IIncidentOperations operations, string ruleId, bool isActive)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListForRuleAsync(ruleId, isActive).Result;
+                return ((IIncidentOperations)s).ListForRuleAsync(ruleId, isActive);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -149,10 +119,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Alerts.IIncidentOperations.
         /// </param>
         /// <param name='ruleId'>
-        /// The rule id.
+        /// Required. The rule id.
         /// </param>
         /// <param name='isActive'>
-        /// A boolean to retrieve only active or resolved incidents.
+        /// Required. A boolean to retrieve only active or resolved incidents.
         /// </param>
         /// <returns>
         /// The List incidents operation response.

@@ -45,10 +45,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server on which the operation was executed.
+        /// Required. The name of the SQL Server on which the operation was
+        /// executed.
         /// </param>
         /// <param name='operationGuid'>
-        /// The Guid of the SQL Server database operation to be obtained.
+        /// Required. The Guid of the SQL Server database operation to be
+        /// obtained.
         /// </param>
         /// <returns>
         /// Response containing the database operation for a given operation
@@ -56,21 +58,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static DatabaseOperationGetResponse Get(this IDatabaseOperationOperations operations, string serverName, string operationGuid)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serverName, operationGuid).Result;
+                return ((IDatabaseOperationOperations)s).GetAsync(serverName, operationGuid);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -81,10 +73,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server on which the operation was executed.
+        /// Required. The name of the SQL Server on which the operation was
+        /// executed.
         /// </param>
         /// <param name='operationGuid'>
-        /// The Guid of the SQL Server database operation to be obtained.
+        /// Required. The Guid of the SQL Server database operation to be
+        /// obtained.
         /// </param>
         /// <returns>
         /// Response containing the database operation for a given operation
@@ -104,10 +98,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the Database to be queried.
+        /// Required. The name of the Database to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of database operations for a given
@@ -115,21 +109,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static DatabaseOperationListResponse ListByDatabase(this IDatabaseOperationOperations operations, string serverName, string databaseName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListByDatabaseAsync(serverName, databaseName).Result;
+                return ((IDatabaseOperationOperations)s).ListByDatabaseAsync(serverName, databaseName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -141,10 +125,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the Database to be queried.
+        /// Required. The name of the Database to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of database operations for a given
@@ -163,7 +147,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of database operations for a given
@@ -171,21 +155,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static DatabaseOperationListResponse ListByServer(this IDatabaseOperationOperations operations, string serverName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListByServerAsync(serverName).Result;
+                return ((IDatabaseOperationOperations)s).ListByServerAsync(serverName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -196,7 +170,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperationOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server to be queried.
+        /// Required. The name of the SQL Server to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of database operations for a given

@@ -70,17 +70,18 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// in a Windows Azure subscription.
         /// </summary>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -96,7 +97,7 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Store.Models.AddOnOperationStatusResponse> BeginCreatingAsync(string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> BeginCreatingAsync(string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters, CancellationToken cancellationToken)
         {
             // Validate
             if (cloudServiceName == null)
@@ -139,7 +140,18 @@ namespace Microsoft.WindowsAzure.Management.Store
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/CloudServices/" + cloudServiceName + "/resources/" + parameters.Type + "/" + resourceName + "/" + addOnName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/CloudServices/" + cloudServiceName.Trim() + "/resources/" + parameters.Type.Trim() + "/" + resourceName.Trim() + "/" + addOnName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -209,8 +221,8 @@ namespace Microsoft.WindowsAzure.Management.Store
                     }
                     
                     // Create Result
-                    AddOnOperationStatusResponse result = null;
-                    result = new AddOnOperationStatusResponse();
+                    OperationStatusResponse result = null;
+                    result = new OperationStatusResponse();
                     result.StatusCode = statusCode;
                     if (httpResponse.Headers.Contains("x-ms-request-id"))
                     {
@@ -245,17 +257,17 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// that re provisioned for a subscription.
         /// </summary>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -271,7 +283,7 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Store.Models.AddOnOperationStatusResponse> BeginDeletingAsync(string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> BeginDeletingAsync(string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName, CancellationToken cancellationToken)
         {
             // Validate
             if (cloudServiceName == null)
@@ -306,7 +318,18 @@ namespace Microsoft.WindowsAzure.Management.Store
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/CloudServices/" + cloudServiceName + "/resources/" + resourceProviderNamespace + "/" + resourceProviderType + "/" + resourceProviderName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/CloudServices/" + cloudServiceName.Trim() + "/resources/" + resourceProviderNamespace.Trim() + "/" + resourceProviderType.Trim() + "/" + resourceProviderName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -350,8 +373,8 @@ namespace Microsoft.WindowsAzure.Management.Store
                     }
                     
                     // Create Result
-                    AddOnOperationStatusResponse result = null;
-                    result = new AddOnOperationStatusResponse();
+                    OperationStatusResponse result = null;
+                    result = new OperationStatusResponse();
                     result.StatusCode = statusCode;
                     if (httpResponse.Headers.Contains("x-ms-request-id"))
                     {
@@ -386,17 +409,18 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// in a Windows Azure subscription.
         /// </summary>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -412,7 +436,7 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Store.Models.AddOnOperationStatusResponse> CreateAsync(string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateAsync(string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters, CancellationToken cancellationToken)
         {
             StoreManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -435,13 +459,13 @@ namespace Microsoft.WindowsAzure.Management.Store
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
-                AddOnOperationStatusResponse response = await client.AddOns.BeginCreatingAsync(cloudServiceName, resourceName, addOnName, parameters, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse response = await client.AddOns.BeginCreatingAsync(cloudServiceName, resourceName, addOnName, parameters, cancellationToken).ConfigureAwait(false);
                 if (response.Status == OperationStatus.Succeeded)
                 {
                     return response;
                 }
                 cancellationToken.ThrowIfCancellationRequested();
-                AddOnOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -497,17 +521,17 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// that are provisioned for a subscription.
         /// </summary>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -523,7 +547,7 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Store.Models.AddOnOperationStatusResponse> DeleteAsync(string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteAsync(string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName, CancellationToken cancellationToken)
         {
             StoreManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -546,13 +570,13 @@ namespace Microsoft.WindowsAzure.Management.Store
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
-                AddOnOperationStatusResponse response = await client.AddOns.BeginDeletingAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse response = await client.AddOns.BeginDeletingAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName, cancellationToken).ConfigureAwait(false);
                 if (response.Status == OperationStatus.Succeeded)
                 {
                     return response;
                 }
                 cancellationToken.ThrowIfCancellationRequested();
-                AddOnOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -608,17 +632,18 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// in a Windows Azure subscription.
         /// </summary>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The addon name.
+        /// Required. The addon name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -634,7 +659,7 @@ namespace Microsoft.WindowsAzure.Management.Store
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Store.Models.AddOnOperationStatusResponse> UpdateAsync(string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpdateAsync(string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters, CancellationToken cancellationToken)
         {
             // Validate
             if (cloudServiceName == null)
@@ -677,7 +702,18 @@ namespace Microsoft.WindowsAzure.Management.Store
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/CloudServices/" + cloudServiceName + "/resources/" + parameters.Type + "/" + resourceName + "/" + addOnName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/CloudServices/" + cloudServiceName.Trim() + "/resources/" + parameters.Type.Trim() + "/" + resourceName.Trim() + "/" + addOnName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -748,8 +784,8 @@ namespace Microsoft.WindowsAzure.Management.Store
                     }
                     
                     // Create Result
-                    AddOnOperationStatusResponse result = null;
-                    result = new AddOnOperationStatusResponse();
+                    OperationStatusResponse result = null;
+                    result = new OperationStatusResponse();
                     result.StatusCode = statusCode;
                     if (httpResponse.Headers.Contains("x-ms-request-id"))
                     {

@@ -37,7 +37,11 @@ using Microsoft.WindowsAzure.Management.Network.Models;
 
 namespace Microsoft.WindowsAzure.Management.Network
 {
-    internal partial class ReservedIPOperations : IServiceOperations<VirtualNetworkManagementClient>, Microsoft.WindowsAzure.Management.Network.IReservedIPOperations
+    /// <summary>
+    /// The Network Management API includes operations for managing the
+    /// reserved IPs for your subscription.
+    /// </summary>
+    internal partial class ReservedIPOperations : IServiceOperations<NetworkManagementClient>, Microsoft.WindowsAzure.Management.Network.IReservedIPOperations
     {
         /// <summary>
         /// Initializes a new instance of the ReservedIPOperations class.
@@ -45,28 +49,29 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// <param name='client'>
         /// Reference to the service client.
         /// </param>
-        internal ReservedIPOperations(VirtualNetworkManagementClient client)
+        internal ReservedIPOperations(NetworkManagementClient client)
         {
             this._client = client;
         }
         
-        private VirtualNetworkManagementClient _client;
+        private NetworkManagementClient _client;
         
         /// <summary>
         /// Gets a reference to the
-        /// Microsoft.WindowsAzure.Management.Network.VirtualNetworkManagementClient.
+        /// Microsoft.WindowsAzure.Management.Network.NetworkManagementClient.
         /// </summary>
-        public VirtualNetworkManagementClient Client
+        public NetworkManagementClient Client
         {
             get { return this._client; }
         }
         
         /// <summary>
-        /// Preview Only. The Create Reserved IP operation creates a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Creating Reserved IP operation creates a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Begin Creating Reserved IP
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -75,14 +80,14 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Network.Models.VirtualNetworkOperationStatusResponse> BeginCreatingAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> BeginCreatingAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken)
         {
             // Validate
             if (parameters == null)
@@ -102,7 +107,18 @@ namespace Microsoft.WindowsAzure.Management.Network
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/networking/reservedips";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/networking/reservedips";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -192,8 +208,8 @@ namespace Microsoft.WindowsAzure.Management.Network
                     }
                     
                     // Create Result
-                    VirtualNetworkOperationStatusResponse result = null;
-                    result = new VirtualNetworkOperationStatusResponse();
+                    OperationStatusResponse result = null;
+                    result = new OperationStatusResponse();
                     result.StatusCode = statusCode;
                     if (httpResponse.Headers.Contains("x-ms-request-id"))
                     {
@@ -224,11 +240,11 @@ namespace Microsoft.WindowsAzure.Management.Network
         }
         
         /// <summary>
-        /// Preview Only. The Delete Reserved IP operation removes a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Deleting Reserved IP operation removes a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -257,7 +273,18 @@ namespace Microsoft.WindowsAzure.Management.Network
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/networking/reservedips/" + ipName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/networking/reservedips/" + ipName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -337,7 +364,7 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// the subscription.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Create Reserved IP operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -346,16 +373,16 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Network.Models.VirtualNetworkOperationStatusResponse> CreateAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateAsync(NetworkReservedIPCreateParameters parameters, CancellationToken cancellationToken)
         {
-            VirtualNetworkManagementClient client = this.Client;
+            NetworkManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
             string invocationId = null;
             if (shouldTrace)
@@ -373,13 +400,13 @@ namespace Microsoft.WindowsAzure.Management.Network
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
-                VirtualNetworkOperationStatusResponse response = await client.ReservedIPs.BeginCreatingAsync(parameters, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse response = await client.ReservedIPs.BeginCreatingAsync(parameters, cancellationToken).ConfigureAwait(false);
                 if (response.Status == OperationStatus.Succeeded)
                 {
                     return response;
                 }
                 cancellationToken.ThrowIfCancellationRequested();
-                VirtualNetworkOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -435,7 +462,7 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// the subscription.
         /// </summary>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -444,16 +471,16 @@ namespace Microsoft.WindowsAzure.Management.Network
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Network.Models.VirtualNetworkOperationStatusResponse> DeleteAsync(string ipName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteAsync(string ipName, CancellationToken cancellationToken)
         {
-            VirtualNetworkManagementClient client = this.Client;
+            NetworkManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
             string invocationId = null;
             if (shouldTrace)
@@ -473,7 +500,7 @@ namespace Microsoft.WindowsAzure.Management.Network
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.ReservedIPs.BeginDeletingAsync(ipName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                VirtualNetworkOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -526,10 +553,10 @@ namespace Microsoft.WindowsAzure.Management.Network
         
         /// <summary>
         /// Preview Only. The Get Reserved IP operation retrieves the details
-        /// for virtual IP reserved for the subscription.
+        /// for the virtual IP reserved for the subscription.
         /// </summary>
         /// <param name='ipName'>
-        /// The name of the reserved IP to retrieve.
+        /// Required. The name of the reserved IP to retrieve.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -557,7 +584,18 @@ namespace Microsoft.WindowsAzure.Management.Network
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/networking/reservedips/" + ipName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/networking/reservedips/" + ipName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -609,66 +647,66 @@ namespace Microsoft.WindowsAzure.Management.Network
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement reservedIPElement = responseDoc.Element(XName.Get("ReservedIP", "http://schemas.microsoft.com/windowsazure"));
-                    if (reservedIPElement != null)
+                    if (reservedIPElement != null && reservedIPElement.IsEmpty == false)
                     {
                         XElement nameElement = reservedIPElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                        if (nameElement != null)
+                        if (nameElement != null && nameElement.IsEmpty == false)
                         {
                             string nameInstance = nameElement.Value;
                             result.Name = nameInstance;
                         }
                         
                         XElement addressElement = reservedIPElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                        if (addressElement != null)
+                        if (addressElement != null && addressElement.IsEmpty == false)
                         {
                             string addressInstance = addressElement.Value;
                             result.Address = addressInstance;
                         }
                         
                         XElement idElement = reservedIPElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                        if (idElement != null)
+                        if (idElement != null && idElement.IsEmpty == false)
                         {
                             string idInstance = idElement.Value;
                             result.Id = idInstance;
                         }
                         
                         XElement labelElement = reservedIPElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                        if (labelElement != null)
+                        if (labelElement != null && labelElement.IsEmpty == false)
                         {
                             string labelInstance = labelElement.Value;
                             result.Label = labelInstance;
                         }
                         
                         XElement affinityGroupElement = reservedIPElement.Element(XName.Get("AffinityGroup", "http://schemas.microsoft.com/windowsazure"));
-                        if (affinityGroupElement != null)
+                        if (affinityGroupElement != null && affinityGroupElement.IsEmpty == false)
                         {
                             string affinityGroupInstance = affinityGroupElement.Value;
                             result.AffinityGroup = affinityGroupInstance;
                         }
                         
                         XElement stateElement = reservedIPElement.Element(XName.Get("State", "http://schemas.microsoft.com/windowsazure"));
-                        if (stateElement != null)
+                        if (stateElement != null && stateElement.IsEmpty == false)
                         {
                             string stateInstance = stateElement.Value;
                             result.State = stateInstance;
                         }
                         
                         XElement inUseElement = reservedIPElement.Element(XName.Get("InUse", "http://schemas.microsoft.com/windowsazure"));
-                        if (inUseElement != null)
+                        if (inUseElement != null && inUseElement.IsEmpty == false)
                         {
                             bool inUseInstance = bool.Parse(inUseElement.Value);
                             result.InUse = inUseInstance;
                         }
                         
                         XElement serviceNameElement = reservedIPElement.Element(XName.Get("ServiceName", "http://schemas.microsoft.com/windowsazure"));
-                        if (serviceNameElement != null)
+                        if (serviceNameElement != null && serviceNameElement.IsEmpty == false)
                         {
                             string serviceNameInstance = serviceNameElement.Value;
                             result.ServiceName = serviceNameInstance;
                         }
                         
                         XElement deploymentNameElement = reservedIPElement.Element(XName.Get("DeploymentName", "http://schemas.microsoft.com/windowsazure"));
-                        if (deploymentNameElement != null)
+                        if (deploymentNameElement != null && deploymentNameElement.IsEmpty == false)
                         {
                             string deploymentNameInstance = deploymentNameElement.Value;
                             result.DeploymentName = deploymentNameInstance;
@@ -705,14 +743,14 @@ namespace Microsoft.WindowsAzure.Management.Network
         }
         
         /// <summary>
-        /// Preview Only. The List Reserved IP operation retrieves the virtual
-        /// IPs reserved for the subscription.
+        /// Preview Only. The List Reserved IP operation retrieves all of the
+        /// virtual IPs reserved for the subscription.
         /// </summary>
         /// <param name='cancellationToken'>
         /// Cancellation token.
         /// </param>
         /// <returns>
-        /// Preview Only. The response structure for the Server List operation
+        /// Preview Only. The response structure for the Server List operation.
         /// </returns>
         public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Network.Models.NetworkReservedIPListResponse> ListAsync(CancellationToken cancellationToken)
         {
@@ -729,7 +767,18 @@ namespace Microsoft.WindowsAzure.Management.Network
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/networking/reservedips";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/networking/reservedips";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -781,7 +830,7 @@ namespace Microsoft.WindowsAzure.Management.Network
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement reservedIPsSequenceElement = responseDoc.Element(XName.Get("ReservedIPs", "http://schemas.microsoft.com/windowsazure"));
-                    if (reservedIPsSequenceElement != null)
+                    if (reservedIPsSequenceElement != null && reservedIPsSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement reservedIPsElement in reservedIPsSequenceElement.Elements(XName.Get("ReservedIP", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -789,63 +838,63 @@ namespace Microsoft.WindowsAzure.Management.Network
                             result.ReservedIPs.Add(reservedIPInstance);
                             
                             XElement nameElement = reservedIPsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 string nameInstance = nameElement.Value;
                                 reservedIPInstance.Name = nameInstance;
                             }
                             
                             XElement addressElement = reservedIPsElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                            if (addressElement != null)
+                            if (addressElement != null && addressElement.IsEmpty == false)
                             {
                                 string addressInstance = addressElement.Value;
                                 reservedIPInstance.Address = addressInstance;
                             }
                             
                             XElement idElement = reservedIPsElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                            if (idElement != null)
+                            if (idElement != null && idElement.IsEmpty == false)
                             {
                                 string idInstance = idElement.Value;
                                 reservedIPInstance.Id = idInstance;
                             }
                             
                             XElement labelElement = reservedIPsElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                            if (labelElement != null)
+                            if (labelElement != null && labelElement.IsEmpty == false)
                             {
                                 string labelInstance = labelElement.Value;
                                 reservedIPInstance.Label = labelInstance;
                             }
                             
                             XElement affinityGroupElement = reservedIPsElement.Element(XName.Get("AffinityGroup", "http://schemas.microsoft.com/windowsazure"));
-                            if (affinityGroupElement != null)
+                            if (affinityGroupElement != null && affinityGroupElement.IsEmpty == false)
                             {
                                 string affinityGroupInstance = affinityGroupElement.Value;
                                 reservedIPInstance.AffinityGroup = affinityGroupInstance;
                             }
                             
                             XElement stateElement = reservedIPsElement.Element(XName.Get("State", "http://schemas.microsoft.com/windowsazure"));
-                            if (stateElement != null)
+                            if (stateElement != null && stateElement.IsEmpty == false)
                             {
                                 string stateInstance = stateElement.Value;
                                 reservedIPInstance.State = stateInstance;
                             }
                             
                             XElement inUseElement = reservedIPsElement.Element(XName.Get("InUse", "http://schemas.microsoft.com/windowsazure"));
-                            if (inUseElement != null)
+                            if (inUseElement != null && inUseElement.IsEmpty == false)
                             {
                                 bool inUseInstance = bool.Parse(inUseElement.Value);
                                 reservedIPInstance.InUse = inUseInstance;
                             }
                             
                             XElement serviceNameElement = reservedIPsElement.Element(XName.Get("ServiceName", "http://schemas.microsoft.com/windowsazure"));
-                            if (serviceNameElement != null)
+                            if (serviceNameElement != null && serviceNameElement.IsEmpty == false)
                             {
                                 string serviceNameInstance = serviceNameElement.Value;
                                 reservedIPInstance.ServiceName = serviceNameInstance;
                             }
                             
                             XElement deploymentNameElement = reservedIPsElement.Element(XName.Get("DeploymentName", "http://schemas.microsoft.com/windowsazure"));
-                            if (deploymentNameElement != null)
+                            if (deploymentNameElement != null && deploymentNameElement.IsEmpty == false)
                             {
                                 string deploymentNameInstance = deploymentNameElement.Value;
                                 reservedIPInstance.DeploymentName = deploymentNameInstance;

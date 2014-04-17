@@ -26,15 +26,16 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.Management.WebSites.Models
 {
     /// <summary>
-    /// The Get Web Site Historical Usage Metrics parameters.
+    /// Parameters supplied to the Get Historical Usage Metrics Web Site
+    /// operation.
     /// </summary>
     public partial class WebSiteGetHistoricalUsageMetricsParameters
     {
         private System.DateTime? _endTime;
         
         /// <summary>
-        /// The ending time of the metrics to return. If this parameter is not
-        /// specified, the current time is used.
+        /// Optional. The ending time of the metrics to return. If this
+        /// parameter is not specified, the current time is used.
         /// </summary>
         public System.DateTime? EndTime
         {
@@ -45,9 +46,9 @@ namespace Microsoft.WindowsAzure.Management.WebSites.Models
         private IList<string> _metricNames;
         
         /// <summary>
-        /// Specifies a comma-separated list of the names of the metrics to
-        /// return. If the names parameter is not specified, then all
-        /// available metrics are returned.
+        /// Optional. Specifies a comma-separated list of the names of the
+        /// metrics to return. If the names parameter is not specified, then
+        /// all available metrics are returned.
         /// </summary>
         public IList<string> MetricNames
         {
@@ -58,8 +59,9 @@ namespace Microsoft.WindowsAzure.Management.WebSites.Models
         private System.DateTime? _startTime;
         
         /// <summary>
-        /// The starting time of the metrics to return. If this parameter is
-        /// not specified, the beginning of the current hour is used.
+        /// Optional. The starting time of the metrics to return. If this
+        /// parameter is not specified, the beginning of the current hour is
+        /// used.
         /// </summary>
         public System.DateTime? StartTime
         {

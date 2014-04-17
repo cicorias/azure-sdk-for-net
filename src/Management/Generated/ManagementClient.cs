@@ -31,7 +31,6 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Common;
 using Microsoft.WindowsAzure.Common.Internals;
 using Microsoft.WindowsAzure.Management;
-using Microsoft.WindowsAzure.Management.Models;
 
 namespace Microsoft.WindowsAzure.Management
 {
@@ -39,7 +38,7 @@ namespace Microsoft.WindowsAzure.Management
     /// The Service Management API provides programmatic access to much of the
     /// functionality available through the Management Portal. The Service
     /// Management API is a REST API. All API operations are performed over
-    /// SSL and mutually authenticated using X.509 v3 certificates.  (see
+    /// SSL and are mutually authenticated using X.509 v3 certificates.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460799.aspx for
     /// more information)
     /// </summary>
@@ -58,13 +57,12 @@ namespace Microsoft.WindowsAzure.Management
         private SubscriptionCloudCredentials _credentials;
         
         /// <summary>
-        /// When you create a Windows Azure subscription, it is uniquely
-        /// identified by a subscription ID. The subscription ID forms part of
-        /// the URI for every call that you make to the Service Management
-        /// API.  The Windows Azure Service ManagementAPI use mutual
-        /// authentication of management certificates over SSL to ensure that
-        /// a request made to the service is secure.  No anonymous requests
-        /// are allowed.
+        /// When you create an Azure subscription, it is uniquely identified by
+        /// a subscription ID. The subscription ID forms part of the URI for
+        /// every call that you make to the Service Management API. The Azure
+        /// Service Management API uses mutual authentication of management
+        /// certificates over SSL to ensure that a request made to the service
+        /// is secure. No anonymous requests are allowed.
         /// </summary>
         public SubscriptionCloudCredentials Credentials
         {
@@ -74,8 +72,7 @@ namespace Microsoft.WindowsAzure.Management
         private IAffinityGroupOperations _affinityGroups;
         
         /// <summary>
-        /// Operations for managing affinity groups beneath your subscription.
-        /// (see
+        /// Operations for managing affinity groups in your subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460798.aspx
         /// for more information)
         /// </summary>
@@ -103,9 +100,8 @@ namespace Microsoft.WindowsAzure.Management
         /// <summary>
         /// You can use management certificates, which are also known as
         /// subscription certificates, to authenticate clients attempting to
-        /// connect to resources associated with your Windows Azure
-        /// subscription.  (see
-        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154124.aspx
+        /// connect to resources associated with your Azure subscription.
+        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/jj154124.aspx
         /// for more information)
         /// </summary>
         public virtual IManagementCertificateOperations ManagementCertificates
@@ -127,7 +123,7 @@ namespace Microsoft.WindowsAzure.Management
         private ISubscriptionOperations _subscriptions;
         
         /// <summary>
-        /// Operation for listing subscription operations and details.  (see
+        /// Operations for listing subscription details.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg715315.aspx
         /// for more information)
         /// </summary>
@@ -154,16 +150,16 @@ namespace Microsoft.WindowsAzure.Management
         /// Initializes a new instance of the ManagementClient class.
         /// </summary>
         /// <param name='credentials'>
-        /// When you create a Windows Azure subscription, it is uniquely
+        /// Required. When you create an Azure subscription, it is uniquely
         /// identified by a subscription ID. The subscription ID forms part of
         /// the URI for every call that you make to the Service Management
-        /// API.  The Windows Azure Service ManagementAPI use mutual
-        /// authentication of management certificates over SSL to ensure that
-        /// a request made to the service is secure.  No anonymous requests
-        /// are allowed.
+        /// API. The Azure Service Management API uses mutual authentication
+        /// of management certificates over SSL to ensure that a request made
+        /// to the service is secure. No anonymous requests are allowed.
         /// </param>
         /// <param name='baseUri'>
-        /// The URI used as the base for all Service Management requests.
+        /// Required. The URI used as the base for all Service Management
+        /// requests.
         /// </param>
         public ManagementClient(SubscriptionCloudCredentials credentials, Uri baseUri)
             : this()
@@ -186,13 +182,12 @@ namespace Microsoft.WindowsAzure.Management
         /// Initializes a new instance of the ManagementClient class.
         /// </summary>
         /// <param name='credentials'>
-        /// When you create a Windows Azure subscription, it is uniquely
+        /// Required. When you create an Azure subscription, it is uniquely
         /// identified by a subscription ID. The subscription ID forms part of
         /// the URI for every call that you make to the Service Management
-        /// API.  The Windows Azure Service ManagementAPI use mutual
-        /// authentication of management certificates over SSL to ensure that
-        /// a request made to the service is secure.  No anonymous requests
-        /// are allowed.
+        /// API. The Azure Service Management API uses mutual authentication
+        /// of management certificates over SSL to ensure that a request made
+        /// to the service is secure. No anonymous requests are allowed.
         /// </param>
         public ManagementClient(SubscriptionCloudCredentials credentials)
             : this()
@@ -208,16 +203,17 @@ namespace Microsoft.WindowsAzure.Management
         }
         
         /// <summary>
-        /// The Get Operation Status operation returns the status of
-        /// thespecified operation. After calling an asynchronous operation,
-        /// you can call Get Operation Status to determine whether the
-        /// operation has succeeded, failed, or is still in progress.  (see
+        /// The Get Operation Status operation returns the status of the
+        /// specified operation. After calling an asynchronous operation, you
+        /// can call Get Operation Status to determine whether the operation
+        /// has succeeded, failed, or is still in progress.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460783.aspx
         /// for more information)
         /// </summary>
         /// <param name='requestId'>
-        /// The request ID for the request you wish to track. The request ID is
-        /// returned in the x-ms-request-id response header for every request.
+        /// Required. The request ID for the request you wish to track. The
+        /// request ID is returned in the x-ms-request-id response header for
+        /// every request.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -233,7 +229,7 @@ namespace Microsoft.WindowsAzure.Management
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Models.OperationStatusResponse> GetOperationStatusAsync(string requestId, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> GetOperationStatusAsync(string requestId, CancellationToken cancellationToken)
         {
             // Validate
             if (requestId == null)
@@ -253,7 +249,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.BaseUri, "/").ToString() + this.Credentials.SubscriptionId + "/operations/" + requestId;
+            string baseUrl = this.BaseUri.AbsoluteUri;
+            string url = "/" + this.Credentials.SubscriptionId.Trim() + "/operations/" + requestId.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -305,44 +312,44 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement operationElement = responseDoc.Element(XName.Get("Operation", "http://schemas.microsoft.com/windowsazure"));
-                    if (operationElement != null)
+                    if (operationElement != null && operationElement.IsEmpty == false)
                     {
                         XElement idElement = operationElement.Element(XName.Get("ID", "http://schemas.microsoft.com/windowsazure"));
-                        if (idElement != null)
+                        if (idElement != null && idElement.IsEmpty == false)
                         {
                             string idInstance = idElement.Value;
                             result.Id = idInstance;
                         }
                         
                         XElement statusElement = operationElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                        if (statusElement != null)
+                        if (statusElement != null && statusElement.IsEmpty == false)
                         {
-                            OperationStatus statusInstance = (OperationStatus)Enum.Parse(typeof(OperationStatus), statusElement.Value, false);
+                            OperationStatus statusInstance = ((OperationStatus)Enum.Parse(typeof(OperationStatus), statusElement.Value, true));
                             result.Status = statusInstance;
                         }
                         
                         XElement httpStatusCodeElement = operationElement.Element(XName.Get("HttpStatusCode", "http://schemas.microsoft.com/windowsazure"));
-                        if (httpStatusCodeElement != null)
+                        if (httpStatusCodeElement != null && httpStatusCodeElement.IsEmpty == false)
                         {
-                            HttpStatusCode httpStatusCodeInstance = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), httpStatusCodeElement.Value, false);
+                            HttpStatusCode httpStatusCodeInstance = ((HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), httpStatusCodeElement.Value, true));
                             result.HttpStatusCode = httpStatusCodeInstance;
                         }
                         
                         XElement errorElement = operationElement.Element(XName.Get("Error", "http://schemas.microsoft.com/windowsazure"));
-                        if (errorElement != null)
+                        if (errorElement != null && errorElement.IsEmpty == false)
                         {
                             OperationStatusResponse.ErrorDetails errorInstance = new OperationStatusResponse.ErrorDetails();
                             result.Error = errorInstance;
                             
                             XElement codeElement = errorElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
-                            if (codeElement != null)
+                            if (codeElement != null && codeElement.IsEmpty == false)
                             {
                                 string codeInstance = codeElement.Value;
                                 errorInstance.Code = codeInstance;
                             }
                             
                             XElement messageElement = errorElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
-                            if (messageElement != null)
+                            if (messageElement != null && messageElement.IsEmpty == false)
                             {
                                 string messageInstance = messageElement.Value;
                                 errorInstance.Message = messageInstance;

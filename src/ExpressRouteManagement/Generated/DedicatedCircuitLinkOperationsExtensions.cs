@@ -47,27 +47,23 @@ namespace Microsoft.WindowsAzure
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
+        /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
         /// code and request ID.
         /// </returns>
         public static ExpressRouteOperationResponse BeginNew(this IDedicatedCircuitLinkOperations operations, string serviceKey, string vnetName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginNewAsync(serviceKey, vnetName).Result;
+                return ((IDedicatedCircuitLinkOperations)s).BeginNewAsync(serviceKey, vnetName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -77,6 +73,12 @@ namespace Microsoft.WindowsAzure
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
+        /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -96,7 +98,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key representing the dedicated circuit.
+        /// Required. Service key representing the dedicated circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -104,21 +109,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginRemove(this IDedicatedCircuitLinkOperations operations, string serviceKey, string vnetName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginRemoveAsync(serviceKey, vnetName).Result;
+                return ((IDedicatedCircuitLinkOperations)s).BeginRemoveAsync(serviceKey, vnetName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -130,7 +125,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key representing the dedicated circuit.
+        /// Required. Service key representing the dedicated circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -150,28 +148,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the circuit.
+        /// Required. The service key representing the circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit Link operation response.
         /// </returns>
         public static DedicatedCircuitLinkGetResponse Get(this IDedicatedCircuitLinkOperations operations, string serviceKey, string vnetName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serviceKey, vnetName).Result;
+                return ((IDedicatedCircuitLinkOperations)s).GetAsync(serviceKey, vnetName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -183,7 +174,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the circuit.
+        /// Required. The service key representing the circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit Link operation response.
@@ -202,26 +196,19 @@ namespace Microsoft.WindowsAzure
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
+        /// </param>
         /// <returns>
         /// The List Dedicated Circuit Link operation response.
         /// </returns>
         public static DedicatedCircuitLinkListResponse List(this IDedicatedCircuitLinkOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(serviceKey).Result;
+                return ((IDedicatedCircuitLinkOperations)s).ListAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -232,6 +219,9 @@ namespace Microsoft.WindowsAzure
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
+        /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The List Dedicated Circuit Link operation response.
@@ -249,26 +239,22 @@ namespace Microsoft.WindowsAzure
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
+        /// </param>
         /// <returns>
         /// The Get Dedicated Circuit Link operation response.
         /// </returns>
         public static DedicatedCircuitLinkGetResponse New(this IDedicatedCircuitLinkOperations operations, string serviceKey, string vnetName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.NewAsync(serviceKey, vnetName).Result;
+                return ((IDedicatedCircuitLinkOperations)s).NewAsync(serviceKey, vnetName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -278,6 +264,12 @@ namespace Microsoft.WindowsAzure
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
+        /// </param>
+        /// <param name='serviceKey'>
+        /// Required.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit Link operation response.
@@ -296,7 +288,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key associated with the dedicated circuit.
+        /// Required. Service Key associated with the dedicated circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -311,21 +306,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationStatusResponse Remove(this IDedicatedCircuitLinkOperations operations, string serviceKey, string vnetName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RemoveAsync(serviceKey, vnetName).Result;
+                return ((IDedicatedCircuitLinkOperations)s).RemoveAsync(serviceKey, vnetName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -337,7 +322,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitLinkOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key associated with the dedicated circuit.
+        /// Required. Service Key associated with the dedicated circuit.
+        /// </param>
+        /// <param name='vnetName'>
+        /// Required.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous

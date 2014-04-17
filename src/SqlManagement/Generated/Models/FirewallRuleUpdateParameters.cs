@@ -21,7 +21,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.Management.Sql.Models
 {
@@ -33,7 +32,8 @@ namespace Microsoft.WindowsAzure.Management.Sql.Models
         private string _endIPAddress;
         
         /// <summary>
-        /// Gets or sets the ending IP address applied to this firewall rule.
+        /// Required. Gets or sets the ending IP address applied to this
+        /// firewall rule.
         /// </summary>
         public string EndIPAddress
         {
@@ -44,7 +44,7 @@ namespace Microsoft.WindowsAzure.Management.Sql.Models
         private string _name;
         
         /// <summary>
-        /// Gets or sets the name of this firewall rule.
+        /// Required. Gets or sets the name of this firewall rule.
         /// </summary>
         public string Name
         {
@@ -55,7 +55,8 @@ namespace Microsoft.WindowsAzure.Management.Sql.Models
         private string _startIPAddress;
         
         /// <summary>
-        /// Gets or sets the beginning IP address applied to this firewall rule.
+        /// Required. Gets or sets the beginning IP address applied to this
+        /// firewall rule.
         /// </summary>
         public string StartIPAddress
         {

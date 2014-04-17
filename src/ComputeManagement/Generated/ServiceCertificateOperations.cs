@@ -69,19 +69,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Add Service Certificate operation adds a certificate to a
-        /// hosted service.  The Add Service Certificate operation is an
-        /// asynchronous operation. To determine whether the management
-        /// service has finished processing the request, call Get Operation
-        /// Status.   (see
+        /// The Begin Creating Service Certificate operation adds a certificate
+        /// to a hosted service. This operation is an asynchronous operation.
+        /// To determine whether the management service has finished
+        /// processing the request, call Get Operation Status.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460817.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The DNS prefix name of your service.
+        /// Required. The DNS prefix name of your service.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Service Certificate operation.
+        /// Required. Parameters supplied to the Begin Creating Service
+        /// Certificate operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -120,7 +120,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/certificates";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/certificates";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -131,7 +142,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -222,16 +233,17 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Service Certificate operation deletes a service
-        /// certificate from the certificate store of a hosted service.  The
-        /// Delete Service Certificate operation is an asynchronous operation.
-        /// To determine whether the management service has finished
-        /// processing the request, call Get Operation Status.  (see
+        /// The Begin Deleting Service Certificate operation deletes a service
+        /// certificate from the certificate store of a hosted service. This
+        /// operation is an asynchronous operation. To determine whether the
+        /// management service has finished processing the request, call Get
+        /// Operation Status.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460803.aspx
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Delete Service Certificate operation.
+        /// Required. Parameters supplied to the Begin Deleting Service
+        /// Certificate operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -273,7 +285,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + parameters.ServiceName + "/certificates/" + parameters.ThumbprintAlgorithm + "-" + parameters.Thumbprint;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + parameters.ServiceName.Trim() + "/certificates/" + parameters.ThumbprintAlgorithm.Trim() + "-" + parameters.Thumbprint.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -284,7 +307,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -349,19 +372,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Add Service Certificate operation adds a certificate to a
-        /// hosted service.  The Add Service Certificate operation is an
-        /// asynchronous operation. To determine whether the management
-        /// service has finished processing the request, call Get Operation
-        /// Status.  This overload will   (see
+        /// The Create Service Certificate operation adds a certificate to a
+        /// hosted service. This operation is an asynchronous operation. To
+        /// determine whether the management service has finished processing
+        /// the request, call Get Operation Status.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460817.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The DNS prefix name of your service.
+        /// Required. The DNS prefix name of your service.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Service Certificate operation.
+        /// Required. Parameters supplied to the Create Service Certificate
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -370,14 +393,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> CreateAsync(string serviceName, ServiceCertificateCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateAsync(string serviceName, ServiceCertificateCreateParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -400,7 +423,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.ServiceCertificates.BeginCreatingAsync(serviceName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -453,15 +476,16 @@ namespace Microsoft.WindowsAzure.Management.Compute
         
         /// <summary>
         /// The Delete Service Certificate operation deletes a service
-        /// certificate from the certificate store of a hosted service.  The
-        /// Delete Service Certificate operation is an asynchronous operation.
-        /// To determine whether the management service has finished
-        /// processing the request, call Get Operation Status.  (see
+        /// certificate from the certificate store of a hosted service. This
+        /// operation is an asynchronous operation. To determine whether the
+        /// management service has finished processing the request, call Get
+        /// Operation Status.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460803.aspx
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Delete Service Certificate operation.
+        /// Required. Parameters supplied to the Delete Service Certificate
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -470,14 +494,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> DeleteAsync(ServiceCertificateDeleteParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteAsync(ServiceCertificateDeleteParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -499,7 +523,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.ServiceCertificates.BeginDeletingAsync(parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -558,7 +582,8 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Service Certificate operation.
+        /// Required. Parameters supplied to the Get Service Certificate
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -599,7 +624,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + parameters.ServiceName + "/certificates/" + parameters.ThumbprintAlgorithm + "-" + parameters.Thumbprint;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + parameters.ServiceName.Trim() + "/certificates/" + parameters.ThumbprintAlgorithm.Trim() + "-" + parameters.Thumbprint.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -610,7 +646,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -651,10 +687,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement certificateElement = responseDoc.Element(XName.Get("Certificate", "http://schemas.microsoft.com/windowsazure"));
-                    if (certificateElement != null)
+                    if (certificateElement != null && certificateElement.IsEmpty == false)
                     {
                         XElement dataElement = certificateElement.Element(XName.Get("Data", "http://schemas.microsoft.com/windowsazure"));
-                        if (dataElement != null)
+                        if (dataElement != null && dataElement.IsEmpty == false)
                         {
                             byte[] dataInstance = Convert.FromBase64String(dataElement.Value);
                             result.Data = dataInstance;
@@ -697,7 +733,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The DNS prefix name of your hosted service.
+        /// Required. The DNS prefix name of your hosted service.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -726,7 +762,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/certificates";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/certificates";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -737,7 +784,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -778,7 +825,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement certificatesSequenceElement = responseDoc.Element(XName.Get("Certificates", "http://schemas.microsoft.com/windowsazure"));
-                    if (certificatesSequenceElement != null)
+                    if (certificatesSequenceElement != null && certificatesSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement certificatesElement in certificatesSequenceElement.Elements(XName.Get("Certificate", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -786,28 +833,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             result.Certificates.Add(certificateInstance);
                             
                             XElement certificateUrlElement = certificatesElement.Element(XName.Get("CertificateUrl", "http://schemas.microsoft.com/windowsazure"));
-                            if (certificateUrlElement != null)
+                            if (certificateUrlElement != null && certificateUrlElement.IsEmpty == false)
                             {
                                 Uri certificateUrlInstance = TypeConversion.TryParseUri(certificateUrlElement.Value);
                                 certificateInstance.CertificateUri = certificateUrlInstance;
                             }
                             
                             XElement thumbprintElement = certificatesElement.Element(XName.Get("Thumbprint", "http://schemas.microsoft.com/windowsazure"));
-                            if (thumbprintElement != null)
+                            if (thumbprintElement != null && thumbprintElement.IsEmpty == false)
                             {
                                 string thumbprintInstance = thumbprintElement.Value;
                                 certificateInstance.Thumbprint = thumbprintInstance;
                             }
                             
                             XElement thumbprintAlgorithmElement = certificatesElement.Element(XName.Get("ThumbprintAlgorithm", "http://schemas.microsoft.com/windowsazure"));
-                            if (thumbprintAlgorithmElement != null)
+                            if (thumbprintAlgorithmElement != null && thumbprintAlgorithmElement.IsEmpty == false)
                             {
                                 string thumbprintAlgorithmInstance = thumbprintAlgorithmElement.Value;
                                 certificateInstance.ThumbprintAlgorithm = thumbprintAlgorithmInstance;
                             }
                             
                             XElement dataElement = certificatesElement.Element(XName.Get("Data", "http://schemas.microsoft.com/windowsazure"));
-                            if (dataElement != null)
+                            if (dataElement != null && dataElement.IsEmpty == false)
                             {
                                 byte[] dataInstance = Convert.FromBase64String(dataElement.Value);
                                 certificateInstance.Data = dataInstance;

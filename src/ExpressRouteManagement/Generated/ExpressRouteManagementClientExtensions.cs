@@ -50,7 +50,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IExpressRouteManagementClient.
         /// </param>
         /// <param name='operationId'>
-        /// The id  of the operation.
+        /// Required. The id  of the operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -65,21 +65,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationStatusResponse GetOperationStatus(this IExpressRouteManagementClient operations, string operationId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetOperationStatusAsync(operationId).Result;
+                return ((IExpressRouteManagementClient)s).GetOperationStatusAsync(operationId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -93,7 +83,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IExpressRouteManagementClient.
         /// </param>
         /// <param name='operationId'>
-        /// The id  of the operation.
+        /// Required. The id  of the operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous

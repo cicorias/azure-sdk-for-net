@@ -36,10 +36,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the operation.
+        /// Required. Parameters supplied to the operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -47,21 +47,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse CreateOrUpdate(this ISettingOperations operations, string resourceId, AutoscaleSettingCreateOrUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateOrUpdateAsync(resourceId, parameters).Result;
+                return ((ISettingOperations)s).CreateOrUpdateAsync(resourceId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -69,10 +59,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the operation.
+        /// Required. Parameters supplied to the operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -88,7 +78,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -96,21 +86,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this ISettingOperations operations, string resourceId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(resourceId).Result;
+                return ((ISettingOperations)s).DeleteAsync(resourceId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -118,7 +98,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -134,7 +114,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -142,21 +122,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static AutoscaleSettingGetResponse Get(this ISettingOperations operations, string resourceId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(resourceId).Result;
+                return ((ISettingOperations)s).GetAsync(resourceId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <param name='operations'>
@@ -164,7 +134,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Autoscale.ISettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The resource ID.
+        /// Required. The resource ID.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

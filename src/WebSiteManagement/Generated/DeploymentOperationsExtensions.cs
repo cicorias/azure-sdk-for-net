@@ -42,28 +42,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <returns>
         /// The deployment information operation response.
         /// </returns>
         public static DeploymentGetResponse Get(this IDeploymentOperations operations, string deploymentId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(deploymentId).Result;
+                return ((IDeploymentOperations)s).GetAsync(deploymentId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -74,7 +64,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <returns>
         /// The deployment information operation response.
@@ -85,35 +75,49 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// List the deployments for a website.
+        /// Gets a deployment log for a website.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
-        /// <param name='parameters'>
-        /// Additional parameters.
+        /// <param name='deploymentId'>
+        /// Required. The deployment identifier.
+        /// </param>
+        /// <param name='deploymentLogId'>
+        /// Required. The deployment log identifier.
         /// </param>
         /// <returns>
-        /// The list of deployments operation response.
+        /// The get log for a deployments operation response.
         /// </returns>
-        public static DeploymentListResponse List(this IDeploymentOperations operations, DeploymentListParameters parameters)
+        public static DeploymentGetLogResponse GetLog(this IDeploymentOperations operations, string deploymentId, string deploymentLogId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(parameters).Result;
+                return ((IDeploymentOperations)s).GetLogAsync(deploymentId, deploymentLogId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+        }
+        
+        /// <summary>
+        /// Gets a deployment log for a website.
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
+        /// </param>
+        /// <param name='deploymentId'>
+        /// Required. The deployment identifier.
+        /// </param>
+        /// <param name='deploymentLogId'>
+        /// Required. The deployment log identifier.
+        /// </param>
+        /// <returns>
+        /// The get log for a deployments operation response.
+        /// </returns>
+        public static Task<DeploymentGetLogResponse> GetLogAsync(this IDeploymentOperations operations, string deploymentId, string deploymentLogId)
+        {
+            return operations.GetLogAsync(deploymentId, deploymentLogId, CancellationToken.None);
         }
         
         /// <summary>
@@ -124,7 +128,29 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
+        /// </param>
+        /// <returns>
+        /// The list of deployments operation response.
+        /// </returns>
+        public static DeploymentListResponse List(this IDeploymentOperations operations, DeploymentListParameters parameters)
+        {
+            return Task.Factory.StartNew((object s) => 
+            {
+                return ((IDeploymentOperations)s).ListAsync(parameters);
+            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+        }
+        
+        /// <summary>
+        /// List the deployments for a website.
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
+        /// </param>
+        /// <param name='parameters'>
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of deployments operation response.
@@ -142,31 +168,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of deployments operation response.
         /// </returns>
         public static DeploymentListLogsResponse ListLogs(this IDeploymentOperations operations, string deploymentId, DeploymentListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListLogsAsync(deploymentId, parameters).Result;
+                return ((IDeploymentOperations)s).ListLogsAsync(deploymentId, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -177,10 +193,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of deployments operation response.
@@ -198,28 +214,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <returns>
         /// The deployment information operation response.
         /// </returns>
-        public static DeploymentUpdateResponse Reploy(this IDeploymentOperations operations, string deploymentId)
+        public static DeploymentUpdateResponse Redeploy(this IDeploymentOperations operations, string deploymentId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ReployAsync(deploymentId).Result;
+                return ((IDeploymentOperations)s).RedeployAsync(deploymentId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -230,14 +236,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IDeploymentOperations.
         /// </param>
         /// <param name='deploymentId'>
-        /// The deployment identifier.
+        /// Required. The deployment identifier.
         /// </param>
         /// <returns>
         /// The deployment information operation response.
         /// </returns>
-        public static Task<DeploymentUpdateResponse> ReployAsync(this IDeploymentOperations operations, string deploymentId)
+        public static Task<DeploymentUpdateResponse> RedeployAsync(this IDeploymentOperations operations, string deploymentId)
         {
-            return operations.ReployAsync(deploymentId, CancellationToken.None);
+            return operations.RedeployAsync(deploymentId, CancellationToken.None);
         }
     }
 }

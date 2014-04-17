@@ -30,11 +30,10 @@ using Microsoft.WindowsAzure.Management.WebSites.Models;
 namespace Microsoft.WindowsAzure
 {
     /// <summary>
-    /// The Windows Azure Web Sites management API provides a RESTful set of
-    /// web services that interact with Windows Azure Web Sites service to
-    /// manage your web sites. The API has entities that capture the
-    /// relationship between an end user and the Windows Azure Web Sites
-    /// service.  (see
+    /// The Web Sites Management API provides a RESTful set of web services
+    /// that interact with the Windows Azure Web Sites service to manage your
+    /// web sites. The API has entities that capture the relationship between
+    /// an end user and Windows Azure Web Sites service.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166981.aspx for
     /// more information)
     /// </summary>
@@ -48,39 +47,30 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='slotName'>
-        /// The name of the web site slot to swap with the production slot.
+        /// Required. The name of the web site slot to swap with the production
+        /// slot.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified long-running
         /// operation, indicating whether it has succeeded, is inprogress, has
-        /// time dout, or has failed. Note that this status is distinct from
+        /// timed out, or has failed. Note that this status is distinct from
         /// the HTTP status code returned for the Get Operation Status
-        /// operation itself.  If the long-running operation failed, the
+        /// operation itself. If the long-running operation failed, the
         /// response body includes error information regarding the failure.
         /// </returns>
         public static WebSiteOperationStatusResponse BeginSwapingSlots(this IWebSiteOperations operations, string webSpaceName, string webSiteName, string slotName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginSwapingSlotsAsync(webSpaceName, webSiteName, slotName).Result;
+                return ((IWebSiteOperations)s).BeginSwapingSlotsAsync(webSpaceName, webSiteName, slotName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -91,20 +81,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='slotName'>
-        /// The name of the web site slot to swap with the production slot.
+        /// Required. The name of the web site slot to swap with the production
+        /// slot.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified long-running
         /// operation, indicating whether it has succeeded, is inprogress, has
-        /// time dout, or has failed. Note that this status is distinct from
+        /// timed out, or has failed. Note that this status is distinct from
         /// the HTTP status code returned for the Get Operation Status
-        /// operation itself.  If the long-running operation failed, the
+        /// operation itself. If the long-running operation failed, the
         /// response body includes error information regarding the failure.
         /// </returns>
         public static Task<WebSiteOperationStatusResponse> BeginSwapingSlotsAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName, string slotName)
@@ -124,31 +115,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Web Site operation.
+        /// Required. Parameters supplied to the Create Web Site operation.
         /// </param>
         /// <returns>
-        /// The Create Web Space operation response.
+        /// The Create Web Site operation response.
         /// </returns>
         public static WebSiteCreateResponse Create(this IWebSiteOperations operations, string webSpaceName, WebSiteCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(webSpaceName, parameters).Result;
+                return ((IWebSiteOperations)s).CreateAsync(webSpaceName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -163,13 +144,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Web Site operation.
+        /// Required. Parameters supplied to the Create Web Site operation.
         /// </param>
         /// <returns>
-        /// The Create Web Space operation response.
+        /// The Create Web Site operation response.
         /// </returns>
         public static Task<WebSiteCreateResponse> CreateAsync(this IWebSiteOperations operations, string webSpaceName, WebSiteCreateParameters parameters)
         {
@@ -177,12 +158,10 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository create operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -191,10 +170,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -202,30 +181,18 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse CreateRepository(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateRepositoryAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).CreateRepositoryAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository create operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -234,10 +201,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -261,13 +228,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters to delete a web site.
+        /// Required. Parameters supplied to the Delete Web Site operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -275,21 +242,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteDeleteParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(webSpaceName, webSiteName, parameters).Result;
+                return ((IWebSiteOperations)s).DeleteAsync(webSpaceName, webSiteName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -305,13 +262,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters to delete a web site.
+        /// Required. Parameters supplied to the Delete Web Site operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -323,12 +280,10 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository delete operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -337,40 +292,28 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Delete Web Site Repository operation response.
+        /// The Delete Repository Web Site operation response.
         /// </returns>
         public static WebSiteDeleteRepositoryResponse DeleteRepository(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteRepositoryAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).DeleteRepositoryAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository delete operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -379,13 +322,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Delete Web Site Repository operation response.
+        /// The Delete Repository Web Site operation response.
         /// </returns>
         public static Task<WebSiteDeleteRepositoryResponse> DeleteRepositoryAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
@@ -394,10 +337,10 @@ namespace Microsoft.WindowsAzure
         
         /// <summary>
         /// You can generate a new random password for publishing a site by
-        /// issuing an HTTP POST request.  Tip: If you want to verify that the
-        /// publish password has changed, call HTTP GET on /publishxml before
-        /// calling /newpassword. In the publish XML, note the hash value in
-        /// the userPWD attribute. After calling /newpassword, call
+        /// issuing an HTTP POST request. Tip: If you want to verify that the
+        /// publish password has changed, issue an HTTP GET on /publishxml
+        /// before calling /newpassword. In the publish XML, note the hash
+        /// value in the userPWD attribute. After calling /newpassword, call
         /// /publishxml again. You can then compare the new value of userPWD
         /// in the Publish XML with the one you noted earlier.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn236428.aspx
@@ -408,10 +351,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -419,29 +362,19 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse GeneratePassword(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GeneratePasswordAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).GeneratePasswordAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
         /// You can generate a new random password for publishing a site by
-        /// issuing an HTTP POST request.  Tip: If you want to verify that the
-        /// publish password has changed, call HTTP GET on /publishxml before
-        /// calling /newpassword. In the publish XML, note the hash value in
-        /// the userPWD attribute. After calling /newpassword, call
+        /// issuing an HTTP POST request. Tip: If you want to verify that the
+        /// publish password has changed, issue an HTTP GET on /publishxml
+        /// before calling /newpassword. In the publish XML, note the hash
+        /// value in the userPWD attribute. After calling /newpassword, call
         /// /publishxml again. You can then compare the new value of userPWD
         /// in the Publish XML with the one you noted earlier.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn236428.aspx
@@ -452,10 +385,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -477,34 +410,24 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Parameters supplied to the Get Web Site Operation.
         /// </param>
         /// <returns>
-        /// The Get Web Site Details operation response.
+        /// The Get Web Site operation response.
         /// </returns>
         public static WebSiteGetResponse Get(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteGetParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(webSpaceName, webSiteName, parameters).Result;
+                return ((IWebSiteOperations)s).GetAsync(webSpaceName, webSiteName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -518,16 +441,16 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Parameters supplied to the Get Web Site Operation.
         /// </param>
         /// <returns>
-        /// The Get Web Site Details operation response.
+        /// The Get Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetResponse> GetAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteGetParameters parameters)
         {
@@ -536,8 +459,7 @@ namespace Microsoft.WindowsAzure
         
         /// <summary>
         /// You can retrieve the config settings for a web site by issuing an
-        /// HTTP GET request, or update them by using HTTP PUT with a request
-        /// body that contains the settings to be updated.  (see
+        /// HTTP GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
         /// for more information)
         /// </summary>
@@ -546,37 +468,26 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Configuration operation response.
+        /// The Get Configuration Web Site operation response.
         /// </returns>
         public static WebSiteGetConfigurationResponse GetConfiguration(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetConfigurationAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).GetConfigurationAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
         /// You can retrieve the config settings for a web site by issuing an
-        /// HTTP GET request, or update them by using HTTP PUT with a request
-        /// body that contains the settings to be updated.  (see
+        /// HTTP GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
         /// for more information)
         /// </summary>
@@ -585,13 +496,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Configuration operation response.
+        /// The Get Configuration Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetConfigurationResponse> GetConfigurationAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
@@ -609,34 +520,25 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The Get Web Site Historical Usage Metrics parameters.
+        /// Required. Parameters supplied to the Get Historical Usage Metrics
+        /// Web Site operation.
         /// </param>
         /// <returns>
-        /// The Get Web Site Historical Usage Metrics operation response.
+        /// The Get Historical Usage Metrics Web Site operation response.
         /// </returns>
         public static WebSiteGetHistoricalUsageMetricsResponse GetHistoricalUsageMetrics(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteGetHistoricalUsageMetricsParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetHistoricalUsageMetricsAsync(webSpaceName, webSiteName, parameters).Result;
+                return ((IWebSiteOperations)s).GetHistoricalUsageMetricsAsync(webSpaceName, webSiteName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -650,16 +552,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The Get Web Site Historical Usage Metrics parameters.
+        /// Required. Parameters supplied to the Get Historical Usage Metrics
+        /// Web Site operation.
         /// </param>
         /// <returns>
-        /// The Get Web Site Historical Usage Metrics operation response.
+        /// The Get Historical Usage Metrics Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetHistoricalUsageMetricsResponse> GetHistoricalUsageMetricsAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteGetHistoricalUsageMetricsParameters parameters)
         {
@@ -677,31 +580,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Publish Profile operation response.
+        /// The Get Publish Profile Web Site operation response.
         /// </returns>
         public static WebSiteGetPublishProfileResponse GetPublishProfile(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetPublishProfileAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).GetPublishProfileAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -715,13 +608,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Publish Profile operation response.
+        /// The Get Publish Profile Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetPublishProfileResponse> GetPublishProfileAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
@@ -729,12 +622,10 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository get operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -743,40 +634,28 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Repository operation response.
+        /// The Get Repository Web Site operation response.
         /// </returns>
         public static WebSiteGetRepositoryResponse GetRepository(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetRepositoryAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).GetRepositoryAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
-        /// site. You can create a repository for your web site by issuing an
-        /// HTTP POST request, or retrieve information about the repository by
-        /// using HTTP GET.  (see
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
+        /// site. This API executes a repository get operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
         /// </summary>
@@ -785,13 +664,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Repository operation response.
+        /// The Get Repository Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetRepositoryResponse> GetRepositoryAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
@@ -799,11 +678,11 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// You can retrieve a site's current usage metrics by issuing an HTTP
-        /// GET request. The metrics returned include CPU Time, Data In, Data
-        /// Out, Local bytes read, Local bytes written, Network bytes read,
-        /// Network bytes written, WP stop requests, Memory Usage, CPU Time -
-        /// Minute Limit, and File System Storage.  (see
+        /// You can retrieve current usage metrics for a site by issuing an
+        /// HTTP GET request. The metrics returned include CPU Time, Data In,
+        /// Data Out, Local Bytes Read, Local Bytes Written, Network Bytes
+        /// Read, Network Bytes Written, WP Stop Requests, Memory Usage, CPU
+        /// Time - Minute Limit, and File System Storage.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166991.aspx
         /// for more information)
         /// </summary>
@@ -812,39 +691,29 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Usage Metrics operation response.
+        /// The Get Usage Metrics Web Site operation response.
         /// </returns>
         public static WebSiteGetUsageMetricsResponse GetUsageMetrics(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetUsageMetricsAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).GetUsageMetricsAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// You can retrieve a site's current usage metrics by issuing an HTTP
-        /// GET request. The metrics returned include CPU Time, Data In, Data
-        /// Out, Local bytes read, Local bytes written, Network bytes read,
-        /// Network bytes written, WP stop requests, Memory Usage, CPU Time -
-        /// Minute Limit, and File System Storage.  (see
+        /// You can retrieve current usage metrics for a site by issuing an
+        /// HTTP GET request. The metrics returned include CPU Time, Data In,
+        /// Data Out, Local Bytes Read, Local Bytes Written, Network Bytes
+        /// Read, Network Bytes Written, WP Stop Requests, Memory Usage, CPU
+        /// Time - Minute Limit, and File System Storage.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166991.aspx
         /// for more information)
         /// </summary>
@@ -853,13 +722,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Get Web Site Usage Metrics operation response.
+        /// The Get Usage Metrics Web Site operation response.
         /// </returns>
         public static Task<WebSiteGetUsageMetricsResponse> GetUsageMetricsAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
@@ -867,49 +736,39 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// Determines if a hostname is available
+        /// Determines if a host name is available.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Is Hostname Available operation response.
+        /// The Is Hostname Available Web Site operation response.
         /// </returns>
         public static WebSiteIsHostnameAvailableResponse IsHostnameAvailable(this IWebSiteOperations operations, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.IsHostnameAvailableAsync(webSiteName).Result;
+                return ((IWebSiteOperations)s).IsHostnameAvailableAsync(webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Determines if a hostname is available
+        /// Determines if a host name is available.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
-        /// The Is Hostname Available operation response.
+        /// The Is Hostname Available Web Site operation response.
         /// </returns>
         public static Task<WebSiteIsHostnameAvailableResponse> IsHostnameAvailableAsync(this IWebSiteOperations operations, string webSiteName)
         {
@@ -926,10 +785,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -937,21 +796,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Restart(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RestartAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).RestartAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -964,10 +813,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -986,39 +835,30 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='slotName'>
-        /// The name of the web site slot to swap with the production slot.
+        /// Required. The name of the web site slot to swap with the production
+        /// slot.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified long-running
         /// operation, indicating whether it has succeeded, is inprogress, has
-        /// time dout, or has failed. Note that this status is distinct from
+        /// timed out, or has failed. Note that this status is distinct from
         /// the HTTP status code returned for the Get Operation Status
-        /// operation itself.  If the long-running operation failed, the
+        /// operation itself. If the long-running operation failed, the
         /// response body includes error information regarding the failure.
         /// </returns>
         public static WebSiteOperationStatusResponse SwapSlots(this IWebSiteOperations operations, string webSpaceName, string webSiteName, string slotName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.SwapSlotsAsync(webSpaceName, webSiteName, slotName).Result;
+                return ((IWebSiteOperations)s).SwapSlotsAsync(webSpaceName, webSiteName, slotName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -1029,20 +869,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='slotName'>
-        /// The name of the web site slot to swap with the production slot.
+        /// Required. The name of the web site slot to swap with the production
+        /// slot.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified long-running
         /// operation, indicating whether it has succeeded, is inprogress, has
-        /// time dout, or has failed. Note that this status is distinct from
+        /// timed out, or has failed. Note that this status is distinct from
         /// the HTTP status code returned for the Get Operation Status
-        /// operation itself.  If the long-running operation failed, the
+        /// operation itself. If the long-running operation failed, the
         /// response body includes error information regarding the failure.
         /// </returns>
         public static Task<WebSiteOperationStatusResponse> SwapSlotsAsync(this IWebSiteOperations operations, string webSpaceName, string webSiteName, string slotName)
@@ -1051,9 +892,9 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
         /// site. This API executes a repository sync operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
@@ -1063,10 +904,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -1074,27 +915,17 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse SyncRepository(this IWebSiteOperations operations, string webSpaceName, string webSiteName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.SyncRepositoryAsync(webSpaceName, webSiteName).Result;
+                return ((IWebSiteOperations)s).SyncRepositoryAsync(webSpaceName, webSiteName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// A web site repository is essentially a GIT repository that you can
-        /// use to manage your web site content. By using GIT source control
-        /// tools, you can push or pull version controlled changes to your
+        /// A web site repository is essentially a Git repository that you can
+        /// use to manage your web site content. By using Git source control
+        /// tools, you can push or pull version-controlled changes to your
         /// site. This API executes a repository sync operation.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166967.aspx
         /// for more information)
@@ -1104,10 +935,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -1129,34 +960,24 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Web Site operation.
+        /// Required. Parameters supplied to the Update Web Site operation.
         /// </param>
         /// <returns>
         /// The Update Web Site operation response.
         /// </returns>
         public static WebSiteUpdateResponse Update(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(webSpaceName, webSiteName, parameters).Result;
+                return ((IWebSiteOperations)s).UpdateAsync(webSpaceName, webSiteName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -1170,13 +991,13 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Web Site operation.
+        /// Required. Parameters supplied to the Update Web Site operation.
         /// </param>
         /// <returns>
         /// The Update Web Site operation response.
@@ -1187,10 +1008,9 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// You can retrieve the config settings for a web site by issuing an
-        /// HTTP GET request, or update them by using HTTP PUT with a request
-        /// body that contains the settings to be updated.  (see
-        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
+        /// You can update the config settings for a web site by issuing an
+        /// HTTP PUT with a request body containing the updated settings.
+        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
         /// for more information)
         /// </summary>
         /// <param name='operations'>
@@ -1198,13 +1018,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The Update Web Site Configuration parameters.
+        /// Required. Parameters supplied to the Update Configuration Web Site
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -1212,28 +1033,17 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse UpdateConfiguration(this IWebSiteOperations operations, string webSpaceName, string webSiteName, WebSiteUpdateConfigurationParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateConfigurationAsync(webSpaceName, webSiteName, parameters).Result;
+                return ((IWebSiteOperations)s).UpdateConfigurationAsync(webSpaceName, webSiteName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// You can retrieve the config settings for a web site by issuing an
-        /// HTTP GET request, or update them by using HTTP PUT with a request
-        /// body that contains the settings to be updated.  (see
-        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
+        /// You can update the config settings for a web site by issuing an
+        /// HTTP PUT with a request body containing the updated settings.
+        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/dn166985.aspx
         /// for more information)
         /// </summary>
         /// <param name='operations'>
@@ -1241,13 +1051,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSiteOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='webSiteName'>
-        /// The name of the web site.
+        /// Required. The name of the web site.
         /// </param>
         /// <param name='parameters'>
-        /// The Update Web Site Configuration parameters.
+        /// Required. Parameters supplied to the Update Configuration Web Site
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

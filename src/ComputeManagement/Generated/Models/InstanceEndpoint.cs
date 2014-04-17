@@ -21,7 +21,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.Management.Compute.Models
 {
@@ -33,9 +32,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private int? _localPort;
         
         /// <summary>
-        /// Specifies the internal port on which the virtual machine is
-        /// listening to serve the endpoint. This element is only listed for
-        /// Virtual Machine deployments.
+        /// Optional. Specifies the internal port on which the virtual machine
+        /// is listening to serve the endpoint. This element is only listed
+        /// for Virtual Machine deployments.
         /// </summary>
         public int? LocalPort
         {
@@ -46,8 +45,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _name;
         
         /// <summary>
-        /// Specifies the name for the external endpoint. This element is only
-        /// listed for Virtual Machine deployments.
+        /// Optional. Specifies the name for the external endpoint. This
+        /// element is only listed for Virtual Machine deployments.
         /// </summary>
         public string Name
         {
@@ -58,7 +57,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private int _port;
         
         /// <summary>
-        /// The external port of the role instance endpoint.
+        /// Optional. The external port of the role instance endpoint.
         /// </summary>
         public int Port
         {
@@ -69,7 +68,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _protocol;
         
         /// <summary>
-        /// Specifies the transport protocol for the endpoint.
+        /// Optional. Specifies the transport protocol for the endpoint.
         /// </summary>
         public string Protocol
         {
@@ -80,7 +79,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _virtualIPAddress;
         
         /// <summary>
-        /// The Virtual IP of the role endpoint.
+        /// Optional. The Virtual IP of the role endpoint.
         /// </summary>
         public string VirtualIPAddress
         {

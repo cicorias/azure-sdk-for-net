@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricSettingOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Metric settings to be created or updated.
+        /// Required. Metric settings to be created or updated.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -48,21 +48,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse CreateOrUpdate(this IMetricSettingOperations operations, MetricSettingsPutParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateOrUpdateAsync(parameters).Result;
+                return ((IMetricSettingOperations)s).CreateOrUpdateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -74,7 +64,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricSettingOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Metric settings to be created or updated.
+        /// Required. Metric settings to be created or updated.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -94,31 +84,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricSettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The id of the resource.
+        /// Required. The id of the resource.
         /// </param>
         /// <param name='metricNamespace'>
-        /// The namespace of the metrics.
+        /// Required. The namespace of the metrics.
         /// </param>
         /// <returns>
         /// The list metric settings operation response.
         /// </returns>
         public static MetricSettingListResponse List(this IMetricSettingOperations operations, string resourceId, string metricNamespace)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(resourceId, metricNamespace).Result;
+                return ((IMetricSettingOperations)s).ListAsync(resourceId, metricNamespace);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -130,10 +110,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricSettingOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The id of the resource.
+        /// Required. The id of the resource.
         /// </param>
         /// <param name='metricNamespace'>
-        /// The namespace of the metrics.
+        /// Required. The namespace of the metrics.
         /// </param>
         /// <returns>
         /// The list metric settings operation response.

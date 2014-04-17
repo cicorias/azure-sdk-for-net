@@ -30,11 +30,10 @@ using Microsoft.WindowsAzure.Management.WebSites.Models;
 namespace Microsoft.WindowsAzure
 {
     /// <summary>
-    /// The Windows Azure Web Sites management API provides a RESTful set of
-    /// web services that interact with Windows Azure Web Sites service to
-    /// manage your web sites. The API has entities that capture the
-    /// relationship between an end user and the Windows Azure Web Sites
-    /// service.  (see
+    /// The Web Sites Management API provides a RESTful set of web services
+    /// that interact with the Windows Azure Web Sites service to manage your
+    /// web sites. The API has entities that capture the relationship between
+    /// an end user and Windows Azure Web Sites service.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166981.aspx for
     /// more information)
     /// </summary>
@@ -46,7 +45,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -58,31 +57,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Server Farm operation.
+        /// Required. Parameters supplied to the Create Server Farm operation.
         /// </param>
         /// <returns>
         /// The Create Server Farm operation response.
         /// </returns>
         public static ServerFarmCreateResponse Create(this IServerFarmOperations operations, string webSpaceName, ServerFarmCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(webSpaceName, parameters).Result;
+                return ((IServerFarmOperations)s).CreateAsync(webSpaceName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -91,7 +80,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -103,10 +92,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Server Farm operation.
+        /// Required. Parameters supplied to the Create Server Farm operation.
         /// </param>
         /// <returns>
         /// The Create Server Farm operation response.
@@ -122,7 +111,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -134,7 +123,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -142,21 +131,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IServerFarmOperations operations, string webSpaceName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(webSpaceName).Result;
+                return ((IServerFarmOperations)s).DeleteAsync(webSpaceName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -165,7 +144,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -177,7 +156,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -194,7 +173,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -206,31 +185,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='serverFarmName'>
-        /// The name of the server farm.
+        /// Required. The name of the server farm.
         /// </param>
         /// <returns>
         /// The Get Server Farm operation response.
         /// </returns>
         public static ServerFarmGetResponse Get(this IServerFarmOperations operations, string webSpaceName, string serverFarmName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(webSpaceName, serverFarmName).Result;
+                return ((IServerFarmOperations)s).GetAsync(webSpaceName, serverFarmName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -239,7 +208,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -251,10 +220,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='serverFarmName'>
-        /// The name of the server farm.
+        /// Required. The name of the server farm.
         /// </param>
         /// <returns>
         /// The Get Server Farm operation response.
@@ -270,7 +239,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -282,28 +251,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// The List Server Farm operation response.
         /// </returns>
         public static ServerFarmListResponse List(this IServerFarmOperations operations, string webSpaceName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(webSpaceName).Result;
+                return ((IServerFarmOperations)s).ListAsync(webSpaceName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -312,7 +271,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -324,7 +283,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// The List Server Farm operation response.
@@ -340,7 +299,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -352,31 +311,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Server Farm operation.
+        /// Required. Parameters supplied to the Update Server Farm operation.
         /// </param>
         /// <returns>
         /// The Update Server Farm operation response.
         /// </returns>
         public static ServerFarmUpdateResponse Update(this IServerFarmOperations operations, string webSpaceName, ServerFarmUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(webSpaceName, parameters).Result;
+                return ((IServerFarmOperations)s).UpdateAsync(webSpaceName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -385,7 +334,7 @@ namespace Microsoft.WindowsAzure
         /// farm details by using HTTP GET, change server farm properties by
         /// using HTTP PUT, and delete a server farm by using HTTP DELETE. A
         /// request body is required for server farm creation (HTTP POST) and
-        /// server farm update (HTTP PUT).  Warning: Creating a server farm
+        /// server farm update (HTTP PUT). Warning: Creating a server farm
         /// changes your webspace’s Compute Mode from Shared to Dedicated. You
         /// will be charged from the moment the server farm is created, even
         /// if all your sites are still running in Free mode.  (see
@@ -397,10 +346,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IServerFarmOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Server Farm operation.
+        /// Required. Parameters supplied to the Update Server Farm operation.
         /// </param>
         /// <returns>
         /// The Update Server Farm operation response.

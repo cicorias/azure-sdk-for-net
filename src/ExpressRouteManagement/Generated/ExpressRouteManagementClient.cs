@@ -122,11 +122,11 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
         /// class.
         /// </summary>
         /// <param name='credentials'>
-        /// The customer subscription ID forms part of the URI for every call
-        /// that you make to the Express Route Gateway Manager.
+        /// Required. The customer subscription ID forms part of the URI for
+        /// every call that you make to the Express Route Gateway Manager.
         /// </param>
         /// <param name='baseUri'>
-        /// The URI used as the base for all golden gate requests.
+        /// Required. The URI used as the base for all golden gate requests.
         /// </param>
         public ExpressRouteManagementClient(SubscriptionCloudCredentials credentials, Uri baseUri)
             : this()
@@ -150,8 +150,8 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
         /// class.
         /// </summary>
         /// <param name='credentials'>
-        /// The customer subscription ID forms part of the URI for every call
-        /// that you make to the Express Route Gateway Manager.
+        /// Required. The customer subscription ID forms part of the URI for
+        /// every call that you make to the Express Route Gateway Manager.
         /// </param>
         public ExpressRouteManagementClient(SubscriptionCloudCredentials credentials)
             : this()
@@ -173,7 +173,7 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
         /// for more information)
         /// </summary>
         /// <param name='operationId'>
-        /// The id  of the operation.
+        /// Required. The id  of the operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -209,7 +209,18 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
             }
             
             // Construct URL
-            string url = new Uri(this.BaseUri, "/").ToString() + this.Credentials.SubscriptionId + "/services/networking/operation/" + operationId;
+            string baseUrl = this.BaseUri.AbsoluteUri;
+            string url = "/" + this.Credentials.SubscriptionId.Trim() + "/services/networking/operation/" + operationId.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -261,51 +272,51 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement gatewayOperationElement = responseDoc.Element(XName.Get("GatewayOperation", "http://schemas.microsoft.com/windowsazure"));
-                    if (gatewayOperationElement != null)
+                    if (gatewayOperationElement != null && gatewayOperationElement.IsEmpty == false)
                     {
                         XElement idElement = gatewayOperationElement.Element(XName.Get("ID", "http://schemas.microsoft.com/windowsazure"));
-                        if (idElement != null)
+                        if (idElement != null && idElement.IsEmpty == false)
                         {
                             string idInstance = idElement.Value;
                             result.Id = idInstance;
                         }
                         
                         XElement statusElement = gatewayOperationElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                        if (statusElement != null)
+                        if (statusElement != null && statusElement.IsEmpty == false)
                         {
-                            ExpressRouteOperationStatus statusInstance = (ExpressRouteOperationStatus)Enum.Parse(typeof(ExpressRouteOperationStatus), statusElement.Value, false);
+                            ExpressRouteOperationStatus statusInstance = ((ExpressRouteOperationStatus)Enum.Parse(typeof(ExpressRouteOperationStatus), statusElement.Value, true));
                             result.Status = statusInstance;
                         }
                         
                         XElement httpStatusCodeElement = gatewayOperationElement.Element(XName.Get("HttpStatusCode", "http://schemas.microsoft.com/windowsazure"));
-                        if (httpStatusCodeElement != null)
+                        if (httpStatusCodeElement != null && httpStatusCodeElement.IsEmpty == false)
                         {
-                            HttpStatusCode httpStatusCodeInstance = (HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), httpStatusCodeElement.Value, false);
+                            HttpStatusCode httpStatusCodeInstance = ((HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), httpStatusCodeElement.Value, true));
                             result.HttpStatusCode = httpStatusCodeInstance;
                         }
                         
                         XElement dataElement = gatewayOperationElement.Element(XName.Get("Data", "http://schemas.microsoft.com/windowsazure"));
-                        if (dataElement != null)
+                        if (dataElement != null && dataElement.IsEmpty == false)
                         {
                             string dataInstance = dataElement.Value;
                             result.Data = dataInstance;
                         }
                         
                         XElement errorElement = gatewayOperationElement.Element(XName.Get("Error", "http://schemas.microsoft.com/windowsazure"));
-                        if (errorElement != null)
+                        if (errorElement != null && errorElement.IsEmpty == false)
                         {
                             ExpressRouteOperationStatusResponse.ErrorDetails errorInstance = new ExpressRouteOperationStatusResponse.ErrorDetails();
                             result.Error = errorInstance;
                             
                             XElement codeElement = errorElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
-                            if (codeElement != null)
+                            if (codeElement != null && codeElement.IsEmpty == false)
                             {
                                 string codeInstance = codeElement.Value;
                                 errorInstance.Code = codeInstance;
                             }
                             
                             XElement messageElement = errorElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
-                            if (messageElement != null)
+                            if (messageElement != null && messageElement.IsEmpty == false)
                             {
                                 string messageInstance = messageElement.Value;
                                 errorInstance.Message = messageInstance;
@@ -353,11 +364,11 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
         /// </returns>
         internal static BgpPeeringAccessType ParseBgpPeeringAccessType(string value)
         {
-            if (value == "private")
+            if ("private".Equals(value, StringComparison.OrdinalIgnoreCase))
             {
                 return BgpPeeringAccessType.Private;
             }
-            if (value == "public")
+            if ("public".Equals(value, StringComparison.OrdinalIgnoreCase))
             {
                 return BgpPeeringAccessType.Public;
             }
@@ -397,11 +408,11 @@ namespace Microsoft.WindowsAzure.Management.ExpressRoute
         /// </returns>
         internal static UpdateCrossConnectionOperation ParseUpdateCrossConnectionOperation(string value)
         {
-            if (value == "NotifyCrossConnectionProvisioned")
+            if ("NotifyCrossConnectionProvisioned".Equals(value, StringComparison.OrdinalIgnoreCase))
             {
                 return UpdateCrossConnectionOperation.NotifyCrossConnectionProvisioned;
             }
-            if (value == "NotifyCrossConnectionNotProvisioned")
+            if ("NotifyCrossConnectionNotProvisioned".Equals(value, StringComparison.OrdinalIgnoreCase))
             {
                 return UpdateCrossConnectionOperation.NotifyCrossConnectionNotProvisioned;
             }

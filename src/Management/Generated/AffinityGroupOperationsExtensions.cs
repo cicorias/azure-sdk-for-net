@@ -33,7 +33,7 @@ namespace Microsoft.WindowsAzure
     /// The Service Management API provides programmatic access to much of the
     /// functionality available through the Management Portal. The Service
     /// Management API is a REST API. All API operations are performed over
-    /// SSL and mutually authenticated using X.509 v3 certificates.  (see
+    /// SSL and are mutually authenticated using X.509 v3 certificates.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460799.aspx for
     /// more information)
     /// </summary>
@@ -50,7 +50,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Affinity Group operation.
+        /// Required. Parameters supplied to the Create Affinity Group
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -58,21 +59,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Create(this IAffinityGroupOperations operations, AffinityGroupCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IAffinityGroupOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -86,7 +77,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Affinity Group operation.
+        /// Required. Parameters supplied to the Create Affinity Group
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -108,7 +100,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -116,21 +108,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IAffinityGroupOperations operations, string affinityGroupName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(affinityGroupName).Result;
+                return ((IAffinityGroupOperations)s).DeleteAsync(affinityGroupName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -144,7 +126,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -166,29 +148,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of the desired affinity group as returned by the name
-        /// element of the List Affinity Groups operation.
+        /// Required. The name of the desired affinity group as returned by the
+        /// name element of the List Affinity Groups operation.
         /// </param>
         /// <returns>
         /// The Get Affinity Group operation response.
         /// </returns>
         public static AffinityGroupGetResponse Get(this IAffinityGroupOperations operations, string affinityGroupName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(affinityGroupName).Result;
+                return ((IAffinityGroupOperations)s).GetAsync(affinityGroupName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -202,8 +174,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of the desired affinity group as returned by the name
-        /// element of the List Affinity Groups operation.
+        /// Required. The name of the desired affinity group as returned by the
+        /// name element of the List Affinity Groups operation.
         /// </param>
         /// <returns>
         /// The Get Affinity Group operation response.
@@ -228,21 +200,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static AffinityGroupListResponse List(this IAffinityGroupOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IAffinityGroupOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -275,10 +237,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Affinity Group operation.
+        /// Required. Parameters supplied to the Update Affinity Group
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -286,21 +249,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Update(this IAffinityGroupOperations operations, string affinityGroupName, AffinityGroupUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(affinityGroupName, parameters).Result;
+                return ((IAffinityGroupOperations)s).UpdateAsync(affinityGroupName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -315,10 +268,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IAffinityGroupOperations.
         /// </param>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Affinity Group operation.
+        /// Required. Parameters supplied to the Update Affinity Group
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

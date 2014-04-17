@@ -43,7 +43,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='settingId'>
-        /// The setting identifier.
+        /// Required. The setting identifier.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -51,21 +51,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this ISettingsOperations operations, string settingId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(settingId).Result;
+                return ((ISettingsOperations)s).DeleteAsync(settingId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -76,7 +66,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='settingId'>
-        /// The setting identifier.
+        /// Required. The setting identifier.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -95,28 +85,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='settingId'>
-        /// The setting identifier.
+        /// Required. The setting identifier.
         /// </param>
         /// <returns>
         /// The get setting operation response.
         /// </returns>
         public static SettingsGetResponse Get(this ISettingsOperations operations, string settingId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(settingId).Result;
+                return ((ISettingsOperations)s).GetAsync(settingId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -127,7 +107,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='settingId'>
-        /// The setting identifier.
+        /// Required. The setting identifier.
         /// </param>
         /// <returns>
         /// The get setting operation response.
@@ -149,21 +129,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static SettingsListResponse List(this ISettingsOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((ISettingsOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -189,7 +159,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='parameters'>
-        /// The setting value.
+        /// Required. The setting value.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -197,21 +167,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Update(this ISettingsOperations operations, SettingsUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(parameters).Result;
+                return ((ISettingsOperations)s).UpdateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -222,7 +182,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.ISettingsOperations.
         /// </param>
         /// <param name='parameters'>
-        /// The setting value.
+        /// Required. The setting value.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

@@ -47,7 +47,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Dedicated Circuit operation.
+        /// Required. Parameters supplied to the New Dedicated Circuit
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -55,21 +56,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginNew(this IDedicatedCircuitOperations operations, DedicatedCircuitNewParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginNewAsync(parameters).Result;
+                return ((IDedicatedCircuitOperations)s).BeginNewAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -80,7 +71,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Dedicated Circuit operation.
+        /// Required. Parameters supplied to the New Dedicated Circuit
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -100,7 +92,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key representing the dedicated circuit to be deleted.
+        /// Required. Service key representing the dedicated circuit to be
+        /// deleted.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -108,21 +101,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginRemove(this IDedicatedCircuitOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginRemoveAsync(serviceKey).Result;
+                return ((IDedicatedCircuitOperations)s).BeginRemoveAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -134,7 +117,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key representing the dedicated circuit to be deleted.
+        /// Required. Service key representing the dedicated circuit to be
+        /// deleted.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -154,28 +138,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the circuit.
+        /// Required. The service key representing the circuit.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit operation response.
         /// </returns>
         public static DedicatedCircuitGetResponse Get(this IDedicatedCircuitOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serviceKey).Result;
+                return ((IDedicatedCircuitOperations)s).GetAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -187,7 +161,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the circuit.
+        /// Required. The service key representing the circuit.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit operation response.
@@ -210,21 +184,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static DedicatedCircuitListResponse List(this IDedicatedCircuitOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IDedicatedCircuitOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -251,28 +215,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Network Gateway operation.
+        /// Required. Parameters supplied to the Create Virtual Network Gateway
+        /// operation.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit operation response.
         /// </returns>
         public static DedicatedCircuitGetResponse New(this IDedicatedCircuitOperations operations, DedicatedCircuitNewParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.NewAsync(parameters).Result;
+                return ((IDedicatedCircuitOperations)s).NewAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -283,7 +238,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Network Gateway operation.
+        /// Required. Parameters supplied to the Create Virtual Network Gateway
+        /// operation.
         /// </param>
         /// <returns>
         /// The Get Dedicated Circuit operation response.
@@ -302,7 +258,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key associated with the dedicated circuit to be deleted.
+        /// Required. Service Key associated with the dedicated circuit to be
+        /// deleted.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -317,21 +274,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationStatusResponse Remove(this IDedicatedCircuitOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RemoveAsync(serviceKey).Result;
+                return ((IDedicatedCircuitOperations)s).RemoveAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -343,7 +290,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IDedicatedCircuitOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key associated with the dedicated circuit to be deleted.
+        /// Required. Service Key associated with the dedicated circuit to be
+        /// deleted.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous

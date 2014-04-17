@@ -23,6 +23,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Management.Store;
 using Microsoft.WindowsAzure.Management.Store.Models;
 
@@ -43,7 +44,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.ICloudServiceOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -56,23 +58,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse BeginCreating(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
+        public static OperationStatusResponse BeginCreating(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginCreatingAsync(parameters).Result;
+                return ((ICloudServiceOperations)s).BeginCreatingAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -84,7 +76,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.ICloudServiceOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -97,7 +90,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> BeginCreatingAsync(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
+        public static Task<OperationStatusResponse> BeginCreatingAsync(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
         {
             return operations.BeginCreatingAsync(parameters, CancellationToken.None);
         }
@@ -111,7 +104,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.ICloudServiceOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -124,23 +118,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse Create(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
+        public static OperationStatusResponse Create(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((ICloudServiceOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -152,7 +136,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.ICloudServiceOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -165,7 +150,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> CreateAsync(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
+        public static Task<OperationStatusResponse> CreateAsync(this ICloudServiceOperations operations, CloudServiceCreateParameters parameters)
         {
             return operations.CreateAsync(parameters, CancellationToken.None);
         }
@@ -183,21 +168,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static CloudServiceListResponse List(this ICloudServiceOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((ICloudServiceOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>

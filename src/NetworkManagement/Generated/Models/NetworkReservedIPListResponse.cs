@@ -22,19 +22,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Management.Network.Models;
 
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
-    /// Preview Only. The response structure for the Server List operation
+    /// Preview Only. The response structure for the Server List operation.
     /// </summary>
     public partial class NetworkReservedIPListResponse : OperationResponse, IEnumerable<NetworkReservedIPListResponse.ReservedIP>
     {
         private IList<NetworkReservedIPListResponse.ReservedIP> _reservedIPs;
         
+        /// <summary>
+        /// Optional.
+        /// </summary>
         public IList<NetworkReservedIPListResponse.ReservedIP> ReservedIPs
         {
             get { return this._reservedIPs; }
@@ -74,7 +76,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _address;
             
             /// <summary>
-            /// The IP address of the reserved IP.
+            /// Optional. The IP address of the reserved IP.
             /// </summary>
             public string Address
             {
@@ -85,8 +87,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _affinityGroup;
             
             /// <summary>
-            /// An affinity group, which indirectly refers to the location
-            /// where the virtual network exists.
+            /// Optional. An affinity group, which indirectly refers to the
+            /// location where the virtual network exists.
             /// </summary>
             public string AffinityGroup
             {
@@ -97,7 +99,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _deploymentName;
             
             /// <summary>
-            /// The name of the deployment the IP belongs to, if being used.
+            /// Optional. The name of the deployment the IP belongs to, if used.
             /// </summary>
             public string DeploymentName
             {
@@ -108,7 +110,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _id;
             
             /// <summary>
-            /// A unique string identifier that represents the reserved IP.
+            /// Optional. A unique string identifier that represents the
+            /// reserved IP.
             /// </summary>
             public string Id
             {
@@ -119,7 +122,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private bool _inUse;
             
             /// <summary>
-            /// The indicator of whether the reserved IP is being used.
+            /// Optional. The indicator of whether the reserved IP is used.
             /// </summary>
             public bool InUse
             {
@@ -130,7 +133,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _label;
             
             /// <summary>
-            /// The friendly identifier of the site.
+            /// Optional. The friendly identifier for the site.
             /// </summary>
             public string Label
             {
@@ -141,7 +144,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _name;
             
             /// <summary>
-            /// Name of the reserved IP.
+            /// Optional. Name of the reserved IP.
             /// </summary>
             public string Name
             {
@@ -152,7 +155,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _serviceName;
             
             /// <summary>
-            /// The name of the service the IP belongs to, if being used.
+            /// Optional. The name of the service the IP belongs to, if used.
             /// </summary>
             public string ServiceName
             {
@@ -163,8 +166,8 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
             private string _state;
             
             /// <summary>
-            /// Current status of the reserved IP. (Created, Creating,
-            /// Updating, Deleting, Unavailable)
+            /// Optional. Current status of the reserved IP. (Created,
+            /// Creating, Updating, Deleting, or Unavailable.)
             /// </summary>
             public string State
             {

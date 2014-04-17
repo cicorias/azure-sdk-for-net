@@ -68,7 +68,8 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// CreateOrUpdate if a user-chosen job id is required.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a Create Job operation.
+        /// Required. Parameters specifying the job definition for a Create Job
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -163,8 +164,19 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs?";
+            url = url + "api-version=2014-04-01";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -228,7 +240,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JObject requestValue = new JObject();
                         errorActionValue["request"] = requestValue;
                         
-                        requestValue["uri"] = parameters.Action.ErrorAction.Request.Uri.ToString();
+                        requestValue["uri"] = parameters.Action.ErrorAction.Request.Uri.AbsoluteUri;
                         
                         requestValue["method"] = parameters.Action.ErrorAction.Request.Method;
                         
@@ -270,7 +282,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                     JObject requestValue2 = new JObject();
                     actionValue["request"] = requestValue2;
                     
-                    requestValue2["uri"] = parameters.Action.Request.Uri.ToString();
+                    requestValue2["uri"] = parameters.Action.Request.Uri.AbsoluteUri;
                     
                     requestValue2["method"] = parameters.Action.Request.Method;
                     
@@ -439,7 +451,11 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobCreateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -449,14 +465,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             jobInstance.Id = idInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["startTime"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             jobInstance.StartTime = startTimeInstance;
                         }
                         
@@ -469,7 +485,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken typeValue = actionValue2["type"];
                             if (typeValue != null && typeValue.Type != JTokenType.Null)
                             {
-                                JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                 actionInstance.Type = typeInstance;
                             }
                             
@@ -482,21 +498,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken retryTypeValue = retryPolicyValue2["retryType"];
                                 if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                 {
-                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                     retryPolicyInstance.RetryType = retryTypeInstance;
                                 }
                                 
                                 JToken retryIntervalValue = retryPolicyValue2["retryInterval"];
                                 if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                 {
-                                    TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                    TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                     retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                 }
                                 
                                 JToken retryCountValue = retryPolicyValue2["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     retryPolicyInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -510,7 +526,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken typeValue2 = errorActionValue2["type"];
                                 if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                 {
-                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                     errorActionInstance.Type = typeInstance2;
                                 }
                                 
@@ -523,24 +539,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken uriValue = requestValue3["uri"];
                                     if (uriValue != null && uriValue.Type != JTokenType.Null)
                                     {
-                                        Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                        Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                         requestInstance.Uri = uriInstance;
                                     }
                                     
                                     JToken methodValue = requestValue3["method"];
                                     if (methodValue != null && methodValue.Type != JTokenType.Null)
                                     {
-                                        string methodInstance = (string)methodValue;
+                                        string methodInstance = ((string)methodValue);
                                         requestInstance.Method = methodInstance;
                                     }
                                     
-                                    JToken headersSequenceElement = (JToken)requestValue3["headers"];
+                                    JToken headersSequenceElement = ((JToken)requestValue3["headers"]);
                                     if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                     {
                                         foreach (JProperty property in headersSequenceElement)
                                         {
-                                            string headersKey3 = (string)property.Name;
-                                            string headersValue3 = (string)property.Value;
+                                            string headersKey3 = ((string)property.Name);
+                                            string headersValue3 = ((string)property.Value);
                                             requestInstance.Headers.Add(headersKey3, headersValue3);
                                         }
                                     }
@@ -548,7 +564,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken bodyValue = requestValue3["body"];
                                     if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                     {
-                                        string bodyInstance = (string)bodyValue;
+                                        string bodyInstance = ((string)bodyValue);
                                         requestInstance.Body = bodyInstance;
                                     }
                                 }
@@ -562,28 +578,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken storageAccountValue = queueMessageValue3["storageAccount"];
                                     if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                     {
-                                        string storageAccountInstance = (string)storageAccountValue;
+                                        string storageAccountInstance = ((string)storageAccountValue);
                                         queueMessageInstance.StorageAccountName = storageAccountInstance;
                                     }
                                     
                                     JToken queueNameValue = queueMessageValue3["queueName"];
                                     if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                     {
-                                        string queueNameInstance = (string)queueNameValue;
+                                        string queueNameInstance = ((string)queueNameValue);
                                         queueMessageInstance.QueueName = queueNameInstance;
                                     }
                                     
                                     JToken sasTokenValue = queueMessageValue3["sasToken"];
                                     if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                     {
-                                        string sasTokenInstance = (string)sasTokenValue;
+                                        string sasTokenInstance = ((string)sasTokenValue);
                                         queueMessageInstance.SasToken = sasTokenInstance;
                                     }
                                     
                                     JToken messageValue = queueMessageValue3["message"];
                                     if (messageValue != null && messageValue.Type != JTokenType.Null)
                                     {
-                                        string messageInstance = (string)messageValue;
+                                        string messageInstance = ((string)messageValue);
                                         queueMessageInstance.Message = messageInstance;
                                     }
                                 }
@@ -598,24 +614,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken uriValue2 = requestValue4["uri"];
                                 if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                 {
-                                    Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                    Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                     requestInstance2.Uri = uriInstance2;
                                 }
                                 
                                 JToken methodValue2 = requestValue4["method"];
                                 if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                 {
-                                    string methodInstance2 = (string)methodValue2;
+                                    string methodInstance2 = ((string)methodValue2);
                                     requestInstance2.Method = methodInstance2;
                                 }
                                 
-                                JToken headersSequenceElement2 = (JToken)requestValue4["headers"];
+                                JToken headersSequenceElement2 = ((JToken)requestValue4["headers"]);
                                 if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                 {
                                     foreach (JProperty property2 in headersSequenceElement2)
                                     {
-                                        string headersKey4 = (string)property2.Name;
-                                        string headersValue4 = (string)property2.Value;
+                                        string headersKey4 = ((string)property2.Name);
+                                        string headersValue4 = ((string)property2.Value);
                                         requestInstance2.Headers.Add(headersKey4, headersValue4);
                                     }
                                 }
@@ -623,7 +639,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken bodyValue2 = requestValue4["body"];
                                 if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                 {
-                                    string bodyInstance2 = (string)bodyValue2;
+                                    string bodyInstance2 = ((string)bodyValue2);
                                     requestInstance2.Body = bodyInstance2;
                                 }
                             }
@@ -637,28 +653,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken storageAccountValue2 = queueMessageValue4["storageAccount"];
                                 if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                 {
-                                    string storageAccountInstance2 = (string)storageAccountValue2;
+                                    string storageAccountInstance2 = ((string)storageAccountValue2);
                                     queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                 }
                                 
                                 JToken queueNameValue2 = queueMessageValue4["queueName"];
                                 if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                 {
-                                    string queueNameInstance2 = (string)queueNameValue2;
+                                    string queueNameInstance2 = ((string)queueNameValue2);
                                     queueMessageInstance2.QueueName = queueNameInstance2;
                                 }
                                 
                                 JToken sasTokenValue2 = queueMessageValue4["sasToken"];
                                 if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                 {
-                                    string sasTokenInstance2 = (string)sasTokenValue2;
+                                    string sasTokenInstance2 = ((string)sasTokenValue2);
                                     queueMessageInstance2.SasToken = sasTokenInstance2;
                                 }
                                 
                                 JToken messageValue2 = queueMessageValue4["message"];
                                 if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                 {
-                                    string messageInstance2 = (string)messageValue2;
+                                    string messageInstance2 = ((string)messageValue2);
                                     queueMessageInstance2.Message = messageInstance2;
                                 }
                             }
@@ -673,28 +689,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken frequencyValue = recurrenceValue2["frequency"];
                             if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                             {
-                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                 recurrenceInstance.Frequency = frequencyInstance;
                             }
                             
                             JToken intervalValue = recurrenceValue2["interval"];
                             if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                             {
-                                int intervalInstance = (int)intervalValue;
+                                int intervalInstance = ((int)intervalValue);
                                 recurrenceInstance.Interval = intervalInstance;
                             }
                             
                             JToken countValue = recurrenceValue2["count"];
                             if (countValue != null && countValue.Type != JTokenType.Null)
                             {
-                                int countInstance = (int)countValue;
+                                int countInstance = ((int)countValue);
                                 recurrenceInstance.Count = countInstance;
                             }
                             
                             JToken endTimeValue = recurrenceValue2["endTime"];
                             if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime endTimeInstance = (DateTime)endTimeValue;
+                                DateTime endTimeInstance = ((DateTime)endTimeValue);
                                 recurrenceInstance.EndTime = endTimeInstance;
                             }
                             
@@ -707,52 +723,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken minutesArray2 = scheduleValue2["minutes"];
                                 if (minutesArray2 != null && minutesArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken minutesValue in (JArray)minutesArray2)
+                                    foreach (JToken minutesValue in ((JArray)minutesArray2))
                                     {
-                                        scheduleInstance.Minutes.Add((int)minutesValue);
+                                        scheduleInstance.Minutes.Add(((int)minutesValue));
                                     }
                                 }
                                 
                                 JToken hoursArray2 = scheduleValue2["hours"];
                                 if (hoursArray2 != null && hoursArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken hoursValue in (JArray)hoursArray2)
+                                    foreach (JToken hoursValue in ((JArray)hoursArray2))
                                     {
-                                        scheduleInstance.Hours.Add((int)hoursValue);
+                                        scheduleInstance.Hours.Add(((int)hoursValue));
                                     }
                                 }
                                 
                                 JToken weekDaysArray2 = scheduleValue2["weekDays"];
                                 if (weekDaysArray2 != null && weekDaysArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken weekDaysValue in (JArray)weekDaysArray2)
+                                    foreach (JToken weekDaysValue in ((JArray)weekDaysArray2))
                                     {
-                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                     }
                                 }
                                 
                                 JToken monthsArray2 = scheduleValue2["months"];
                                 if (monthsArray2 != null && monthsArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthsValue in (JArray)monthsArray2)
+                                    foreach (JToken monthsValue in ((JArray)monthsArray2))
                                     {
-                                        scheduleInstance.Months.Add((int)monthsValue);
+                                        scheduleInstance.Months.Add(((int)monthsValue));
                                     }
                                 }
                                 
                                 JToken monthDaysArray2 = scheduleValue2["monthDays"];
                                 if (monthDaysArray2 != null && monthDaysArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthDaysValue in (JArray)monthDaysArray2)
+                                    foreach (JToken monthDaysValue in ((JArray)monthDaysArray2))
                                     {
-                                        scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                        scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                     }
                                 }
                                 
                                 JToken monthlyOccurrencesArray2 = scheduleValue2["monthlyOccurrences"];
                                 if (monthlyOccurrencesArray2 != null && monthlyOccurrencesArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray2)
+                                    foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray2))
                                     {
                                         JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                         scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -760,14 +776,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken dayValue = monthlyOccurrencesValue["day"];
                                         if (dayValue != null && dayValue.Type != JTokenType.Null)
                                         {
-                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                             jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                         }
                                         
                                         JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                         if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                         {
-                                            int occurrenceInstance = (int)occurrenceValue;
+                                            int occurrenceInstance = ((int)occurrenceValue);
                                             jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                         }
                                     }
@@ -784,35 +800,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                             if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                 statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                             }
                             
                             JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                             if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                 statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                             }
                             
                             JToken executionCountValue = statusValue["executionCount"];
                             if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                             {
-                                int executionCountInstance = (int)executionCountValue;
+                                int executionCountInstance = ((int)executionCountValue);
                                 statusInstance.ExecutionCount = executionCountInstance;
                             }
                             
                             JToken failureCountValue = statusValue["failureCount"];
                             if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                             {
-                                int failureCountInstance = (int)failureCountValue;
+                                int failureCountInstance = ((int)failureCountValue);
                                 statusInstance.FailureCount = failureCountInstance;
                             }
                             
                             JToken faultedCountValue = statusValue["faultedCount"];
                             if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                             {
-                                int faultedCountInstance = (int)faultedCountValue;
+                                int faultedCountInstance = ((int)faultedCountValue);
                                 statusInstance.FaultedCount = faultedCountInstance;
                             }
                         }
@@ -820,7 +836,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken stateValue = responseDoc["state"];
                         if (stateValue != null && stateValue.Type != JTokenType.Null)
                         {
-                            JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                            JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                             jobInstance.State = stateInstance;
                         }
                     }
@@ -859,11 +875,11 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// existing job, replacing its definition with that specified.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to create or update.
+        /// Required. Id of the job to create or update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters specifying the job definition for a CreateOrUpdate Job
-        /// operation.
+        /// Required. Parameters specifying the job definition for a
+        /// CreateOrUpdate Job operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -963,8 +979,19 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "?";
+            url = url + "api-version=2014-04-01";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1028,7 +1055,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JObject requestValue = new JObject();
                         errorActionValue["request"] = requestValue;
                         
-                        requestValue["uri"] = parameters.Action.ErrorAction.Request.Uri.ToString();
+                        requestValue["uri"] = parameters.Action.ErrorAction.Request.Uri.AbsoluteUri;
                         
                         requestValue["method"] = parameters.Action.ErrorAction.Request.Method;
                         
@@ -1070,7 +1097,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                     JObject requestValue2 = new JObject();
                     actionValue["request"] = requestValue2;
                     
-                    requestValue2["uri"] = parameters.Action.Request.Uri.ToString();
+                    requestValue2["uri"] = parameters.Action.Request.Uri.AbsoluteUri;
                     
                     requestValue2["method"] = parameters.Action.Request.Method;
                     
@@ -1239,7 +1266,11 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobCreateOrUpdateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -1249,14 +1280,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             jobInstance.Id = idInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["startTime"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             jobInstance.StartTime = startTimeInstance;
                         }
                         
@@ -1269,7 +1300,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken typeValue = actionValue2["type"];
                             if (typeValue != null && typeValue.Type != JTokenType.Null)
                             {
-                                JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                 actionInstance.Type = typeInstance;
                             }
                             
@@ -1282,21 +1313,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken retryTypeValue = retryPolicyValue2["retryType"];
                                 if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                 {
-                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                     retryPolicyInstance.RetryType = retryTypeInstance;
                                 }
                                 
                                 JToken retryIntervalValue = retryPolicyValue2["retryInterval"];
                                 if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                 {
-                                    TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                    TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                     retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                 }
                                 
                                 JToken retryCountValue = retryPolicyValue2["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     retryPolicyInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -1310,7 +1341,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken typeValue2 = errorActionValue2["type"];
                                 if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                 {
-                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                     errorActionInstance.Type = typeInstance2;
                                 }
                                 
@@ -1323,24 +1354,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken uriValue = requestValue3["uri"];
                                     if (uriValue != null && uriValue.Type != JTokenType.Null)
                                     {
-                                        Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                        Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                         requestInstance.Uri = uriInstance;
                                     }
                                     
                                     JToken methodValue = requestValue3["method"];
                                     if (methodValue != null && methodValue.Type != JTokenType.Null)
                                     {
-                                        string methodInstance = (string)methodValue;
+                                        string methodInstance = ((string)methodValue);
                                         requestInstance.Method = methodInstance;
                                     }
                                     
-                                    JToken headersSequenceElement = (JToken)requestValue3["headers"];
+                                    JToken headersSequenceElement = ((JToken)requestValue3["headers"]);
                                     if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                     {
                                         foreach (JProperty property in headersSequenceElement)
                                         {
-                                            string headersKey3 = (string)property.Name;
-                                            string headersValue3 = (string)property.Value;
+                                            string headersKey3 = ((string)property.Name);
+                                            string headersValue3 = ((string)property.Value);
                                             requestInstance.Headers.Add(headersKey3, headersValue3);
                                         }
                                     }
@@ -1348,7 +1379,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken bodyValue = requestValue3["body"];
                                     if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                     {
-                                        string bodyInstance = (string)bodyValue;
+                                        string bodyInstance = ((string)bodyValue);
                                         requestInstance.Body = bodyInstance;
                                     }
                                 }
@@ -1362,28 +1393,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken storageAccountValue = queueMessageValue3["storageAccount"];
                                     if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                     {
-                                        string storageAccountInstance = (string)storageAccountValue;
+                                        string storageAccountInstance = ((string)storageAccountValue);
                                         queueMessageInstance.StorageAccountName = storageAccountInstance;
                                     }
                                     
                                     JToken queueNameValue = queueMessageValue3["queueName"];
                                     if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                     {
-                                        string queueNameInstance = (string)queueNameValue;
+                                        string queueNameInstance = ((string)queueNameValue);
                                         queueMessageInstance.QueueName = queueNameInstance;
                                     }
                                     
                                     JToken sasTokenValue = queueMessageValue3["sasToken"];
                                     if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                     {
-                                        string sasTokenInstance = (string)sasTokenValue;
+                                        string sasTokenInstance = ((string)sasTokenValue);
                                         queueMessageInstance.SasToken = sasTokenInstance;
                                     }
                                     
                                     JToken messageValue = queueMessageValue3["message"];
                                     if (messageValue != null && messageValue.Type != JTokenType.Null)
                                     {
-                                        string messageInstance = (string)messageValue;
+                                        string messageInstance = ((string)messageValue);
                                         queueMessageInstance.Message = messageInstance;
                                     }
                                 }
@@ -1398,24 +1429,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken uriValue2 = requestValue4["uri"];
                                 if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                 {
-                                    Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                    Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                     requestInstance2.Uri = uriInstance2;
                                 }
                                 
                                 JToken methodValue2 = requestValue4["method"];
                                 if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                 {
-                                    string methodInstance2 = (string)methodValue2;
+                                    string methodInstance2 = ((string)methodValue2);
                                     requestInstance2.Method = methodInstance2;
                                 }
                                 
-                                JToken headersSequenceElement2 = (JToken)requestValue4["headers"];
+                                JToken headersSequenceElement2 = ((JToken)requestValue4["headers"]);
                                 if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                 {
                                     foreach (JProperty property2 in headersSequenceElement2)
                                     {
-                                        string headersKey4 = (string)property2.Name;
-                                        string headersValue4 = (string)property2.Value;
+                                        string headersKey4 = ((string)property2.Name);
+                                        string headersValue4 = ((string)property2.Value);
                                         requestInstance2.Headers.Add(headersKey4, headersValue4);
                                     }
                                 }
@@ -1423,7 +1454,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken bodyValue2 = requestValue4["body"];
                                 if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                 {
-                                    string bodyInstance2 = (string)bodyValue2;
+                                    string bodyInstance2 = ((string)bodyValue2);
                                     requestInstance2.Body = bodyInstance2;
                                 }
                             }
@@ -1437,28 +1468,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken storageAccountValue2 = queueMessageValue4["storageAccount"];
                                 if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                 {
-                                    string storageAccountInstance2 = (string)storageAccountValue2;
+                                    string storageAccountInstance2 = ((string)storageAccountValue2);
                                     queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                 }
                                 
                                 JToken queueNameValue2 = queueMessageValue4["queueName"];
                                 if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                 {
-                                    string queueNameInstance2 = (string)queueNameValue2;
+                                    string queueNameInstance2 = ((string)queueNameValue2);
                                     queueMessageInstance2.QueueName = queueNameInstance2;
                                 }
                                 
                                 JToken sasTokenValue2 = queueMessageValue4["sasToken"];
                                 if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                 {
-                                    string sasTokenInstance2 = (string)sasTokenValue2;
+                                    string sasTokenInstance2 = ((string)sasTokenValue2);
                                     queueMessageInstance2.SasToken = sasTokenInstance2;
                                 }
                                 
                                 JToken messageValue2 = queueMessageValue4["message"];
                                 if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                 {
-                                    string messageInstance2 = (string)messageValue2;
+                                    string messageInstance2 = ((string)messageValue2);
                                     queueMessageInstance2.Message = messageInstance2;
                                 }
                             }
@@ -1473,28 +1504,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken frequencyValue = recurrenceValue2["frequency"];
                             if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                             {
-                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                 recurrenceInstance.Frequency = frequencyInstance;
                             }
                             
                             JToken intervalValue = recurrenceValue2["interval"];
                             if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                             {
-                                int intervalInstance = (int)intervalValue;
+                                int intervalInstance = ((int)intervalValue);
                                 recurrenceInstance.Interval = intervalInstance;
                             }
                             
                             JToken countValue = recurrenceValue2["count"];
                             if (countValue != null && countValue.Type != JTokenType.Null)
                             {
-                                int countInstance = (int)countValue;
+                                int countInstance = ((int)countValue);
                                 recurrenceInstance.Count = countInstance;
                             }
                             
                             JToken endTimeValue = recurrenceValue2["endTime"];
                             if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime endTimeInstance = (DateTime)endTimeValue;
+                                DateTime endTimeInstance = ((DateTime)endTimeValue);
                                 recurrenceInstance.EndTime = endTimeInstance;
                             }
                             
@@ -1507,52 +1538,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken minutesArray2 = scheduleValue2["minutes"];
                                 if (minutesArray2 != null && minutesArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken minutesValue in (JArray)minutesArray2)
+                                    foreach (JToken minutesValue in ((JArray)minutesArray2))
                                     {
-                                        scheduleInstance.Minutes.Add((int)minutesValue);
+                                        scheduleInstance.Minutes.Add(((int)minutesValue));
                                     }
                                 }
                                 
                                 JToken hoursArray2 = scheduleValue2["hours"];
                                 if (hoursArray2 != null && hoursArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken hoursValue in (JArray)hoursArray2)
+                                    foreach (JToken hoursValue in ((JArray)hoursArray2))
                                     {
-                                        scheduleInstance.Hours.Add((int)hoursValue);
+                                        scheduleInstance.Hours.Add(((int)hoursValue));
                                     }
                                 }
                                 
                                 JToken weekDaysArray2 = scheduleValue2["weekDays"];
                                 if (weekDaysArray2 != null && weekDaysArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken weekDaysValue in (JArray)weekDaysArray2)
+                                    foreach (JToken weekDaysValue in ((JArray)weekDaysArray2))
                                     {
-                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                     }
                                 }
                                 
                                 JToken monthsArray2 = scheduleValue2["months"];
                                 if (monthsArray2 != null && monthsArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthsValue in (JArray)monthsArray2)
+                                    foreach (JToken monthsValue in ((JArray)monthsArray2))
                                     {
-                                        scheduleInstance.Months.Add((int)monthsValue);
+                                        scheduleInstance.Months.Add(((int)monthsValue));
                                     }
                                 }
                                 
                                 JToken monthDaysArray2 = scheduleValue2["monthDays"];
                                 if (monthDaysArray2 != null && monthDaysArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthDaysValue in (JArray)monthDaysArray2)
+                                    foreach (JToken monthDaysValue in ((JArray)monthDaysArray2))
                                     {
-                                        scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                        scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                     }
                                 }
                                 
                                 JToken monthlyOccurrencesArray2 = scheduleValue2["monthlyOccurrences"];
                                 if (monthlyOccurrencesArray2 != null && monthlyOccurrencesArray2.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray2)
+                                    foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray2))
                                     {
                                         JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                         scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -1560,14 +1591,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken dayValue = monthlyOccurrencesValue["day"];
                                         if (dayValue != null && dayValue.Type != JTokenType.Null)
                                         {
-                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                             jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                         }
                                         
                                         JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                         if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                         {
-                                            int occurrenceInstance = (int)occurrenceValue;
+                                            int occurrenceInstance = ((int)occurrenceValue);
                                             jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                         }
                                     }
@@ -1584,35 +1615,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                             if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                 statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                             }
                             
                             JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                             if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                 statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                             }
                             
                             JToken executionCountValue = statusValue["executionCount"];
                             if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                             {
-                                int executionCountInstance = (int)executionCountValue;
+                                int executionCountInstance = ((int)executionCountValue);
                                 statusInstance.ExecutionCount = executionCountInstance;
                             }
                             
                             JToken failureCountValue = statusValue["failureCount"];
                             if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                             {
-                                int failureCountInstance = (int)failureCountValue;
+                                int failureCountInstance = ((int)failureCountValue);
                                 statusInstance.FailureCount = failureCountInstance;
                             }
                             
                             JToken faultedCountValue = statusValue["faultedCount"];
                             if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                             {
-                                int faultedCountInstance = (int)faultedCountValue;
+                                int faultedCountInstance = ((int)faultedCountValue);
                                 statusInstance.FaultedCount = faultedCountInstance;
                             }
                         }
@@ -1620,7 +1651,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken stateValue = responseDoc["state"];
                         if (stateValue != null && stateValue.Type != JTokenType.Null)
                         {
-                            JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                            JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                             jobInstance.State = stateInstance;
                         }
                     }
@@ -1658,7 +1689,7 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Deletes a job.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to delete.
+        /// Required. Id of the job to delete.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1687,8 +1718,19 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "?";
+            url = url + "api-version=2014-04-01";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1767,7 +1809,7 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Get the definition and status of a job.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to get.
+        /// Required. Id of the job to get.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1795,8 +1837,19 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "?";
+            url = url + "api-version=2014-04-01";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1845,7 +1898,11 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobGetResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -1855,14 +1912,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             jobInstance.Id = idInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["startTime"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             jobInstance.StartTime = startTimeInstance;
                         }
                         
@@ -1875,7 +1932,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken typeValue = actionValue["type"];
                             if (typeValue != null && typeValue.Type != JTokenType.Null)
                             {
-                                JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                 actionInstance.Type = typeInstance;
                             }
                             
@@ -1888,21 +1945,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken retryTypeValue = retryPolicyValue["retryType"];
                                 if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                 {
-                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                     retryPolicyInstance.RetryType = retryTypeInstance;
                                 }
                                 
                                 JToken retryIntervalValue = retryPolicyValue["retryInterval"];
                                 if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                 {
-                                    TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                    TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                     retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                 }
                                 
                                 JToken retryCountValue = retryPolicyValue["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     retryPolicyInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -1916,7 +1973,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken typeValue2 = errorActionValue["type"];
                                 if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                 {
-                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                     errorActionInstance.Type = typeInstance2;
                                 }
                                 
@@ -1929,24 +1986,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken uriValue = requestValue["uri"];
                                     if (uriValue != null && uriValue.Type != JTokenType.Null)
                                     {
-                                        Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                        Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                         requestInstance.Uri = uriInstance;
                                     }
                                     
                                     JToken methodValue = requestValue["method"];
                                     if (methodValue != null && methodValue.Type != JTokenType.Null)
                                     {
-                                        string methodInstance = (string)methodValue;
+                                        string methodInstance = ((string)methodValue);
                                         requestInstance.Method = methodInstance;
                                     }
                                     
-                                    JToken headersSequenceElement = (JToken)requestValue["headers"];
+                                    JToken headersSequenceElement = ((JToken)requestValue["headers"]);
                                     if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                     {
                                         foreach (JProperty property in headersSequenceElement)
                                         {
-                                            string headersKey = (string)property.Name;
-                                            string headersValue = (string)property.Value;
+                                            string headersKey = ((string)property.Name);
+                                            string headersValue = ((string)property.Value);
                                             requestInstance.Headers.Add(headersKey, headersValue);
                                         }
                                     }
@@ -1954,7 +2011,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken bodyValue = requestValue["body"];
                                     if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                     {
-                                        string bodyInstance = (string)bodyValue;
+                                        string bodyInstance = ((string)bodyValue);
                                         requestInstance.Body = bodyInstance;
                                     }
                                 }
@@ -1968,28 +2025,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken storageAccountValue = queueMessageValue["storageAccount"];
                                     if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                     {
-                                        string storageAccountInstance = (string)storageAccountValue;
+                                        string storageAccountInstance = ((string)storageAccountValue);
                                         queueMessageInstance.StorageAccountName = storageAccountInstance;
                                     }
                                     
                                     JToken queueNameValue = queueMessageValue["queueName"];
                                     if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                     {
-                                        string queueNameInstance = (string)queueNameValue;
+                                        string queueNameInstance = ((string)queueNameValue);
                                         queueMessageInstance.QueueName = queueNameInstance;
                                     }
                                     
                                     JToken sasTokenValue = queueMessageValue["sasToken"];
                                     if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                     {
-                                        string sasTokenInstance = (string)sasTokenValue;
+                                        string sasTokenInstance = ((string)sasTokenValue);
                                         queueMessageInstance.SasToken = sasTokenInstance;
                                     }
                                     
                                     JToken messageValue = queueMessageValue["message"];
                                     if (messageValue != null && messageValue.Type != JTokenType.Null)
                                     {
-                                        string messageInstance = (string)messageValue;
+                                        string messageInstance = ((string)messageValue);
                                         queueMessageInstance.Message = messageInstance;
                                     }
                                 }
@@ -2004,24 +2061,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken uriValue2 = requestValue2["uri"];
                                 if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                 {
-                                    Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                    Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                     requestInstance2.Uri = uriInstance2;
                                 }
                                 
                                 JToken methodValue2 = requestValue2["method"];
                                 if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                 {
-                                    string methodInstance2 = (string)methodValue2;
+                                    string methodInstance2 = ((string)methodValue2);
                                     requestInstance2.Method = methodInstance2;
                                 }
                                 
-                                JToken headersSequenceElement2 = (JToken)requestValue2["headers"];
+                                JToken headersSequenceElement2 = ((JToken)requestValue2["headers"]);
                                 if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                 {
                                     foreach (JProperty property2 in headersSequenceElement2)
                                     {
-                                        string headersKey2 = (string)property2.Name;
-                                        string headersValue2 = (string)property2.Value;
+                                        string headersKey2 = ((string)property2.Name);
+                                        string headersValue2 = ((string)property2.Value);
                                         requestInstance2.Headers.Add(headersKey2, headersValue2);
                                     }
                                 }
@@ -2029,7 +2086,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken bodyValue2 = requestValue2["body"];
                                 if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                 {
-                                    string bodyInstance2 = (string)bodyValue2;
+                                    string bodyInstance2 = ((string)bodyValue2);
                                     requestInstance2.Body = bodyInstance2;
                                 }
                             }
@@ -2043,28 +2100,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken storageAccountValue2 = queueMessageValue2["storageAccount"];
                                 if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                 {
-                                    string storageAccountInstance2 = (string)storageAccountValue2;
+                                    string storageAccountInstance2 = ((string)storageAccountValue2);
                                     queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                 }
                                 
                                 JToken queueNameValue2 = queueMessageValue2["queueName"];
                                 if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                 {
-                                    string queueNameInstance2 = (string)queueNameValue2;
+                                    string queueNameInstance2 = ((string)queueNameValue2);
                                     queueMessageInstance2.QueueName = queueNameInstance2;
                                 }
                                 
                                 JToken sasTokenValue2 = queueMessageValue2["sasToken"];
                                 if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                 {
-                                    string sasTokenInstance2 = (string)sasTokenValue2;
+                                    string sasTokenInstance2 = ((string)sasTokenValue2);
                                     queueMessageInstance2.SasToken = sasTokenInstance2;
                                 }
                                 
                                 JToken messageValue2 = queueMessageValue2["message"];
                                 if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                 {
-                                    string messageInstance2 = (string)messageValue2;
+                                    string messageInstance2 = ((string)messageValue2);
                                     queueMessageInstance2.Message = messageInstance2;
                                 }
                             }
@@ -2079,28 +2136,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken frequencyValue = recurrenceValue["frequency"];
                             if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                             {
-                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                 recurrenceInstance.Frequency = frequencyInstance;
                             }
                             
                             JToken intervalValue = recurrenceValue["interval"];
                             if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                             {
-                                int intervalInstance = (int)intervalValue;
+                                int intervalInstance = ((int)intervalValue);
                                 recurrenceInstance.Interval = intervalInstance;
                             }
                             
                             JToken countValue = recurrenceValue["count"];
                             if (countValue != null && countValue.Type != JTokenType.Null)
                             {
-                                int countInstance = (int)countValue;
+                                int countInstance = ((int)countValue);
                                 recurrenceInstance.Count = countInstance;
                             }
                             
                             JToken endTimeValue = recurrenceValue["endTime"];
                             if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime endTimeInstance = (DateTime)endTimeValue;
+                                DateTime endTimeInstance = ((DateTime)endTimeValue);
                                 recurrenceInstance.EndTime = endTimeInstance;
                             }
                             
@@ -2113,52 +2170,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken minutesArray = scheduleValue["minutes"];
                                 if (minutesArray != null && minutesArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken minutesValue in (JArray)minutesArray)
+                                    foreach (JToken minutesValue in ((JArray)minutesArray))
                                     {
-                                        scheduleInstance.Minutes.Add((int)minutesValue);
+                                        scheduleInstance.Minutes.Add(((int)minutesValue));
                                     }
                                 }
                                 
                                 JToken hoursArray = scheduleValue["hours"];
                                 if (hoursArray != null && hoursArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken hoursValue in (JArray)hoursArray)
+                                    foreach (JToken hoursValue in ((JArray)hoursArray))
                                     {
-                                        scheduleInstance.Hours.Add((int)hoursValue);
+                                        scheduleInstance.Hours.Add(((int)hoursValue));
                                     }
                                 }
                                 
                                 JToken weekDaysArray = scheduleValue["weekDays"];
                                 if (weekDaysArray != null && weekDaysArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken weekDaysValue in (JArray)weekDaysArray)
+                                    foreach (JToken weekDaysValue in ((JArray)weekDaysArray))
                                     {
-                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                     }
                                 }
                                 
                                 JToken monthsArray = scheduleValue["months"];
                                 if (monthsArray != null && monthsArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthsValue in (JArray)monthsArray)
+                                    foreach (JToken monthsValue in ((JArray)monthsArray))
                                     {
-                                        scheduleInstance.Months.Add((int)monthsValue);
+                                        scheduleInstance.Months.Add(((int)monthsValue));
                                     }
                                 }
                                 
                                 JToken monthDaysArray = scheduleValue["monthDays"];
                                 if (monthDaysArray != null && monthDaysArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthDaysValue in (JArray)monthDaysArray)
+                                    foreach (JToken monthDaysValue in ((JArray)monthDaysArray))
                                     {
-                                        scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                        scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                     }
                                 }
                                 
                                 JToken monthlyOccurrencesArray = scheduleValue["monthlyOccurrences"];
                                 if (monthlyOccurrencesArray != null && monthlyOccurrencesArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray)
+                                    foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray))
                                     {
                                         JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                         scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -2166,14 +2223,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken dayValue = monthlyOccurrencesValue["day"];
                                         if (dayValue != null && dayValue.Type != JTokenType.Null)
                                         {
-                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                             jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                         }
                                         
                                         JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                         if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                         {
-                                            int occurrenceInstance = (int)occurrenceValue;
+                                            int occurrenceInstance = ((int)occurrenceValue);
                                             jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                         }
                                     }
@@ -2190,35 +2247,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                             if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                 statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                             }
                             
                             JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                             if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                 statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                             }
                             
                             JToken executionCountValue = statusValue["executionCount"];
                             if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                             {
-                                int executionCountInstance = (int)executionCountValue;
+                                int executionCountInstance = ((int)executionCountValue);
                                 statusInstance.ExecutionCount = executionCountInstance;
                             }
                             
                             JToken failureCountValue = statusValue["failureCount"];
                             if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                             {
-                                int failureCountInstance = (int)failureCountValue;
+                                int failureCountInstance = ((int)failureCountValue);
                                 statusInstance.FailureCount = failureCountInstance;
                             }
                             
                             JToken faultedCountValue = statusValue["faultedCount"];
                             if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                             {
-                                int faultedCountInstance = (int)faultedCountValue;
+                                int faultedCountInstance = ((int)faultedCountValue);
                                 statusInstance.FaultedCount = faultedCountInstance;
                             }
                         }
@@ -2226,7 +2283,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken stateValue = responseDoc["state"];
                         if (stateValue != null && stateValue.Type != JTokenType.Null)
                         {
-                            JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                            JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                             jobInstance.State = stateInstance;
                         }
                     }
@@ -2264,10 +2321,10 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Get the execution history of a Job.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History operation.
+        /// Required. Parameters supplied to the Get Job History operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2300,10 +2357,21 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "/history?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "/history?";
+            url = url + "api-version=2014-04-01";
             url = url + "&$skip=" + Uri.EscapeUriString(parameters.Skip.ToString());
             url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.ToString());
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2352,14 +2420,18 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobGetHistoryResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken jobHistoryArray = responseDoc;
                         if (jobHistoryArray != null && jobHistoryArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken jobHistoryValue in (JArray)jobHistoryArray)
+                            foreach (JToken jobHistoryValue in ((JArray)jobHistoryArray))
                             {
                                 JobGetHistoryResponse.JobHistoryEntry jobHistoryEntryInstance = new JobGetHistoryResponse.JobHistoryEntry();
                                 result.JobHistory.Add(jobHistoryEntryInstance);
@@ -2367,70 +2439,70 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken jobIdValue = jobHistoryValue["jobId"];
                                 if (jobIdValue != null && jobIdValue.Type != JTokenType.Null)
                                 {
-                                    string jobIdInstance = (string)jobIdValue;
+                                    string jobIdInstance = ((string)jobIdValue);
                                     jobHistoryEntryInstance.Id = jobIdInstance;
                                 }
                                 
                                 JToken timestampValue = jobHistoryValue["timestamp"];
                                 if (timestampValue != null && timestampValue.Type != JTokenType.Null)
                                 {
-                                    DateTime timestampInstance = (DateTime)timestampValue;
+                                    DateTime timestampInstance = ((DateTime)timestampValue);
                                     jobHistoryEntryInstance.Timestamp = timestampInstance;
                                 }
                                 
                                 JToken startTimeValue = jobHistoryValue["startTime"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     jobHistoryEntryInstance.StartTime = startTimeInstance;
                                 }
                                 
                                 JToken endTimeValue = jobHistoryValue["endTime"];
                                 if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime endTimeInstance = (DateTime)endTimeValue;
+                                    DateTime endTimeInstance = ((DateTime)endTimeValue);
                                     jobHistoryEntryInstance.EndTime = endTimeInstance;
                                 }
                                 
                                 JToken stateValue = jobHistoryValue["state"];
                                 if (stateValue != null && stateValue.Type != JTokenType.Null)
                                 {
-                                    JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                                    JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                                     jobHistoryEntryInstance.State = stateInstance;
                                 }
                                 
                                 JToken messageValue = jobHistoryValue["message"];
                                 if (messageValue != null && messageValue.Type != JTokenType.Null)
                                 {
-                                    string messageInstance = (string)messageValue;
+                                    string messageInstance = ((string)messageValue);
                                     jobHistoryEntryInstance.Message = messageInstance;
                                 }
                                 
                                 JToken statusValue = jobHistoryValue["status"];
                                 if (statusValue != null && statusValue.Type != JTokenType.Null)
                                 {
-                                    JobHistoryStatus statusInstance = SchedulerClient.ParseJobHistoryStatus((string)statusValue);
+                                    JobHistoryStatus statusInstance = SchedulerClient.ParseJobHistoryStatus(((string)statusValue));
                                     jobHistoryEntryInstance.Status = statusInstance;
                                 }
                                 
                                 JToken actionNameValue = jobHistoryValue["actionName"];
                                 if (actionNameValue != null && actionNameValue.Type != JTokenType.Null)
                                 {
-                                    JobHistoryActionName actionNameInstance = SchedulerClient.ParseJobHistoryActionName((string)actionNameValue);
+                                    JobHistoryActionName actionNameInstance = SchedulerClient.ParseJobHistoryActionName(((string)actionNameValue));
                                     jobHistoryEntryInstance.ActionName = actionNameInstance;
                                 }
                                 
                                 JToken repeatCountValue = jobHistoryValue["repeatCount"];
                                 if (repeatCountValue != null && repeatCountValue.Type != JTokenType.Null)
                                 {
-                                    int repeatCountInstance = (int)repeatCountValue;
+                                    int repeatCountInstance = ((int)repeatCountValue);
                                     jobHistoryEntryInstance.RepeatCount = repeatCountInstance;
                                 }
                                 
                                 JToken retryCountValue = jobHistoryValue["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     jobHistoryEntryInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -2470,10 +2542,11 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Get the execution history of a Job with a filter on the job Status.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to get the history of.
+        /// Required. Id of the job to get the history of.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Job History With Filter operation.
+        /// Required. Parameters supplied to the Get Job History With Filter
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2506,11 +2579,22 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "/history?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "/history?";
+            url = url + "api-version=2014-04-01";
             url = url + "&$filter=status eq " + Uri.EscapeUriString(SchedulerClient.JobHistoryStatusToString(parameters.Status));
             url = url + "&$skip=" + Uri.EscapeUriString(parameters.Skip.ToString());
             url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.ToString());
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2559,14 +2643,18 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobGetHistoryResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken jobHistoryArray = responseDoc;
                         if (jobHistoryArray != null && jobHistoryArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken jobHistoryValue in (JArray)jobHistoryArray)
+                            foreach (JToken jobHistoryValue in ((JArray)jobHistoryArray))
                             {
                                 JobGetHistoryResponse.JobHistoryEntry jobHistoryEntryInstance = new JobGetHistoryResponse.JobHistoryEntry();
                                 result.JobHistory.Add(jobHistoryEntryInstance);
@@ -2574,70 +2662,70 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken jobIdValue = jobHistoryValue["jobId"];
                                 if (jobIdValue != null && jobIdValue.Type != JTokenType.Null)
                                 {
-                                    string jobIdInstance = (string)jobIdValue;
+                                    string jobIdInstance = ((string)jobIdValue);
                                     jobHistoryEntryInstance.Id = jobIdInstance;
                                 }
                                 
                                 JToken timestampValue = jobHistoryValue["timestamp"];
                                 if (timestampValue != null && timestampValue.Type != JTokenType.Null)
                                 {
-                                    DateTime timestampInstance = (DateTime)timestampValue;
+                                    DateTime timestampInstance = ((DateTime)timestampValue);
                                     jobHistoryEntryInstance.Timestamp = timestampInstance;
                                 }
                                 
                                 JToken startTimeValue = jobHistoryValue["startTime"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     jobHistoryEntryInstance.StartTime = startTimeInstance;
                                 }
                                 
                                 JToken endTimeValue = jobHistoryValue["endTime"];
                                 if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime endTimeInstance = (DateTime)endTimeValue;
+                                    DateTime endTimeInstance = ((DateTime)endTimeValue);
                                     jobHistoryEntryInstance.EndTime = endTimeInstance;
                                 }
                                 
                                 JToken stateValue = jobHistoryValue["state"];
                                 if (stateValue != null && stateValue.Type != JTokenType.Null)
                                 {
-                                    JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                                    JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                                     jobHistoryEntryInstance.State = stateInstance;
                                 }
                                 
                                 JToken messageValue = jobHistoryValue["message"];
                                 if (messageValue != null && messageValue.Type != JTokenType.Null)
                                 {
-                                    string messageInstance = (string)messageValue;
+                                    string messageInstance = ((string)messageValue);
                                     jobHistoryEntryInstance.Message = messageInstance;
                                 }
                                 
                                 JToken statusValue = jobHistoryValue["status"];
                                 if (statusValue != null && statusValue.Type != JTokenType.Null)
                                 {
-                                    JobHistoryStatus statusInstance = SchedulerClient.ParseJobHistoryStatus((string)statusValue);
+                                    JobHistoryStatus statusInstance = SchedulerClient.ParseJobHistoryStatus(((string)statusValue));
                                     jobHistoryEntryInstance.Status = statusInstance;
                                 }
                                 
                                 JToken actionNameValue = jobHistoryValue["actionName"];
                                 if (actionNameValue != null && actionNameValue.Type != JTokenType.Null)
                                 {
-                                    JobHistoryActionName actionNameInstance = SchedulerClient.ParseJobHistoryActionName((string)actionNameValue);
+                                    JobHistoryActionName actionNameInstance = SchedulerClient.ParseJobHistoryActionName(((string)actionNameValue));
                                     jobHistoryEntryInstance.ActionName = actionNameInstance;
                                 }
                                 
                                 JToken repeatCountValue = jobHistoryValue["repeatCount"];
                                 if (repeatCountValue != null && repeatCountValue.Type != JTokenType.Null)
                                 {
-                                    int repeatCountInstance = (int)repeatCountValue;
+                                    int repeatCountInstance = ((int)repeatCountValue);
                                     jobHistoryEntryInstance.RepeatCount = repeatCountInstance;
                                 }
                                 
                                 JToken retryCountValue = jobHistoryValue["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     jobHistoryEntryInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -2677,7 +2765,7 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Get the list of all jobs in a job collection.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs operation.
+        /// Required. Parameters supplied to the List Jobs operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2705,8 +2793,9 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs?";
+            url = url + "api-version=2014-04-01";
             if (parameters.Skip != null)
             {
                 url = url + "&$skip=" + Uri.EscapeUriString(parameters.Skip.Value.ToString());
@@ -2715,6 +2804,16 @@ namespace Microsoft.WindowsAzure.Scheduler
             {
                 url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.Value.ToString());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2763,14 +2862,18 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobListResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken jobsArray = responseDoc;
                         if (jobsArray != null && jobsArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken jobsValue in (JArray)jobsArray)
+                            foreach (JToken jobsValue in ((JArray)jobsArray))
                             {
                                 Job jobInstance = new Job();
                                 result.Jobs.Add(jobInstance);
@@ -2778,14 +2881,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken idValue = jobsValue["id"];
                                 if (idValue != null && idValue.Type != JTokenType.Null)
                                 {
-                                    string idInstance = (string)idValue;
+                                    string idInstance = ((string)idValue);
                                     jobInstance.Id = idInstance;
                                 }
                                 
                                 JToken startTimeValue = jobsValue["startTime"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     jobInstance.StartTime = startTimeInstance;
                                 }
                                 
@@ -2798,7 +2901,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken typeValue = actionValue["type"];
                                     if (typeValue != null && typeValue.Type != JTokenType.Null)
                                     {
-                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                         actionInstance.Type = typeInstance;
                                     }
                                     
@@ -2811,21 +2914,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken retryTypeValue = retryPolicyValue["retryType"];
                                         if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                         {
-                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                             retryPolicyInstance.RetryType = retryTypeInstance;
                                         }
                                         
                                         JToken retryIntervalValue = retryPolicyValue["retryInterval"];
                                         if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                         {
-                                            TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                            TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                             retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                         }
                                         
                                         JToken retryCountValue = retryPolicyValue["retryCount"];
                                         if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                         {
-                                            int retryCountInstance = (int)retryCountValue;
+                                            int retryCountInstance = ((int)retryCountValue);
                                             retryPolicyInstance.RetryCount = retryCountInstance;
                                         }
                                     }
@@ -2839,7 +2942,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken typeValue2 = errorActionValue["type"];
                                         if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                         {
-                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                             errorActionInstance.Type = typeInstance2;
                                         }
                                         
@@ -2852,24 +2955,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken uriValue = requestValue["uri"];
                                             if (uriValue != null && uriValue.Type != JTokenType.Null)
                                             {
-                                                Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                                Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                                 requestInstance.Uri = uriInstance;
                                             }
                                             
                                             JToken methodValue = requestValue["method"];
                                             if (methodValue != null && methodValue.Type != JTokenType.Null)
                                             {
-                                                string methodInstance = (string)methodValue;
+                                                string methodInstance = ((string)methodValue);
                                                 requestInstance.Method = methodInstance;
                                             }
                                             
-                                            JToken headersSequenceElement = (JToken)requestValue["headers"];
+                                            JToken headersSequenceElement = ((JToken)requestValue["headers"]);
                                             if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                             {
                                                 foreach (JProperty property in headersSequenceElement)
                                                 {
-                                                    string headersKey = (string)property.Name;
-                                                    string headersValue = (string)property.Value;
+                                                    string headersKey = ((string)property.Name);
+                                                    string headersValue = ((string)property.Value);
                                                     requestInstance.Headers.Add(headersKey, headersValue);
                                                 }
                                             }
@@ -2877,7 +2980,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken bodyValue = requestValue["body"];
                                             if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                             {
-                                                string bodyInstance = (string)bodyValue;
+                                                string bodyInstance = ((string)bodyValue);
                                                 requestInstance.Body = bodyInstance;
                                             }
                                         }
@@ -2891,28 +2994,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken storageAccountValue = queueMessageValue["storageAccount"];
                                             if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                             {
-                                                string storageAccountInstance = (string)storageAccountValue;
+                                                string storageAccountInstance = ((string)storageAccountValue);
                                                 queueMessageInstance.StorageAccountName = storageAccountInstance;
                                             }
                                             
                                             JToken queueNameValue = queueMessageValue["queueName"];
                                             if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                             {
-                                                string queueNameInstance = (string)queueNameValue;
+                                                string queueNameInstance = ((string)queueNameValue);
                                                 queueMessageInstance.QueueName = queueNameInstance;
                                             }
                                             
                                             JToken sasTokenValue = queueMessageValue["sasToken"];
                                             if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                             {
-                                                string sasTokenInstance = (string)sasTokenValue;
+                                                string sasTokenInstance = ((string)sasTokenValue);
                                                 queueMessageInstance.SasToken = sasTokenInstance;
                                             }
                                             
                                             JToken messageValue = queueMessageValue["message"];
                                             if (messageValue != null && messageValue.Type != JTokenType.Null)
                                             {
-                                                string messageInstance = (string)messageValue;
+                                                string messageInstance = ((string)messageValue);
                                                 queueMessageInstance.Message = messageInstance;
                                             }
                                         }
@@ -2927,24 +3030,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken uriValue2 = requestValue2["uri"];
                                         if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                         {
-                                            Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                            Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                             requestInstance2.Uri = uriInstance2;
                                         }
                                         
                                         JToken methodValue2 = requestValue2["method"];
                                         if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                         {
-                                            string methodInstance2 = (string)methodValue2;
+                                            string methodInstance2 = ((string)methodValue2);
                                             requestInstance2.Method = methodInstance2;
                                         }
                                         
-                                        JToken headersSequenceElement2 = (JToken)requestValue2["headers"];
+                                        JToken headersSequenceElement2 = ((JToken)requestValue2["headers"]);
                                         if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                         {
                                             foreach (JProperty property2 in headersSequenceElement2)
                                             {
-                                                string headersKey2 = (string)property2.Name;
-                                                string headersValue2 = (string)property2.Value;
+                                                string headersKey2 = ((string)property2.Name);
+                                                string headersValue2 = ((string)property2.Value);
                                                 requestInstance2.Headers.Add(headersKey2, headersValue2);
                                             }
                                         }
@@ -2952,7 +3055,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken bodyValue2 = requestValue2["body"];
                                         if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                         {
-                                            string bodyInstance2 = (string)bodyValue2;
+                                            string bodyInstance2 = ((string)bodyValue2);
                                             requestInstance2.Body = bodyInstance2;
                                         }
                                     }
@@ -2966,28 +3069,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken storageAccountValue2 = queueMessageValue2["storageAccount"];
                                         if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                         {
-                                            string storageAccountInstance2 = (string)storageAccountValue2;
+                                            string storageAccountInstance2 = ((string)storageAccountValue2);
                                             queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                         }
                                         
                                         JToken queueNameValue2 = queueMessageValue2["queueName"];
                                         if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                         {
-                                            string queueNameInstance2 = (string)queueNameValue2;
+                                            string queueNameInstance2 = ((string)queueNameValue2);
                                             queueMessageInstance2.QueueName = queueNameInstance2;
                                         }
                                         
                                         JToken sasTokenValue2 = queueMessageValue2["sasToken"];
                                         if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                         {
-                                            string sasTokenInstance2 = (string)sasTokenValue2;
+                                            string sasTokenInstance2 = ((string)sasTokenValue2);
                                             queueMessageInstance2.SasToken = sasTokenInstance2;
                                         }
                                         
                                         JToken messageValue2 = queueMessageValue2["message"];
                                         if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                         {
-                                            string messageInstance2 = (string)messageValue2;
+                                            string messageInstance2 = ((string)messageValue2);
                                             queueMessageInstance2.Message = messageInstance2;
                                         }
                                     }
@@ -3002,28 +3105,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken frequencyValue = recurrenceValue["frequency"];
                                     if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                                     {
-                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                         recurrenceInstance.Frequency = frequencyInstance;
                                     }
                                     
                                     JToken intervalValue = recurrenceValue["interval"];
                                     if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                                     {
-                                        int intervalInstance = (int)intervalValue;
+                                        int intervalInstance = ((int)intervalValue);
                                         recurrenceInstance.Interval = intervalInstance;
                                     }
                                     
                                     JToken countValue = recurrenceValue["count"];
                                     if (countValue != null && countValue.Type != JTokenType.Null)
                                     {
-                                        int countInstance = (int)countValue;
+                                        int countInstance = ((int)countValue);
                                         recurrenceInstance.Count = countInstance;
                                     }
                                     
                                     JToken endTimeValue = recurrenceValue["endTime"];
                                     if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime endTimeInstance = (DateTime)endTimeValue;
+                                        DateTime endTimeInstance = ((DateTime)endTimeValue);
                                         recurrenceInstance.EndTime = endTimeInstance;
                                     }
                                     
@@ -3036,52 +3139,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken minutesArray = scheduleValue["minutes"];
                                         if (minutesArray != null && minutesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken minutesValue in (JArray)minutesArray)
+                                            foreach (JToken minutesValue in ((JArray)minutesArray))
                                             {
-                                                scheduleInstance.Minutes.Add((int)minutesValue);
+                                                scheduleInstance.Minutes.Add(((int)minutesValue));
                                             }
                                         }
                                         
                                         JToken hoursArray = scheduleValue["hours"];
                                         if (hoursArray != null && hoursArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken hoursValue in (JArray)hoursArray)
+                                            foreach (JToken hoursValue in ((JArray)hoursArray))
                                             {
-                                                scheduleInstance.Hours.Add((int)hoursValue);
+                                                scheduleInstance.Hours.Add(((int)hoursValue));
                                             }
                                         }
                                         
                                         JToken weekDaysArray = scheduleValue["weekDays"];
                                         if (weekDaysArray != null && weekDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken weekDaysValue in (JArray)weekDaysArray)
+                                            foreach (JToken weekDaysValue in ((JArray)weekDaysArray))
                                             {
-                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                             }
                                         }
                                         
                                         JToken monthsArray = scheduleValue["months"];
                                         if (monthsArray != null && monthsArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthsValue in (JArray)monthsArray)
+                                            foreach (JToken monthsValue in ((JArray)monthsArray))
                                             {
-                                                scheduleInstance.Months.Add((int)monthsValue);
+                                                scheduleInstance.Months.Add(((int)monthsValue));
                                             }
                                         }
                                         
                                         JToken monthDaysArray = scheduleValue["monthDays"];
                                         if (monthDaysArray != null && monthDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthDaysValue in (JArray)monthDaysArray)
+                                            foreach (JToken monthDaysValue in ((JArray)monthDaysArray))
                                             {
-                                                scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                                scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                             }
                                         }
                                         
                                         JToken monthlyOccurrencesArray = scheduleValue["monthlyOccurrences"];
                                         if (monthlyOccurrencesArray != null && monthlyOccurrencesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray)
+                                            foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray))
                                             {
                                                 JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                                 scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -3089,14 +3192,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                                 JToken dayValue = monthlyOccurrencesValue["day"];
                                                 if (dayValue != null && dayValue.Type != JTokenType.Null)
                                                 {
-                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                                     jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                                 }
                                                 
                                                 JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                                 if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                                 {
-                                                    int occurrenceInstance = (int)occurrenceValue;
+                                                    int occurrenceInstance = ((int)occurrenceValue);
                                                     jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                                 }
                                             }
@@ -3113,35 +3216,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                                     if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                        DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                         statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                                     }
                                     
                                     JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                                     if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                        DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                         statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                                     }
                                     
                                     JToken executionCountValue = statusValue["executionCount"];
                                     if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                                     {
-                                        int executionCountInstance = (int)executionCountValue;
+                                        int executionCountInstance = ((int)executionCountValue);
                                         statusInstance.ExecutionCount = executionCountInstance;
                                     }
                                     
                                     JToken failureCountValue = statusValue["failureCount"];
                                     if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                                     {
-                                        int failureCountInstance = (int)failureCountValue;
+                                        int failureCountInstance = ((int)failureCountValue);
                                         statusInstance.FailureCount = failureCountInstance;
                                     }
                                     
                                     JToken faultedCountValue = statusValue["faultedCount"];
                                     if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                                     {
-                                        int faultedCountInstance = (int)faultedCountValue;
+                                        int faultedCountInstance = ((int)faultedCountValue);
                                         statusInstance.FaultedCount = faultedCountInstance;
                                     }
                                 }
@@ -3149,7 +3252,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken stateValue = jobsValue["state"];
                                 if (stateValue != null && stateValue.Type != JTokenType.Null)
                                 {
-                                    JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                                    JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                                     jobInstance.State = stateInstance;
                                 }
                             }
@@ -3190,7 +3293,8 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// state.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the List Jobs with filter operation.
+        /// Required. Parameters supplied to the List Jobs with filter
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3218,8 +3322,9 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs?";
+            url = url + "api-version=2014-04-01";
             url = url + "&$filter=state eq " + Uri.EscapeUriString(SchedulerClient.JobStateToString(parameters.State));
             if (parameters.Skip != null)
             {
@@ -3229,6 +3334,16 @@ namespace Microsoft.WindowsAzure.Scheduler
             {
                 url = url + "&$top=" + Uri.EscapeUriString(parameters.Top.Value.ToString());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3277,14 +3392,18 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobListResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken jobsArray = responseDoc;
                         if (jobsArray != null && jobsArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken jobsValue in (JArray)jobsArray)
+                            foreach (JToken jobsValue in ((JArray)jobsArray))
                             {
                                 Job jobInstance = new Job();
                                 result.Jobs.Add(jobInstance);
@@ -3292,14 +3411,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken idValue = jobsValue["id"];
                                 if (idValue != null && idValue.Type != JTokenType.Null)
                                 {
-                                    string idInstance = (string)idValue;
+                                    string idInstance = ((string)idValue);
                                     jobInstance.Id = idInstance;
                                 }
                                 
                                 JToken startTimeValue = jobsValue["startTime"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     jobInstance.StartTime = startTimeInstance;
                                 }
                                 
@@ -3312,7 +3431,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken typeValue = actionValue["type"];
                                     if (typeValue != null && typeValue.Type != JTokenType.Null)
                                     {
-                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                         actionInstance.Type = typeInstance;
                                     }
                                     
@@ -3325,21 +3444,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken retryTypeValue = retryPolicyValue["retryType"];
                                         if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                         {
-                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                             retryPolicyInstance.RetryType = retryTypeInstance;
                                         }
                                         
                                         JToken retryIntervalValue = retryPolicyValue["retryInterval"];
                                         if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                         {
-                                            TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                            TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                             retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                         }
                                         
                                         JToken retryCountValue = retryPolicyValue["retryCount"];
                                         if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                         {
-                                            int retryCountInstance = (int)retryCountValue;
+                                            int retryCountInstance = ((int)retryCountValue);
                                             retryPolicyInstance.RetryCount = retryCountInstance;
                                         }
                                     }
@@ -3353,7 +3472,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken typeValue2 = errorActionValue["type"];
                                         if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                         {
-                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                             errorActionInstance.Type = typeInstance2;
                                         }
                                         
@@ -3366,24 +3485,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken uriValue = requestValue["uri"];
                                             if (uriValue != null && uriValue.Type != JTokenType.Null)
                                             {
-                                                Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                                Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                                 requestInstance.Uri = uriInstance;
                                             }
                                             
                                             JToken methodValue = requestValue["method"];
                                             if (methodValue != null && methodValue.Type != JTokenType.Null)
                                             {
-                                                string methodInstance = (string)methodValue;
+                                                string methodInstance = ((string)methodValue);
                                                 requestInstance.Method = methodInstance;
                                             }
                                             
-                                            JToken headersSequenceElement = (JToken)requestValue["headers"];
+                                            JToken headersSequenceElement = ((JToken)requestValue["headers"]);
                                             if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                             {
                                                 foreach (JProperty property in headersSequenceElement)
                                                 {
-                                                    string headersKey = (string)property.Name;
-                                                    string headersValue = (string)property.Value;
+                                                    string headersKey = ((string)property.Name);
+                                                    string headersValue = ((string)property.Value);
                                                     requestInstance.Headers.Add(headersKey, headersValue);
                                                 }
                                             }
@@ -3391,7 +3510,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken bodyValue = requestValue["body"];
                                             if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                             {
-                                                string bodyInstance = (string)bodyValue;
+                                                string bodyInstance = ((string)bodyValue);
                                                 requestInstance.Body = bodyInstance;
                                             }
                                         }
@@ -3405,28 +3524,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken storageAccountValue = queueMessageValue["storageAccount"];
                                             if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                             {
-                                                string storageAccountInstance = (string)storageAccountValue;
+                                                string storageAccountInstance = ((string)storageAccountValue);
                                                 queueMessageInstance.StorageAccountName = storageAccountInstance;
                                             }
                                             
                                             JToken queueNameValue = queueMessageValue["queueName"];
                                             if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                             {
-                                                string queueNameInstance = (string)queueNameValue;
+                                                string queueNameInstance = ((string)queueNameValue);
                                                 queueMessageInstance.QueueName = queueNameInstance;
                                             }
                                             
                                             JToken sasTokenValue = queueMessageValue["sasToken"];
                                             if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                             {
-                                                string sasTokenInstance = (string)sasTokenValue;
+                                                string sasTokenInstance = ((string)sasTokenValue);
                                                 queueMessageInstance.SasToken = sasTokenInstance;
                                             }
                                             
                                             JToken messageValue = queueMessageValue["message"];
                                             if (messageValue != null && messageValue.Type != JTokenType.Null)
                                             {
-                                                string messageInstance = (string)messageValue;
+                                                string messageInstance = ((string)messageValue);
                                                 queueMessageInstance.Message = messageInstance;
                                             }
                                         }
@@ -3441,24 +3560,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken uriValue2 = requestValue2["uri"];
                                         if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                         {
-                                            Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                            Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                             requestInstance2.Uri = uriInstance2;
                                         }
                                         
                                         JToken methodValue2 = requestValue2["method"];
                                         if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                         {
-                                            string methodInstance2 = (string)methodValue2;
+                                            string methodInstance2 = ((string)methodValue2);
                                             requestInstance2.Method = methodInstance2;
                                         }
                                         
-                                        JToken headersSequenceElement2 = (JToken)requestValue2["headers"];
+                                        JToken headersSequenceElement2 = ((JToken)requestValue2["headers"]);
                                         if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                         {
                                             foreach (JProperty property2 in headersSequenceElement2)
                                             {
-                                                string headersKey2 = (string)property2.Name;
-                                                string headersValue2 = (string)property2.Value;
+                                                string headersKey2 = ((string)property2.Name);
+                                                string headersValue2 = ((string)property2.Value);
                                                 requestInstance2.Headers.Add(headersKey2, headersValue2);
                                             }
                                         }
@@ -3466,7 +3585,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken bodyValue2 = requestValue2["body"];
                                         if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                         {
-                                            string bodyInstance2 = (string)bodyValue2;
+                                            string bodyInstance2 = ((string)bodyValue2);
                                             requestInstance2.Body = bodyInstance2;
                                         }
                                     }
@@ -3480,28 +3599,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken storageAccountValue2 = queueMessageValue2["storageAccount"];
                                         if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                         {
-                                            string storageAccountInstance2 = (string)storageAccountValue2;
+                                            string storageAccountInstance2 = ((string)storageAccountValue2);
                                             queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                         }
                                         
                                         JToken queueNameValue2 = queueMessageValue2["queueName"];
                                         if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                         {
-                                            string queueNameInstance2 = (string)queueNameValue2;
+                                            string queueNameInstance2 = ((string)queueNameValue2);
                                             queueMessageInstance2.QueueName = queueNameInstance2;
                                         }
                                         
                                         JToken sasTokenValue2 = queueMessageValue2["sasToken"];
                                         if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                         {
-                                            string sasTokenInstance2 = (string)sasTokenValue2;
+                                            string sasTokenInstance2 = ((string)sasTokenValue2);
                                             queueMessageInstance2.SasToken = sasTokenInstance2;
                                         }
                                         
                                         JToken messageValue2 = queueMessageValue2["message"];
                                         if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                         {
-                                            string messageInstance2 = (string)messageValue2;
+                                            string messageInstance2 = ((string)messageValue2);
                                             queueMessageInstance2.Message = messageInstance2;
                                         }
                                     }
@@ -3516,28 +3635,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken frequencyValue = recurrenceValue["frequency"];
                                     if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                                     {
-                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                         recurrenceInstance.Frequency = frequencyInstance;
                                     }
                                     
                                     JToken intervalValue = recurrenceValue["interval"];
                                     if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                                     {
-                                        int intervalInstance = (int)intervalValue;
+                                        int intervalInstance = ((int)intervalValue);
                                         recurrenceInstance.Interval = intervalInstance;
                                     }
                                     
                                     JToken countValue = recurrenceValue["count"];
                                     if (countValue != null && countValue.Type != JTokenType.Null)
                                     {
-                                        int countInstance = (int)countValue;
+                                        int countInstance = ((int)countValue);
                                         recurrenceInstance.Count = countInstance;
                                     }
                                     
                                     JToken endTimeValue = recurrenceValue["endTime"];
                                     if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime endTimeInstance = (DateTime)endTimeValue;
+                                        DateTime endTimeInstance = ((DateTime)endTimeValue);
                                         recurrenceInstance.EndTime = endTimeInstance;
                                     }
                                     
@@ -3550,52 +3669,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken minutesArray = scheduleValue["minutes"];
                                         if (minutesArray != null && minutesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken minutesValue in (JArray)minutesArray)
+                                            foreach (JToken minutesValue in ((JArray)minutesArray))
                                             {
-                                                scheduleInstance.Minutes.Add((int)minutesValue);
+                                                scheduleInstance.Minutes.Add(((int)minutesValue));
                                             }
                                         }
                                         
                                         JToken hoursArray = scheduleValue["hours"];
                                         if (hoursArray != null && hoursArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken hoursValue in (JArray)hoursArray)
+                                            foreach (JToken hoursValue in ((JArray)hoursArray))
                                             {
-                                                scheduleInstance.Hours.Add((int)hoursValue);
+                                                scheduleInstance.Hours.Add(((int)hoursValue));
                                             }
                                         }
                                         
                                         JToken weekDaysArray = scheduleValue["weekDays"];
                                         if (weekDaysArray != null && weekDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken weekDaysValue in (JArray)weekDaysArray)
+                                            foreach (JToken weekDaysValue in ((JArray)weekDaysArray))
                                             {
-                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                             }
                                         }
                                         
                                         JToken monthsArray = scheduleValue["months"];
                                         if (monthsArray != null && monthsArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthsValue in (JArray)monthsArray)
+                                            foreach (JToken monthsValue in ((JArray)monthsArray))
                                             {
-                                                scheduleInstance.Months.Add((int)monthsValue);
+                                                scheduleInstance.Months.Add(((int)monthsValue));
                                             }
                                         }
                                         
                                         JToken monthDaysArray = scheduleValue["monthDays"];
                                         if (monthDaysArray != null && monthDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthDaysValue in (JArray)monthDaysArray)
+                                            foreach (JToken monthDaysValue in ((JArray)monthDaysArray))
                                             {
-                                                scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                                scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                             }
                                         }
                                         
                                         JToken monthlyOccurrencesArray = scheduleValue["monthlyOccurrences"];
                                         if (monthlyOccurrencesArray != null && monthlyOccurrencesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray)
+                                            foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray))
                                             {
                                                 JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                                 scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -3603,14 +3722,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                                 JToken dayValue = monthlyOccurrencesValue["day"];
                                                 if (dayValue != null && dayValue.Type != JTokenType.Null)
                                                 {
-                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                                     jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                                 }
                                                 
                                                 JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                                 if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                                 {
-                                                    int occurrenceInstance = (int)occurrenceValue;
+                                                    int occurrenceInstance = ((int)occurrenceValue);
                                                     jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                                 }
                                             }
@@ -3627,35 +3746,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                                     if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                        DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                         statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                                     }
                                     
                                     JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                                     if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                        DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                         statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                                     }
                                     
                                     JToken executionCountValue = statusValue["executionCount"];
                                     if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                                     {
-                                        int executionCountInstance = (int)executionCountValue;
+                                        int executionCountInstance = ((int)executionCountValue);
                                         statusInstance.ExecutionCount = executionCountInstance;
                                     }
                                     
                                     JToken failureCountValue = statusValue["failureCount"];
                                     if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                                     {
-                                        int failureCountInstance = (int)failureCountValue;
+                                        int failureCountInstance = ((int)failureCountValue);
                                         statusInstance.FailureCount = failureCountInstance;
                                     }
                                     
                                     JToken faultedCountValue = statusValue["faultedCount"];
                                     if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                                     {
-                                        int faultedCountInstance = (int)faultedCountValue;
+                                        int faultedCountInstance = ((int)faultedCountValue);
                                         statusInstance.FaultedCount = faultedCountInstance;
                                     }
                                 }
@@ -3663,7 +3782,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken stateValue = jobsValue["state"];
                                 if (stateValue != null && stateValue.Type != JTokenType.Null)
                                 {
-                                    JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                                    JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                                     jobInstance.State = stateInstance;
                                 }
                             }
@@ -3703,7 +3822,7 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Update the state of all jobs in a job collections.
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Jobs State operation.
+        /// Required. Parameters supplied to the Update Jobs State operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3731,7 +3850,18 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3796,14 +3926,18 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobCollectionJobsUpdateStateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
                         JToken jobsArray = responseDoc;
                         if (jobsArray != null && jobsArray.Type != JTokenType.Null)
                         {
-                            foreach (JToken jobsValue in (JArray)jobsArray)
+                            foreach (JToken jobsValue in ((JArray)jobsArray))
                             {
                                 Job jobInstance = new Job();
                                 result.Jobs.Add(jobInstance);
@@ -3811,14 +3945,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken idValue = jobsValue["id"];
                                 if (idValue != null && idValue.Type != JTokenType.Null)
                                 {
-                                    string idInstance = (string)idValue;
+                                    string idInstance = ((string)idValue);
                                     jobInstance.Id = idInstance;
                                 }
                                 
                                 JToken startTimeValue = jobsValue["startTime"];
                                 if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                                 {
-                                    DateTime startTimeInstance = (DateTime)startTimeValue;
+                                    DateTime startTimeInstance = ((DateTime)startTimeValue);
                                     jobInstance.StartTime = startTimeInstance;
                                 }
                                 
@@ -3831,7 +3965,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken typeValue = actionValue["type"];
                                     if (typeValue != null && typeValue.Type != JTokenType.Null)
                                     {
-                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                        JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                         actionInstance.Type = typeInstance;
                                     }
                                     
@@ -3844,21 +3978,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken retryTypeValue = retryPolicyValue["retryType"];
                                         if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                         {
-                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                            RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                             retryPolicyInstance.RetryType = retryTypeInstance;
                                         }
                                         
                                         JToken retryIntervalValue = retryPolicyValue["retryInterval"];
                                         if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                         {
-                                            TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                            TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                             retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                         }
                                         
                                         JToken retryCountValue = retryPolicyValue["retryCount"];
                                         if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                         {
-                                            int retryCountInstance = (int)retryCountValue;
+                                            int retryCountInstance = ((int)retryCountValue);
                                             retryPolicyInstance.RetryCount = retryCountInstance;
                                         }
                                     }
@@ -3872,7 +4006,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken typeValue2 = errorActionValue["type"];
                                         if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                         {
-                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                            JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                             errorActionInstance.Type = typeInstance2;
                                         }
                                         
@@ -3885,24 +4019,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken uriValue = requestValue["uri"];
                                             if (uriValue != null && uriValue.Type != JTokenType.Null)
                                             {
-                                                Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                                Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                                 requestInstance.Uri = uriInstance;
                                             }
                                             
                                             JToken methodValue = requestValue["method"];
                                             if (methodValue != null && methodValue.Type != JTokenType.Null)
                                             {
-                                                string methodInstance = (string)methodValue;
+                                                string methodInstance = ((string)methodValue);
                                                 requestInstance.Method = methodInstance;
                                             }
                                             
-                                            JToken headersSequenceElement = (JToken)requestValue["headers"];
+                                            JToken headersSequenceElement = ((JToken)requestValue["headers"]);
                                             if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                             {
                                                 foreach (JProperty property in headersSequenceElement)
                                                 {
-                                                    string headersKey = (string)property.Name;
-                                                    string headersValue = (string)property.Value;
+                                                    string headersKey = ((string)property.Name);
+                                                    string headersValue = ((string)property.Value);
                                                     requestInstance.Headers.Add(headersKey, headersValue);
                                                 }
                                             }
@@ -3910,7 +4044,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken bodyValue = requestValue["body"];
                                             if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                             {
-                                                string bodyInstance = (string)bodyValue;
+                                                string bodyInstance = ((string)bodyValue);
                                                 requestInstance.Body = bodyInstance;
                                             }
                                         }
@@ -3924,28 +4058,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                             JToken storageAccountValue = queueMessageValue["storageAccount"];
                                             if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                             {
-                                                string storageAccountInstance = (string)storageAccountValue;
+                                                string storageAccountInstance = ((string)storageAccountValue);
                                                 queueMessageInstance.StorageAccountName = storageAccountInstance;
                                             }
                                             
                                             JToken queueNameValue = queueMessageValue["queueName"];
                                             if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                             {
-                                                string queueNameInstance = (string)queueNameValue;
+                                                string queueNameInstance = ((string)queueNameValue);
                                                 queueMessageInstance.QueueName = queueNameInstance;
                                             }
                                             
                                             JToken sasTokenValue = queueMessageValue["sasToken"];
                                             if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                             {
-                                                string sasTokenInstance = (string)sasTokenValue;
+                                                string sasTokenInstance = ((string)sasTokenValue);
                                                 queueMessageInstance.SasToken = sasTokenInstance;
                                             }
                                             
                                             JToken messageValue = queueMessageValue["message"];
                                             if (messageValue != null && messageValue.Type != JTokenType.Null)
                                             {
-                                                string messageInstance = (string)messageValue;
+                                                string messageInstance = ((string)messageValue);
                                                 queueMessageInstance.Message = messageInstance;
                                             }
                                         }
@@ -3960,24 +4094,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken uriValue2 = requestValue2["uri"];
                                         if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                         {
-                                            Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                            Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                             requestInstance2.Uri = uriInstance2;
                                         }
                                         
                                         JToken methodValue2 = requestValue2["method"];
                                         if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                         {
-                                            string methodInstance2 = (string)methodValue2;
+                                            string methodInstance2 = ((string)methodValue2);
                                             requestInstance2.Method = methodInstance2;
                                         }
                                         
-                                        JToken headersSequenceElement2 = (JToken)requestValue2["headers"];
+                                        JToken headersSequenceElement2 = ((JToken)requestValue2["headers"]);
                                         if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                         {
                                             foreach (JProperty property2 in headersSequenceElement2)
                                             {
-                                                string headersKey2 = (string)property2.Name;
-                                                string headersValue2 = (string)property2.Value;
+                                                string headersKey2 = ((string)property2.Name);
+                                                string headersValue2 = ((string)property2.Value);
                                                 requestInstance2.Headers.Add(headersKey2, headersValue2);
                                             }
                                         }
@@ -3985,7 +4119,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken bodyValue2 = requestValue2["body"];
                                         if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                         {
-                                            string bodyInstance2 = (string)bodyValue2;
+                                            string bodyInstance2 = ((string)bodyValue2);
                                             requestInstance2.Body = bodyInstance2;
                                         }
                                     }
@@ -3999,28 +4133,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken storageAccountValue2 = queueMessageValue2["storageAccount"];
                                         if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                         {
-                                            string storageAccountInstance2 = (string)storageAccountValue2;
+                                            string storageAccountInstance2 = ((string)storageAccountValue2);
                                             queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                         }
                                         
                                         JToken queueNameValue2 = queueMessageValue2["queueName"];
                                         if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                         {
-                                            string queueNameInstance2 = (string)queueNameValue2;
+                                            string queueNameInstance2 = ((string)queueNameValue2);
                                             queueMessageInstance2.QueueName = queueNameInstance2;
                                         }
                                         
                                         JToken sasTokenValue2 = queueMessageValue2["sasToken"];
                                         if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                         {
-                                            string sasTokenInstance2 = (string)sasTokenValue2;
+                                            string sasTokenInstance2 = ((string)sasTokenValue2);
                                             queueMessageInstance2.SasToken = sasTokenInstance2;
                                         }
                                         
                                         JToken messageValue2 = queueMessageValue2["message"];
                                         if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                         {
-                                            string messageInstance2 = (string)messageValue2;
+                                            string messageInstance2 = ((string)messageValue2);
                                             queueMessageInstance2.Message = messageInstance2;
                                         }
                                     }
@@ -4035,28 +4169,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken frequencyValue = recurrenceValue["frequency"];
                                     if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                                     {
-                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                        JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                         recurrenceInstance.Frequency = frequencyInstance;
                                     }
                                     
                                     JToken intervalValue = recurrenceValue["interval"];
                                     if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                                     {
-                                        int intervalInstance = (int)intervalValue;
+                                        int intervalInstance = ((int)intervalValue);
                                         recurrenceInstance.Interval = intervalInstance;
                                     }
                                     
                                     JToken countValue = recurrenceValue["count"];
                                     if (countValue != null && countValue.Type != JTokenType.Null)
                                     {
-                                        int countInstance = (int)countValue;
+                                        int countInstance = ((int)countValue);
                                         recurrenceInstance.Count = countInstance;
                                     }
                                     
                                     JToken endTimeValue = recurrenceValue["endTime"];
                                     if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime endTimeInstance = (DateTime)endTimeValue;
+                                        DateTime endTimeInstance = ((DateTime)endTimeValue);
                                         recurrenceInstance.EndTime = endTimeInstance;
                                     }
                                     
@@ -4069,52 +4203,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken minutesArray = scheduleValue["minutes"];
                                         if (minutesArray != null && minutesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken minutesValue in (JArray)minutesArray)
+                                            foreach (JToken minutesValue in ((JArray)minutesArray))
                                             {
-                                                scheduleInstance.Minutes.Add((int)minutesValue);
+                                                scheduleInstance.Minutes.Add(((int)minutesValue));
                                             }
                                         }
                                         
                                         JToken hoursArray = scheduleValue["hours"];
                                         if (hoursArray != null && hoursArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken hoursValue in (JArray)hoursArray)
+                                            foreach (JToken hoursValue in ((JArray)hoursArray))
                                             {
-                                                scheduleInstance.Hours.Add((int)hoursValue);
+                                                scheduleInstance.Hours.Add(((int)hoursValue));
                                             }
                                         }
                                         
                                         JToken weekDaysArray = scheduleValue["weekDays"];
                                         if (weekDaysArray != null && weekDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken weekDaysValue in (JArray)weekDaysArray)
+                                            foreach (JToken weekDaysValue in ((JArray)weekDaysArray))
                                             {
-                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                                scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                             }
                                         }
                                         
                                         JToken monthsArray = scheduleValue["months"];
                                         if (monthsArray != null && monthsArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthsValue in (JArray)monthsArray)
+                                            foreach (JToken monthsValue in ((JArray)monthsArray))
                                             {
-                                                scheduleInstance.Months.Add((int)monthsValue);
+                                                scheduleInstance.Months.Add(((int)monthsValue));
                                             }
                                         }
                                         
                                         JToken monthDaysArray = scheduleValue["monthDays"];
                                         if (monthDaysArray != null && monthDaysArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthDaysValue in (JArray)monthDaysArray)
+                                            foreach (JToken monthDaysValue in ((JArray)monthDaysArray))
                                             {
-                                                scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                                scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                             }
                                         }
                                         
                                         JToken monthlyOccurrencesArray = scheduleValue["monthlyOccurrences"];
                                         if (monthlyOccurrencesArray != null && monthlyOccurrencesArray.Type != JTokenType.Null)
                                         {
-                                            foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray)
+                                            foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray))
                                             {
                                                 JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                                 scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -4122,14 +4256,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                                 JToken dayValue = monthlyOccurrencesValue["day"];
                                                 if (dayValue != null && dayValue.Type != JTokenType.Null)
                                                 {
-                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                                    JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                                     jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                                 }
                                                 
                                                 JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                                 if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                                 {
-                                                    int occurrenceInstance = (int)occurrenceValue;
+                                                    int occurrenceInstance = ((int)occurrenceValue);
                                                     jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                                 }
                                             }
@@ -4146,35 +4280,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                                     if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                        DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                         statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                                     }
                                     
                                     JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                                     if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                                     {
-                                        DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                        DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                         statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                                     }
                                     
                                     JToken executionCountValue = statusValue["executionCount"];
                                     if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                                     {
-                                        int executionCountInstance = (int)executionCountValue;
+                                        int executionCountInstance = ((int)executionCountValue);
                                         statusInstance.ExecutionCount = executionCountInstance;
                                     }
                                     
                                     JToken failureCountValue = statusValue["failureCount"];
                                     if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                                     {
-                                        int failureCountInstance = (int)failureCountValue;
+                                        int failureCountInstance = ((int)failureCountValue);
                                         statusInstance.FailureCount = failureCountInstance;
                                     }
                                     
                                     JToken faultedCountValue = statusValue["faultedCount"];
                                     if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                                     {
-                                        int faultedCountInstance = (int)faultedCountValue;
+                                        int faultedCountInstance = ((int)faultedCountValue);
                                         statusInstance.FaultedCount = faultedCountInstance;
                                     }
                                 }
@@ -4182,7 +4316,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken stateValue = jobsValue["state"];
                                 if (stateValue != null && stateValue.Type != JTokenType.Null)
                                 {
-                                    JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                                    JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                                     jobInstance.State = stateInstance;
                                 }
                             }
@@ -4222,10 +4356,10 @@ namespace Microsoft.WindowsAzure.Scheduler
         /// Update the state of a job.
         /// </summary>
         /// <param name='jobId'>
-        /// Id of the job to update.
+        /// Required. Id of the job to update.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Job State operation.
+        /// Required. Parameters supplied to the Update Job State operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4258,8 +4392,19 @@ namespace Microsoft.WindowsAzure.Scheduler
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, this.Client.Credentials.SubscriptionId).ToString() + "/cloudservices/" + this.Client.CloudServiceName + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName + "/jobs/" + jobId + "?";
-            url = url + "api-version=2013-10-31_Preview";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = this.Client.Credentials.SubscriptionId.Trim() + "/cloudservices/" + this.Client.CloudServiceName.Trim() + "/resources/scheduler/~/JobCollections/" + this.Client.JobCollectionName.Trim() + "/jobs/" + jobId.Trim() + "?";
+            url = url + "api-version=2014-04-01";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -4326,7 +4471,11 @@ namespace Microsoft.WindowsAzure.Scheduler
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new JobUpdateStateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -4336,14 +4485,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken idValue = responseDoc["id"];
                         if (idValue != null && idValue.Type != JTokenType.Null)
                         {
-                            string idInstance = (string)idValue;
+                            string idInstance = ((string)idValue);
                             jobInstance.Id = idInstance;
                         }
                         
                         JToken startTimeValue = responseDoc["startTime"];
                         if (startTimeValue != null && startTimeValue.Type != JTokenType.Null)
                         {
-                            DateTime startTimeInstance = (DateTime)startTimeValue;
+                            DateTime startTimeInstance = ((DateTime)startTimeValue);
                             jobInstance.StartTime = startTimeInstance;
                         }
                         
@@ -4356,7 +4505,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken typeValue = actionValue["type"];
                             if (typeValue != null && typeValue.Type != JTokenType.Null)
                             {
-                                JobActionType typeInstance = SchedulerClient.ParseJobActionType((string)typeValue);
+                                JobActionType typeInstance = SchedulerClient.ParseJobActionType(((string)typeValue));
                                 actionInstance.Type = typeInstance;
                             }
                             
@@ -4369,21 +4518,21 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken retryTypeValue = retryPolicyValue["retryType"];
                                 if (retryTypeValue != null && retryTypeValue.Type != JTokenType.Null)
                                 {
-                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType((string)retryTypeValue);
+                                    RetryType retryTypeInstance = SchedulerClient.ParseRetryType(((string)retryTypeValue));
                                     retryPolicyInstance.RetryType = retryTypeInstance;
                                 }
                                 
                                 JToken retryIntervalValue = retryPolicyValue["retryInterval"];
                                 if (retryIntervalValue != null && retryIntervalValue.Type != JTokenType.Null)
                                 {
-                                    TimeSpan retryIntervalInstance = TimeSpan.Parse((string)retryIntervalValue, CultureInfo.InvariantCulture);
+                                    TimeSpan retryIntervalInstance = TimeSpan.Parse(((string)retryIntervalValue), CultureInfo.InvariantCulture);
                                     retryPolicyInstance.RetryInterval = retryIntervalInstance;
                                 }
                                 
                                 JToken retryCountValue = retryPolicyValue["retryCount"];
                                 if (retryCountValue != null && retryCountValue.Type != JTokenType.Null)
                                 {
-                                    int retryCountInstance = (int)retryCountValue;
+                                    int retryCountInstance = ((int)retryCountValue);
                                     retryPolicyInstance.RetryCount = retryCountInstance;
                                 }
                             }
@@ -4397,7 +4546,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken typeValue2 = errorActionValue["type"];
                                 if (typeValue2 != null && typeValue2.Type != JTokenType.Null)
                                 {
-                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType((string)typeValue2);
+                                    JobActionType typeInstance2 = SchedulerClient.ParseJobActionType(((string)typeValue2));
                                     errorActionInstance.Type = typeInstance2;
                                 }
                                 
@@ -4410,24 +4559,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken uriValue = requestValue["uri"];
                                     if (uriValue != null && uriValue.Type != JTokenType.Null)
                                     {
-                                        Uri uriInstance = TypeConversion.TryParseUri((string)uriValue);
+                                        Uri uriInstance = TypeConversion.TryParseUri(((string)uriValue));
                                         requestInstance.Uri = uriInstance;
                                     }
                                     
                                     JToken methodValue = requestValue["method"];
                                     if (methodValue != null && methodValue.Type != JTokenType.Null)
                                     {
-                                        string methodInstance = (string)methodValue;
+                                        string methodInstance = ((string)methodValue);
                                         requestInstance.Method = methodInstance;
                                     }
                                     
-                                    JToken headersSequenceElement = (JToken)requestValue["headers"];
+                                    JToken headersSequenceElement = ((JToken)requestValue["headers"]);
                                     if (headersSequenceElement != null && headersSequenceElement.Type != JTokenType.Null)
                                     {
                                         foreach (JProperty property in headersSequenceElement)
                                         {
-                                            string headersKey = (string)property.Name;
-                                            string headersValue = (string)property.Value;
+                                            string headersKey = ((string)property.Name);
+                                            string headersValue = ((string)property.Value);
                                             requestInstance.Headers.Add(headersKey, headersValue);
                                         }
                                     }
@@ -4435,7 +4584,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken bodyValue = requestValue["body"];
                                     if (bodyValue != null && bodyValue.Type != JTokenType.Null)
                                     {
-                                        string bodyInstance = (string)bodyValue;
+                                        string bodyInstance = ((string)bodyValue);
                                         requestInstance.Body = bodyInstance;
                                     }
                                 }
@@ -4449,28 +4598,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                     JToken storageAccountValue = queueMessageValue["storageAccount"];
                                     if (storageAccountValue != null && storageAccountValue.Type != JTokenType.Null)
                                     {
-                                        string storageAccountInstance = (string)storageAccountValue;
+                                        string storageAccountInstance = ((string)storageAccountValue);
                                         queueMessageInstance.StorageAccountName = storageAccountInstance;
                                     }
                                     
                                     JToken queueNameValue = queueMessageValue["queueName"];
                                     if (queueNameValue != null && queueNameValue.Type != JTokenType.Null)
                                     {
-                                        string queueNameInstance = (string)queueNameValue;
+                                        string queueNameInstance = ((string)queueNameValue);
                                         queueMessageInstance.QueueName = queueNameInstance;
                                     }
                                     
                                     JToken sasTokenValue = queueMessageValue["sasToken"];
                                     if (sasTokenValue != null && sasTokenValue.Type != JTokenType.Null)
                                     {
-                                        string sasTokenInstance = (string)sasTokenValue;
+                                        string sasTokenInstance = ((string)sasTokenValue);
                                         queueMessageInstance.SasToken = sasTokenInstance;
                                     }
                                     
                                     JToken messageValue = queueMessageValue["message"];
                                     if (messageValue != null && messageValue.Type != JTokenType.Null)
                                     {
-                                        string messageInstance = (string)messageValue;
+                                        string messageInstance = ((string)messageValue);
                                         queueMessageInstance.Message = messageInstance;
                                     }
                                 }
@@ -4485,24 +4634,24 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken uriValue2 = requestValue2["uri"];
                                 if (uriValue2 != null && uriValue2.Type != JTokenType.Null)
                                 {
-                                    Uri uriInstance2 = TypeConversion.TryParseUri((string)uriValue2);
+                                    Uri uriInstance2 = TypeConversion.TryParseUri(((string)uriValue2));
                                     requestInstance2.Uri = uriInstance2;
                                 }
                                 
                                 JToken methodValue2 = requestValue2["method"];
                                 if (methodValue2 != null && methodValue2.Type != JTokenType.Null)
                                 {
-                                    string methodInstance2 = (string)methodValue2;
+                                    string methodInstance2 = ((string)methodValue2);
                                     requestInstance2.Method = methodInstance2;
                                 }
                                 
-                                JToken headersSequenceElement2 = (JToken)requestValue2["headers"];
+                                JToken headersSequenceElement2 = ((JToken)requestValue2["headers"]);
                                 if (headersSequenceElement2 != null && headersSequenceElement2.Type != JTokenType.Null)
                                 {
                                     foreach (JProperty property2 in headersSequenceElement2)
                                     {
-                                        string headersKey2 = (string)property2.Name;
-                                        string headersValue2 = (string)property2.Value;
+                                        string headersKey2 = ((string)property2.Name);
+                                        string headersValue2 = ((string)property2.Value);
                                         requestInstance2.Headers.Add(headersKey2, headersValue2);
                                     }
                                 }
@@ -4510,7 +4659,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken bodyValue2 = requestValue2["body"];
                                 if (bodyValue2 != null && bodyValue2.Type != JTokenType.Null)
                                 {
-                                    string bodyInstance2 = (string)bodyValue2;
+                                    string bodyInstance2 = ((string)bodyValue2);
                                     requestInstance2.Body = bodyInstance2;
                                 }
                             }
@@ -4524,28 +4673,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken storageAccountValue2 = queueMessageValue2["storageAccount"];
                                 if (storageAccountValue2 != null && storageAccountValue2.Type != JTokenType.Null)
                                 {
-                                    string storageAccountInstance2 = (string)storageAccountValue2;
+                                    string storageAccountInstance2 = ((string)storageAccountValue2);
                                     queueMessageInstance2.StorageAccountName = storageAccountInstance2;
                                 }
                                 
                                 JToken queueNameValue2 = queueMessageValue2["queueName"];
                                 if (queueNameValue2 != null && queueNameValue2.Type != JTokenType.Null)
                                 {
-                                    string queueNameInstance2 = (string)queueNameValue2;
+                                    string queueNameInstance2 = ((string)queueNameValue2);
                                     queueMessageInstance2.QueueName = queueNameInstance2;
                                 }
                                 
                                 JToken sasTokenValue2 = queueMessageValue2["sasToken"];
                                 if (sasTokenValue2 != null && sasTokenValue2.Type != JTokenType.Null)
                                 {
-                                    string sasTokenInstance2 = (string)sasTokenValue2;
+                                    string sasTokenInstance2 = ((string)sasTokenValue2);
                                     queueMessageInstance2.SasToken = sasTokenInstance2;
                                 }
                                 
                                 JToken messageValue2 = queueMessageValue2["message"];
                                 if (messageValue2 != null && messageValue2.Type != JTokenType.Null)
                                 {
-                                    string messageInstance2 = (string)messageValue2;
+                                    string messageInstance2 = ((string)messageValue2);
                                     queueMessageInstance2.Message = messageInstance2;
                                 }
                             }
@@ -4560,28 +4709,28 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken frequencyValue = recurrenceValue["frequency"];
                             if (frequencyValue != null && frequencyValue.Type != JTokenType.Null)
                             {
-                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency((string)frequencyValue);
+                                JobRecurrenceFrequency frequencyInstance = SchedulerClient.ParseJobRecurrenceFrequency(((string)frequencyValue));
                                 recurrenceInstance.Frequency = frequencyInstance;
                             }
                             
                             JToken intervalValue = recurrenceValue["interval"];
                             if (intervalValue != null && intervalValue.Type != JTokenType.Null)
                             {
-                                int intervalInstance = (int)intervalValue;
+                                int intervalInstance = ((int)intervalValue);
                                 recurrenceInstance.Interval = intervalInstance;
                             }
                             
                             JToken countValue = recurrenceValue["count"];
                             if (countValue != null && countValue.Type != JTokenType.Null)
                             {
-                                int countInstance = (int)countValue;
+                                int countInstance = ((int)countValue);
                                 recurrenceInstance.Count = countInstance;
                             }
                             
                             JToken endTimeValue = recurrenceValue["endTime"];
                             if (endTimeValue != null && endTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime endTimeInstance = (DateTime)endTimeValue;
+                                DateTime endTimeInstance = ((DateTime)endTimeValue);
                                 recurrenceInstance.EndTime = endTimeInstance;
                             }
                             
@@ -4594,52 +4743,52 @@ namespace Microsoft.WindowsAzure.Scheduler
                                 JToken minutesArray = scheduleValue["minutes"];
                                 if (minutesArray != null && minutesArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken minutesValue in (JArray)minutesArray)
+                                    foreach (JToken minutesValue in ((JArray)minutesArray))
                                     {
-                                        scheduleInstance.Minutes.Add((int)minutesValue);
+                                        scheduleInstance.Minutes.Add(((int)minutesValue));
                                     }
                                 }
                                 
                                 JToken hoursArray = scheduleValue["hours"];
                                 if (hoursArray != null && hoursArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken hoursValue in (JArray)hoursArray)
+                                    foreach (JToken hoursValue in ((JArray)hoursArray))
                                     {
-                                        scheduleInstance.Hours.Add((int)hoursValue);
+                                        scheduleInstance.Hours.Add(((int)hoursValue));
                                     }
                                 }
                                 
                                 JToken weekDaysArray = scheduleValue["weekDays"];
                                 if (weekDaysArray != null && weekDaysArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken weekDaysValue in (JArray)weekDaysArray)
+                                    foreach (JToken weekDaysValue in ((JArray)weekDaysArray))
                                     {
-                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay((string)weekDaysValue));
+                                        scheduleInstance.Days.Add(SchedulerClient.ParseJobScheduleDay(((string)weekDaysValue)));
                                     }
                                 }
                                 
                                 JToken monthsArray = scheduleValue["months"];
                                 if (monthsArray != null && monthsArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthsValue in (JArray)monthsArray)
+                                    foreach (JToken monthsValue in ((JArray)monthsArray))
                                     {
-                                        scheduleInstance.Months.Add((int)monthsValue);
+                                        scheduleInstance.Months.Add(((int)monthsValue));
                                     }
                                 }
                                 
                                 JToken monthDaysArray = scheduleValue["monthDays"];
                                 if (monthDaysArray != null && monthDaysArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthDaysValue in (JArray)monthDaysArray)
+                                    foreach (JToken monthDaysValue in ((JArray)monthDaysArray))
                                     {
-                                        scheduleInstance.MonthDays.Add((int)monthDaysValue);
+                                        scheduleInstance.MonthDays.Add(((int)monthDaysValue));
                                     }
                                 }
                                 
                                 JToken monthlyOccurrencesArray = scheduleValue["monthlyOccurrences"];
                                 if (monthlyOccurrencesArray != null && monthlyOccurrencesArray.Type != JTokenType.Null)
                                 {
-                                    foreach (JToken monthlyOccurrencesValue in (JArray)monthlyOccurrencesArray)
+                                    foreach (JToken monthlyOccurrencesValue in ((JArray)monthlyOccurrencesArray))
                                     {
                                         JobScheduleMonthlyOccurrence jobScheduleMonthlyOccurrenceInstance = new JobScheduleMonthlyOccurrence();
                                         scheduleInstance.MonthlyOccurrences.Add(jobScheduleMonthlyOccurrenceInstance);
@@ -4647,14 +4796,14 @@ namespace Microsoft.WindowsAzure.Scheduler
                                         JToken dayValue = monthlyOccurrencesValue["day"];
                                         if (dayValue != null && dayValue.Type != JTokenType.Null)
                                         {
-                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay((string)dayValue);
+                                            JobScheduleDay dayInstance = SchedulerClient.ParseJobScheduleDay(((string)dayValue));
                                             jobScheduleMonthlyOccurrenceInstance.Day = dayInstance;
                                         }
                                         
                                         JToken occurrenceValue = monthlyOccurrencesValue["occurrence"];
                                         if (occurrenceValue != null && occurrenceValue.Type != JTokenType.Null)
                                         {
-                                            int occurrenceInstance = (int)occurrenceValue;
+                                            int occurrenceInstance = ((int)occurrenceValue);
                                             jobScheduleMonthlyOccurrenceInstance.Occurrence = occurrenceInstance;
                                         }
                                     }
@@ -4671,35 +4820,35 @@ namespace Microsoft.WindowsAzure.Scheduler
                             JToken lastExecutionTimeValue = statusValue["lastExecutionTime"];
                             if (lastExecutionTimeValue != null && lastExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime lastExecutionTimeInstance = (DateTime)lastExecutionTimeValue;
+                                DateTime lastExecutionTimeInstance = ((DateTime)lastExecutionTimeValue);
                                 statusInstance.LastExecutionTime = lastExecutionTimeInstance;
                             }
                             
                             JToken nextExecutionTimeValue = statusValue["nextExecutionTime"];
                             if (nextExecutionTimeValue != null && nextExecutionTimeValue.Type != JTokenType.Null)
                             {
-                                DateTime nextExecutionTimeInstance = (DateTime)nextExecutionTimeValue;
+                                DateTime nextExecutionTimeInstance = ((DateTime)nextExecutionTimeValue);
                                 statusInstance.NextExecutionTime = nextExecutionTimeInstance;
                             }
                             
                             JToken executionCountValue = statusValue["executionCount"];
                             if (executionCountValue != null && executionCountValue.Type != JTokenType.Null)
                             {
-                                int executionCountInstance = (int)executionCountValue;
+                                int executionCountInstance = ((int)executionCountValue);
                                 statusInstance.ExecutionCount = executionCountInstance;
                             }
                             
                             JToken failureCountValue = statusValue["failureCount"];
                             if (failureCountValue != null && failureCountValue.Type != JTokenType.Null)
                             {
-                                int failureCountInstance = (int)failureCountValue;
+                                int failureCountInstance = ((int)failureCountValue);
                                 statusInstance.FailureCount = failureCountInstance;
                             }
                             
                             JToken faultedCountValue = statusValue["faultedCount"];
                             if (faultedCountValue != null && faultedCountValue.Type != JTokenType.Null)
                             {
-                                int faultedCountInstance = (int)faultedCountValue;
+                                int faultedCountInstance = ((int)faultedCountValue);
                                 statusInstance.FaultedCount = faultedCountInstance;
                             }
                         }
@@ -4707,7 +4856,7 @@ namespace Microsoft.WindowsAzure.Scheduler
                         JToken stateValue = responseDoc["state"];
                         if (stateValue != null && stateValue.Type != JTokenType.Null)
                         {
-                            JobState stateInstance = SchedulerClient.ParseJobState((string)stateValue);
+                            JobState stateInstance = SchedulerClient.ParseJobState(((string)stateValue));
                             jobInstance.State = stateInstance;
                         }
                     }

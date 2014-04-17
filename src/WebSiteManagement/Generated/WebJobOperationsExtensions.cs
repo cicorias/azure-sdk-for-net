@@ -44,10 +44,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='recursive'>
-        /// Removing the specified directory and all its files and
+        /// Required. Removing the specified directory and all its files and
         /// subdirectories. The value must be set to true.
         /// </param>
         /// <returns>
@@ -56,21 +56,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse DeleteContinuous(this IWebJobOperations operations, string jobName, bool recursive)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteContinuousAsync(jobName, recursive).Result;
+                return ((IWebJobOperations)s).DeleteContinuousAsync(jobName, recursive);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -81,10 +71,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='recursive'>
-        /// Removing the specified directory and all its files and
+        /// Required. Removing the specified directory and all its files and
         /// subdirectories. The value must be set to true.
         /// </param>
         /// <returns>
@@ -104,10 +94,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='recursive'>
-        /// Removing the specified directory and all its files and
+        /// Required. Removing the specified directory and all its files and
         /// subdirectories. The value must be set to true.
         /// </param>
         /// <returns>
@@ -116,21 +106,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse DeleteTriggered(this IWebJobOperations operations, string jobName, bool recursive)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteTriggeredAsync(jobName, recursive).Result;
+                return ((IWebJobOperations)s).DeleteTriggeredAsync(jobName, recursive);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -141,10 +121,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='recursive'>
-        /// Removing the specified directory and all its files and
+        /// Required. Removing the specified directory and all its files and
         /// subdirectories. The value must be set to true.
         /// </param>
         /// <returns>
@@ -164,28 +144,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
         /// </returns>
         public static WebJobGetResponse Get(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(jobName).Result;
+                return ((IWebJobOperations)s).GetAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -196,7 +166,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
@@ -214,28 +184,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
         /// </returns>
         public static WebJobGetResponse GetContinuous(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetContinuousAsync(jobName).Result;
+                return ((IWebJobOperations)s).GetContinuousAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -246,7 +206,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
@@ -264,31 +224,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobRunId'>
-        /// The job run identifier.
+        /// Required. The job run identifier.
         /// </param>
         /// <returns>
         /// The Get Web Job Run operation response.
         /// </returns>
         public static WebJobGetRunResponse GetRun(this IWebJobOperations operations, string jobName, string jobRunId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetRunAsync(jobName, jobRunId).Result;
+                return ((IWebJobOperations)s).GetRunAsync(jobName, jobRunId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -299,10 +249,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobRunId'>
-        /// The job run identifier.
+        /// Required. The job run identifier.
         /// </param>
         /// <returns>
         /// The Get Web Job Run operation response.
@@ -320,28 +270,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
         /// </returns>
         public static WebJobGetResponse GetTriggered(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetTriggeredAsync(jobName).Result;
+                return ((IWebJobOperations)s).GetTriggeredAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -352,7 +292,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// The get Web Job Operation Response.
@@ -370,28 +310,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
         /// </returns>
         public static WebJobListResponse List(this IWebJobOperations operations, WebJobListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(parameters).Result;
+                return ((IWebJobOperations)s).ListAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -402,7 +332,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
@@ -420,28 +350,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
         /// </returns>
         public static WebJobListResponse ListContinuous(this IWebJobOperations operations, WebJobListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListContinuousAsync(parameters).Result;
+                return ((IWebJobOperations)s).ListContinuousAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -452,7 +372,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
@@ -470,31 +390,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The Web Job run list operation response.
         /// </returns>
         public static WebJobRunListResponse ListRuns(this IWebJobOperations operations, string jobName, WebJobRunListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListRunsAsync(jobName, parameters).Result;
+                return ((IWebJobOperations)s).ListRunsAsync(jobName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -505,10 +415,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The Web Job run list operation response.
@@ -526,28 +436,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
         /// </returns>
         public static WebJobListResponse ListTriggered(this IWebJobOperations operations, WebJobListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListTriggeredAsync(parameters).Result;
+                return ((IWebJobOperations)s).ListTriggeredAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -558,7 +458,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The list of jobs operation response.
@@ -576,7 +476,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -584,21 +484,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse RunTriggered(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RunTriggeredAsync(jobName).Result;
+                return ((IWebJobOperations)s).RunTriggeredAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -609,7 +499,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -629,10 +519,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='isSingleton'>
-        /// Boolean value indicating if the job is singleton or not.
+        /// Required. Boolean value indicating if the job is singleton or not.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -640,21 +530,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse SetSingleton(this IWebJobOperations operations, string jobName, bool isSingleton)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.SetSingletonAsync(jobName, isSingleton).Result;
+                return ((IWebJobOperations)s).SetSingletonAsync(jobName, isSingleton);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -666,10 +546,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='isSingleton'>
-        /// Boolean value indicating if the job is singleton or not.
+        /// Required. Boolean value indicating if the job is singleton or not.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -688,7 +568,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -696,21 +576,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse StartContinuous(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.StartContinuousAsync(jobName).Result;
+                return ((IWebJobOperations)s).StartContinuousAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -721,7 +591,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -740,7 +610,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -748,21 +618,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse StopContinuous(this IWebJobOperations operations, string jobName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.StopContinuousAsync(jobName).Result;
+                return ((IWebJobOperations)s).StopContinuousAsync(jobName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -773,7 +633,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -792,10 +652,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobContent'>
-        /// The job content.
+        /// Required. The job content.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -803,21 +663,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse UploadContinuous(this IWebJobOperations operations, string jobName, Stream jobContent)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UploadContinuousAsync(jobName, jobContent).Result;
+                return ((IWebJobOperations)s).UploadContinuousAsync(jobName, jobContent);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -828,10 +678,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobContent'>
-        /// The job content.
+        /// Required. The job content.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -850,10 +700,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobContent'>
-        /// The job content.
+        /// Required. The job content.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -861,21 +711,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse UploadTriggered(this IWebJobOperations operations, string jobName, Stream jobContent)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UploadTriggeredAsync(jobName, jobContent).Result;
+                return ((IWebJobOperations)s).UploadTriggeredAsync(jobName, jobContent);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -886,10 +726,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.WebSitesExtensions.IWebJobOperations.
         /// </param>
         /// <param name='jobName'>
-        /// The job name.
+        /// Required. The job name.
         /// </param>
         /// <param name='jobContent'>
-        /// The job content.
+        /// Required. The job content.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

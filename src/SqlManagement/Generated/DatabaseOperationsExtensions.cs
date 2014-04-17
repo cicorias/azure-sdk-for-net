@@ -46,32 +46,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server where the database will be created.
+        /// Required. The name of the SQL Server where the database will be
+        /// created.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the create database operation.
+        /// Required. The parameters for the create database operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database create response.
         /// </returns>
         public static DatabaseCreateResponse Create(this IDatabaseOperations operations, string serverName, DatabaseCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(serverName, parameters).Result;
+                return ((IDatabaseOperations)s).CreateAsync(serverName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -82,14 +72,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server where the database will be created.
+        /// Required. The name of the SQL Server where the database will be
+        /// created.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the create database operation.
+        /// Required. The parameters for the create database operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database create response.
         /// </returns>
         public static Task<DatabaseCreateResponse> CreateAsync(this IDatabaseOperations operations, string serverName, DatabaseCreateParameters parameters)
         {
@@ -106,10 +96,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server on which the database is found.
+        /// Required. The name of the server on which the database is found.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the database to be deleted.
+        /// Required. The name of the database to be deleted.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -117,21 +107,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IDatabaseOperations operations, string serverName, string databaseName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(serverName, databaseName).Result;
+                return ((IDatabaseOperations)s).DeleteAsync(serverName, databaseName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -144,10 +124,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the server on which the database is found.
+        /// Required. The name of the server on which the database is found.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the database to be deleted.
+        /// Required. The name of the database to be deleted.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -166,32 +146,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server on which the database is housed.
+        /// Required. The name of the SQL Server on which the database is
+        /// housed.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the SQL Server database to be obtained.
+        /// Required. The name of the SQL Server database to be obtained.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database get response.
         /// </returns>
         public static DatabaseGetResponse Get(this IDatabaseOperations operations, string serverName, string databaseName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serverName, databaseName).Result;
+                return ((IDatabaseOperations)s).GetAsync(serverName, databaseName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -202,14 +172,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server on which the database is housed.
+        /// Required. The name of the SQL Server on which the database is
+        /// housed.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the SQL Server database to be obtained.
+        /// Required. The name of the SQL Server database to be obtained.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database get response.
         /// </returns>
         public static Task<DatabaseGetResponse> GetAsync(this IDatabaseOperations operations, string serverName, string databaseName)
         {
@@ -217,35 +187,59 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// Returns the list SQL Server databases.
+        /// Returns information about a SQL Server database event logs.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the database server to be queried.
+        /// Required. The name of the SQL Server on which the database is
+        /// housed.
+        /// </param>
+        /// <param name='databaseName'>
+        /// Required. The name of the SQL Server database to be obtained.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. The parameters for the get event logs database operation.
         /// </param>
         /// <returns>
-        /// Response containing the list of databases for a given server.
+        /// A standard service response including an HTTP status code and
+        /// request ID.
         /// </returns>
-        public static DatabaseListResponse List(this IDatabaseOperations operations, string serverName)
+        public static DatabaseGetEventLogsResponse GetEventLogs(this IDatabaseOperations operations, string serverName, string databaseName, DatabaseGetEventLogsParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(serverName).Result;
+                return ((IDatabaseOperations)s).GetEventLogsAsync(serverName, databaseName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+        }
+        
+        /// <summary>
+        /// Returns information about a SQL Server database event logs.
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
+        /// </param>
+        /// <param name='serverName'>
+        /// Required. The name of the SQL Server on which the database is
+        /// housed.
+        /// </param>
+        /// <param name='databaseName'>
+        /// Required. The name of the SQL Server database to be obtained.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. The parameters for the get event logs database operation.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public static Task<DatabaseGetEventLogsResponse> GetEventLogsAsync(this IDatabaseOperations operations, string serverName, string databaseName, DatabaseGetEventLogsParameters parameters)
+        {
+            return operations.GetEventLogsAsync(serverName, databaseName, parameters, CancellationToken.None);
         }
         
         /// <summary>
@@ -256,7 +250,29 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the database server to be queried.
+        /// Required. The name of the database server to be queried.
+        /// </param>
+        /// <returns>
+        /// Response containing the list of databases for a given server.
+        /// </returns>
+        public static DatabaseListResponse List(this IDatabaseOperations operations, string serverName)
+        {
+            return Task.Factory.StartNew((object s) => 
+            {
+                return ((IDatabaseOperations)s).ListAsync(serverName);
+            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
+        }
+        
+        /// <summary>
+        /// Returns the list SQL Server databases.
+        /// </summary>
+        /// <param name='operations'>
+        /// Reference to the
+        /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
+        /// </param>
+        /// <param name='serverName'>
+        /// Required. The name of the database server to be queried.
         /// </param>
         /// <returns>
         /// Response containing the list of databases for a given server.
@@ -274,35 +290,24 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server where the database is housed.
+        /// Required. The name of the SQL Server where the database is housed.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the SQL Server database to be obtained.
+        /// Required. The name of the SQL Server database to be obtained.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the update database operation.
+        /// Required. The parameters for the update database operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database update response.
         /// </returns>
         public static DatabaseUpdateResponse Update(this IDatabaseOperations operations, string serverName, string databaseName, DatabaseUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(serverName, databaseName, parameters).Result;
+                return ((IDatabaseOperations)s).UpdateAsync(serverName, databaseName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -313,17 +318,16 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Sql.IDatabaseOperations.
         /// </param>
         /// <param name='serverName'>
-        /// The name of the SQL Server where the database is housed.
+        /// Required. The name of the SQL Server where the database is housed.
         /// </param>
         /// <param name='databaseName'>
-        /// The name of the SQL Server database to be obtained.
+        /// Required. The name of the SQL Server database to be obtained.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the update database operation.
+        /// Required. The parameters for the update database operation.
         /// </param>
         /// <returns>
-        /// A standard service response including an HTTP status code and
-        /// request ID.
+        /// Response containing the database update response.
         /// </returns>
         public static Task<DatabaseUpdateResponse> UpdateAsync(this IDatabaseOperations operations, string serverName, string databaseName, DatabaseUpdateParameters parameters)
         {

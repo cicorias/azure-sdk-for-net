@@ -89,7 +89,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/rolesizes";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/rolesizes";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -141,7 +152,7 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement roleSizesSequenceElement = responseDoc.Element(XName.Get("RoleSizes", "http://schemas.microsoft.com/windowsazure"));
-                    if (roleSizesSequenceElement != null)
+                    if (roleSizesSequenceElement != null && roleSizesSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement roleSizesElement in roleSizesSequenceElement.Elements(XName.Get("RoleSize", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -149,42 +160,42 @@ namespace Microsoft.WindowsAzure.Management
                             result.RoleSizes.Add(roleSizeInstance);
                             
                             XElement nameElement = roleSizesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 string nameInstance = nameElement.Value;
                                 roleSizeInstance.Name = nameInstance;
                             }
                             
                             XElement labelElement = roleSizesElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                            if (labelElement != null)
+                            if (labelElement != null && labelElement.IsEmpty == false)
                             {
                                 string labelInstance = labelElement.Value;
                                 roleSizeInstance.Label = labelInstance;
                             }
                             
                             XElement coresElement = roleSizesElement.Element(XName.Get("Cores", "http://schemas.microsoft.com/windowsazure"));
-                            if (coresElement != null)
+                            if (coresElement != null && coresElement.IsEmpty == false)
                             {
                                 int coresInstance = int.Parse(coresElement.Value, CultureInfo.InvariantCulture);
                                 roleSizeInstance.Cores = coresInstance;
                             }
                             
                             XElement memoryInMbElement = roleSizesElement.Element(XName.Get("MemoryInMb", "http://schemas.microsoft.com/windowsazure"));
-                            if (memoryInMbElement != null)
+                            if (memoryInMbElement != null && memoryInMbElement.IsEmpty == false)
                             {
                                 int memoryInMbInstance = int.Parse(memoryInMbElement.Value, CultureInfo.InvariantCulture);
                                 roleSizeInstance.MemoryInMb = memoryInMbInstance;
                             }
                             
                             XElement supportedByWebWorkerRolesElement = roleSizesElement.Element(XName.Get("SupportedByWebWorkerRoles", "http://schemas.microsoft.com/windowsazure"));
-                            if (supportedByWebWorkerRolesElement != null)
+                            if (supportedByWebWorkerRolesElement != null && supportedByWebWorkerRolesElement.IsEmpty == false)
                             {
                                 bool supportedByWebWorkerRolesInstance = bool.Parse(supportedByWebWorkerRolesElement.Value);
                                 roleSizeInstance.SupportedByWebWorkerRoles = supportedByWebWorkerRolesInstance;
                             }
                             
                             XElement supportedByVirtualMachinesElement = roleSizesElement.Element(XName.Get("SupportedByVirtualMachines", "http://schemas.microsoft.com/windowsazure"));
-                            if (supportedByVirtualMachinesElement != null)
+                            if (supportedByVirtualMachinesElement != null && supportedByVirtualMachinesElement.IsEmpty == false)
                             {
                                 bool supportedByVirtualMachinesInstance = bool.Parse(supportedByVirtualMachinesElement.Value);
                                 roleSizeInstance.SupportedByVirtualMachines = supportedByVirtualMachinesInstance;

@@ -31,90 +31,82 @@ namespace Microsoft.WindowsAzure
 {
     /// <summary>
     /// The Service Management API includes operations for managing the virtual
-    /// networks your subscription.  (see
+    /// networks for your subscription.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157182.aspx for
     /// more information)
     /// </summary>
     public static partial class ReservedIPOperationsExtensions
     {
         /// <summary>
-        /// Preview Only. The Create Reserved IP operation creates a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Creating Reserved IP operation creates a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Begin Creating Reserved IP
+        /// operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static VirtualNetworkOperationStatusResponse BeginCreating(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
+        public static OperationStatusResponse BeginCreating(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginCreatingAsync(parameters).Result;
+                return ((IReservedIPOperations)s).BeginCreatingAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Preview Only. The Create Reserved IP operation creates a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Creating Reserved IP operation creates a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Begin Creating Reserved IP
+        /// operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<VirtualNetworkOperationStatusResponse> BeginCreatingAsync(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
+        public static Task<OperationStatusResponse> BeginCreatingAsync(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
         {
             return operations.BeginCreatingAsync(parameters, CancellationToken.None);
         }
         
         /// <summary>
-        /// Preview Only. The Delete Reserved IP operation removes a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Deleting Reserved IP operation removes a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and
@@ -122,33 +114,23 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse BeginDeleting(this IReservedIPOperations operations, string ipName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginDeletingAsync(ipName).Result;
+                return ((IReservedIPOperations)s).BeginDeletingAsync(ipName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Preview Only. The Delete Reserved IP operation removes a reserved
-        /// IP from your the subscription.
+        /// Preview Only. The Begin Deleting Reserved IP operation removes a
+        /// reserved IP from your the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <returns>
         /// A standard storage response including an HTTP status code and
@@ -168,36 +150,26 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Create Reserved IP operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static VirtualNetworkOperationStatusResponse Create(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
+        public static OperationStatusResponse Create(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IReservedIPOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -209,20 +181,20 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Image operation.
+        /// Required. Parameters supplied to the Create Reserved IP operation.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<VirtualNetworkOperationStatusResponse> CreateAsync(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
+        public static Task<OperationStatusResponse> CreateAsync(this IReservedIPOperations operations, NetworkReservedIPCreateParameters parameters)
         {
             return operations.CreateAsync(parameters, CancellationToken.None);
         }
@@ -236,36 +208,26 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static VirtualNetworkOperationStatusResponse Delete(this IReservedIPOperations operations, string ipName)
+        public static OperationStatusResponse Delete(this IReservedIPOperations operations, string ipName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(ipName).Result;
+                return ((IReservedIPOperations)s).DeleteAsync(ipName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -277,67 +239,57 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP.
+        /// Required. The name of the reserved IP.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<VirtualNetworkOperationStatusResponse> DeleteAsync(this IReservedIPOperations operations, string ipName)
+        public static Task<OperationStatusResponse> DeleteAsync(this IReservedIPOperations operations, string ipName)
         {
             return operations.DeleteAsync(ipName, CancellationToken.None);
         }
         
         /// <summary>
         /// Preview Only. The Get Reserved IP operation retrieves the details
-        /// for virtual IP reserved for the subscription.
+        /// for the virtual IP reserved for the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP to retrieve.
+        /// Required. The name of the reserved IP to retrieve.
         /// </param>
         /// <returns>
         /// Preview Only. A reserved IP associated with your subscription.
         /// </returns>
         public static NetworkReservedIPGetResponse Get(this IReservedIPOperations operations, string ipName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(ipName).Result;
+                return ((IReservedIPOperations)s).GetAsync(ipName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
         /// Preview Only. The Get Reserved IP operation retrieves the details
-        /// for virtual IP reserved for the subscription.
+        /// for the virtual IP reserved for the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <param name='ipName'>
-        /// The name of the reserved IP to retrieve.
+        /// Required. The name of the reserved IP to retrieve.
         /// </param>
         /// <returns>
         /// Preview Only. A reserved IP associated with your subscription.
@@ -348,45 +300,35 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// Preview Only. The List Reserved IP operation retrieves the virtual
-        /// IPs reserved for the subscription.
+        /// Preview Only. The List Reserved IP operation retrieves all of the
+        /// virtual IPs reserved for the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <returns>
-        /// Preview Only. The response structure for the Server List operation
+        /// Preview Only. The response structure for the Server List operation.
         /// </returns>
         public static NetworkReservedIPListResponse List(this IReservedIPOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IReservedIPOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Preview Only. The List Reserved IP operation retrieves the virtual
-        /// IPs reserved for the subscription.
+        /// Preview Only. The List Reserved IP operation retrieves all of the
+        /// virtual IPs reserved for the subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.Network.IReservedIPOperations.
         /// </param>
         /// <returns>
-        /// Preview Only. The response structure for the Server List operation
+        /// Preview Only. The response structure for the Server List operation.
         /// </returns>
         public static Task<NetworkReservedIPListResponse> ListAsync(this IReservedIPOperations operations)
         {

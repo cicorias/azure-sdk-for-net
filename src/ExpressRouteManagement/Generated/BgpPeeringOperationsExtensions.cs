@@ -47,14 +47,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Bgp Peering operation.
+        /// Required. Parameters supplied to the New Bgp Peering operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -62,21 +62,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginNew(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType, BgpPeeringNewParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginNewAsync(serviceKey, accessType, parameters).Result;
+                return ((IBgpPeeringOperations)s).BeginNewAsync(serviceKey, accessType, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -87,14 +77,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Bgp Peering operation.
+        /// Required. Parameters supplied to the New Bgp Peering operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -114,10 +104,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key representing the bgp peering to be deleted.
+        /// Required. Service Key representing the bgp peering to be deleted.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -125,21 +115,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginRemove(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginRemoveAsync(serviceKey, accessType).Result;
+                return ((IBgpPeeringOperations)s).BeginRemoveAsync(serviceKey, accessType);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -151,10 +131,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service Key representing the bgp peering to be deleted.
+        /// Required. Service Key representing the bgp peering to be deleted.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -173,14 +153,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -188,21 +168,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginUpdate(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType, BgpPeeringUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginUpdateAsync(serviceKey, accessType, parameters).Result;
+                return ((IBgpPeeringOperations)s).BeginUpdateAsync(serviceKey, accessType, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -213,14 +183,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -240,31 +210,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The servicee key representing the dedicated circuit.
+        /// Required. The servicee key representing the dedicated circuit.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.
         /// </returns>
         public static BgpPeeringGetResponse Get(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serviceKey, accessType).Result;
+                return ((IBgpPeeringOperations)s).GetAsync(serviceKey, accessType);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -276,10 +236,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The servicee key representing the dedicated circuit.
+        /// Required. The servicee key representing the dedicated circuit.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.
@@ -298,35 +258,25 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Bgp Peering operation.
+        /// Required. Parameters supplied to the New Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.
         /// </returns>
         public static BgpPeeringGetResponse New(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType, BgpPeeringNewParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.NewAsync(serviceKey, accessType, parameters).Result;
+                return ((IBgpPeeringOperations)s).NewAsync(serviceKey, accessType, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -338,14 +288,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the New Bgp Peering operation.
+        /// Required. Parameters supplied to the New Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.
@@ -363,10 +313,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key associated with the bgp peering to be deleted.
+        /// Required. Service key associated with the bgp peering to be deleted.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -381,21 +331,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationStatusResponse Remove(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RemoveAsync(serviceKey, accessType).Result;
+                return ((IBgpPeeringOperations)s).RemoveAsync(serviceKey, accessType);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -406,10 +346,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key associated with the bgp peering to be deleted.
+        /// Required. Service key associated with the bgp peering to be deleted.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -436,35 +376,25 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.
         /// </returns>
         public static BgpPeeringGetResponse Update(this IBgpPeeringOperations operations, string serviceKey, BgpPeeringAccessType accessType, BgpPeeringUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(serviceKey, accessType, parameters).Result;
+                return ((IBgpPeeringOperations)s).UpdateAsync(serviceKey, accessType, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -476,14 +406,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.IBgpPeeringOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='accessType'>
-        /// Whether the peering is private or public.
+        /// Required. Whether the peering is private or public.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Bgp Peering Operation Response.

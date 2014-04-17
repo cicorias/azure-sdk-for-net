@@ -40,14 +40,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricDefinitionOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The id of the resource.The resource id can be built using the
-        /// resource id builder class under utilities
+        /// Required. The id of the resource.The resource id can be built using
+        /// the resource id builder class under utilities
         /// </param>
         /// <param name='metricNames'>
-        /// The names of the metrics.
+        /// Optional. The names of the metrics.
         /// </param>
         /// <param name='metricNamespace'>
-        /// The namespace of the metrics.The value is either null or
+        /// Required. The namespace of the metrics.The value is either null or
         /// WindowsAzure.Availability.WindowsAzure.Availability returns the
         /// metric definitions for endpoint monitoring metrics
         /// </param>
@@ -56,21 +56,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static MetricDefinitionListResponse List(this IMetricDefinitionOperations operations, string resourceId, IList<string> metricNames, string metricNamespace)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(resourceId, metricNames, metricNamespace).Result;
+                return ((IMetricDefinitionOperations)s).ListAsync(resourceId, metricNames, metricNamespace);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -82,14 +72,14 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Monitoring.Metrics.IMetricDefinitionOperations.
         /// </param>
         /// <param name='resourceId'>
-        /// The id of the resource.The resource id can be built using the
-        /// resource id builder class under utilities
+        /// Required. The id of the resource.The resource id can be built using
+        /// the resource id builder class under utilities
         /// </param>
         /// <param name='metricNames'>
-        /// The names of the metrics.
+        /// Optional. The names of the metrics.
         /// </param>
         /// <param name='metricNamespace'>
-        /// The namespace of the metrics.The value is either null or
+        /// Required. The namespace of the metrics.The value is either null or
         /// WindowsAzure.Availability.WindowsAzure.Availability returns the
         /// metric definitions for endpoint monitoring metrics
         /// </param>

@@ -38,9 +38,9 @@ using Microsoft.WindowsAzure.Management.Models;
 namespace Microsoft.WindowsAzure.Management
 {
     /// <summary>
-    /// Operations for managing affinity groups beneath your subscription.
-    /// (see http://msdn.microsoft.com/en-us/library/windowsazure/ee460798.aspx
-    /// for more information)
+    /// Operations for managing affinity groups in your subscription.  (see
+    /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460798.aspx for
+    /// more information)
     /// </summary>
     internal partial class AffinityGroupOperations : IServiceOperations<ManagementClient>, Microsoft.WindowsAzure.Management.IAffinityGroupOperations
     {
@@ -73,7 +73,8 @@ namespace Microsoft.WindowsAzure.Management
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Affinity Group operation.
+        /// Required. Parameters supplied to the Create Affinity Group
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -122,7 +123,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/affinitygroups";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/affinitygroups";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -234,7 +246,7 @@ namespace Microsoft.WindowsAzure.Management
         /// for more information)
         /// </summary>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -263,7 +275,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/affinitygroups/" + affinityGroupName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/affinitygroups/" + affinityGroupName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -345,8 +368,8 @@ namespace Microsoft.WindowsAzure.Management
         /// for more information)
         /// </summary>
         /// <param name='affinityGroupName'>
-        /// The name of the desired affinity group as returned by the name
-        /// element of the List Affinity Groups operation.
+        /// Required. The name of the desired affinity group as returned by the
+        /// name element of the List Affinity Groups operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -374,7 +397,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/affinitygroups/" + affinityGroupName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/affinitygroups/" + affinityGroupName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -426,38 +460,38 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement affinityGroupElement = responseDoc.Element(XName.Get("AffinityGroup", "http://schemas.microsoft.com/windowsazure"));
-                    if (affinityGroupElement != null)
+                    if (affinityGroupElement != null && affinityGroupElement.IsEmpty == false)
                     {
                         XElement nameElement = affinityGroupElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                        if (nameElement != null)
+                        if (nameElement != null && nameElement.IsEmpty == false)
                         {
                             string nameInstance = nameElement.Value;
                             result.Name = nameInstance;
                         }
                         
                         XElement labelElement = affinityGroupElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                        if (labelElement != null)
+                        if (labelElement != null && labelElement.IsEmpty == false)
                         {
                             string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                             result.Label = labelInstance;
                         }
                         
                         XElement descriptionElement = affinityGroupElement.Element(XName.Get("Description", "http://schemas.microsoft.com/windowsazure"));
-                        if (descriptionElement != null)
+                        if (descriptionElement != null && descriptionElement.IsEmpty == false)
                         {
                             string descriptionInstance = descriptionElement.Value;
                             result.Description = descriptionInstance;
                         }
                         
                         XElement locationElement = affinityGroupElement.Element(XName.Get("Location", "http://schemas.microsoft.com/windowsazure"));
-                        if (locationElement != null)
+                        if (locationElement != null && locationElement.IsEmpty == false)
                         {
                             string locationInstance = locationElement.Value;
                             result.Location = locationInstance;
                         }
                         
                         XElement hostedServicesSequenceElement = affinityGroupElement.Element(XName.Get("HostedServices", "http://schemas.microsoft.com/windowsazure"));
-                        if (hostedServicesSequenceElement != null)
+                        if (hostedServicesSequenceElement != null && hostedServicesSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement hostedServicesElement in hostedServicesSequenceElement.Elements(XName.Get("HostedService", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -465,14 +499,14 @@ namespace Microsoft.WindowsAzure.Management
                                 result.HostedServices.Add(hostedServiceInstance);
                                 
                                 XElement urlElement = hostedServicesElement.Element(XName.Get("Url", "http://schemas.microsoft.com/windowsazure"));
-                                if (urlElement != null)
+                                if (urlElement != null && urlElement.IsEmpty == false)
                                 {
                                     Uri urlInstance = TypeConversion.TryParseUri(urlElement.Value);
                                     hostedServiceInstance.Uri = urlInstance;
                                 }
                                 
                                 XElement serviceNameElement = hostedServicesElement.Element(XName.Get("ServiceName", "http://schemas.microsoft.com/windowsazure"));
-                                if (serviceNameElement != null)
+                                if (serviceNameElement != null && serviceNameElement.IsEmpty == false)
                                 {
                                     string serviceNameInstance = serviceNameElement.Value;
                                     hostedServiceInstance.ServiceName = serviceNameInstance;
@@ -481,7 +515,7 @@ namespace Microsoft.WindowsAzure.Management
                         }
                         
                         XElement storageServicesSequenceElement = affinityGroupElement.Element(XName.Get("StorageServices", "http://schemas.microsoft.com/windowsazure"));
-                        if (storageServicesSequenceElement != null)
+                        if (storageServicesSequenceElement != null && storageServicesSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement storageServicesElement in storageServicesSequenceElement.Elements(XName.Get("StorageService", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -489,14 +523,14 @@ namespace Microsoft.WindowsAzure.Management
                                 result.StorageServices.Add(storageServiceInstance);
                                 
                                 XElement urlElement2 = storageServicesElement.Element(XName.Get("Url", "http://schemas.microsoft.com/windowsazure"));
-                                if (urlElement2 != null)
+                                if (urlElement2 != null && urlElement2.IsEmpty == false)
                                 {
                                     Uri urlInstance2 = TypeConversion.TryParseUri(urlElement2.Value);
                                     storageServiceInstance.Uri = urlInstance2;
                                 }
                                 
                                 XElement serviceNameElement2 = storageServicesElement.Element(XName.Get("ServiceName", "http://schemas.microsoft.com/windowsazure"));
-                                if (serviceNameElement2 != null)
+                                if (serviceNameElement2 != null && serviceNameElement2.IsEmpty == false)
                                 {
                                     string serviceNameInstance2 = serviceNameElement2.Value;
                                     storageServiceInstance.ServiceName = serviceNameInstance2;
@@ -505,7 +539,7 @@ namespace Microsoft.WindowsAzure.Management
                         }
                         
                         XElement capabilitiesSequenceElement = affinityGroupElement.Element(XName.Get("Capabilities", "http://schemas.microsoft.com/windowsazure"));
-                        if (capabilitiesSequenceElement != null)
+                        if (capabilitiesSequenceElement != null && capabilitiesSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement capabilitiesElement in capabilitiesSequenceElement.Elements(XName.Get("Capability", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -570,7 +604,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/affinitygroups";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/affinitygroups";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -622,7 +667,7 @@ namespace Microsoft.WindowsAzure.Management
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement affinityGroupsSequenceElement = responseDoc.Element(XName.Get("AffinityGroups", "http://schemas.microsoft.com/windowsazure"));
-                    if (affinityGroupsSequenceElement != null)
+                    if (affinityGroupsSequenceElement != null && affinityGroupsSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement affinityGroupsElement in affinityGroupsSequenceElement.Elements(XName.Get("AffinityGroup", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -630,35 +675,35 @@ namespace Microsoft.WindowsAzure.Management
                             result.AffinityGroups.Add(affinityGroupInstance);
                             
                             XElement nameElement = affinityGroupsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 string nameInstance = nameElement.Value;
                                 affinityGroupInstance.Name = nameInstance;
                             }
                             
                             XElement labelElement = affinityGroupsElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                            if (labelElement != null)
+                            if (labelElement != null && labelElement.IsEmpty == false)
                             {
                                 string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                                 affinityGroupInstance.Label = labelInstance;
                             }
                             
                             XElement descriptionElement = affinityGroupsElement.Element(XName.Get("Description", "http://schemas.microsoft.com/windowsazure"));
-                            if (descriptionElement != null)
+                            if (descriptionElement != null && descriptionElement.IsEmpty == false)
                             {
                                 string descriptionInstance = descriptionElement.Value;
                                 affinityGroupInstance.Description = descriptionInstance;
                             }
                             
                             XElement locationElement = affinityGroupsElement.Element(XName.Get("Location", "http://schemas.microsoft.com/windowsazure"));
-                            if (locationElement != null)
+                            if (locationElement != null && locationElement.IsEmpty == false)
                             {
                                 string locationInstance = locationElement.Value;
                                 affinityGroupInstance.Location = locationInstance;
                             }
                             
                             XElement capabilitiesSequenceElement = affinityGroupsElement.Element(XName.Get("Capabilities", "http://schemas.microsoft.com/windowsazure"));
-                            if (capabilitiesSequenceElement != null)
+                            if (capabilitiesSequenceElement != null && capabilitiesSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement capabilitiesElement in capabilitiesSequenceElement.Elements(XName.Get("Capability", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -705,10 +750,11 @@ namespace Microsoft.WindowsAzure.Management
         /// for more information)
         /// </summary>
         /// <param name='affinityGroupName'>
-        /// The name of your affinity group.
+        /// Required. The name of the affinity group.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Affinity Group operation.
+        /// Required. Parameters supplied to the Update Affinity Group
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -754,7 +800,18 @@ namespace Microsoft.WindowsAzure.Management
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/affinitygroups/" + affinityGroupName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/affinitygroups/" + affinityGroupName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;

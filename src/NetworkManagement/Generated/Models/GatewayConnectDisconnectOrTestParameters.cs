@@ -21,7 +21,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 using Microsoft.WindowsAzure.Management.Network.Models;
 
 namespace Microsoft.WindowsAzure.Management.Network.Models
@@ -34,9 +33,9 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         private string _iPAddress;
         
         /// <summary>
-        /// Required if operation is set to Test; otherwise not used. Specifies
-        /// the IP address of the target local network site with which the
-        /// gateway will test connectivity.
+        /// Optional. Required if operation is set to Test; otherwise not used.
+        /// Specifies the IP address of the target local network site with
+        /// which the gateway will test connectivity.
         /// </summary>
         public string IPAddress
         {
@@ -48,7 +47,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         
         /// <summary>
         /// Required. Specifies the operation to perform on the connection. Can
-        /// be set to Connect, Disconnect or Test to connect to a local
+        /// be set to Connect, Disconnect, or Test to connect to a local
         /// network, disconnect from a local network, or test the gateway’s
         /// connection to a local network site.
         /// </summary>

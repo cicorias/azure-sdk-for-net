@@ -40,7 +40,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
 {
     /// <summary>
     /// The Service Management API includes operations for managing the
-    /// deployments beneath your subscription.  (see
+    /// deployments in your subscription.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460812.aspx for
     /// more information)
     /// </summary>
@@ -69,25 +69,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Change Deployment Configuration operation initiates a change to
-        /// the deployment configuration.  The Change Deployment Configuration
-        /// operation is an asynchronous operation. To determine whether the
-        /// Management service has finished processing the request, call Get
-        /// Operation Status.  For more information on asynchronous
-        /// operations, see Tracking Asynchronous Service Management Requests.
+        /// The Begin Changing Deployment Configuration By Name operation
+        /// initiates a change to the deployment configuration. This operation
+        /// is an asynchronous operation. To determine whether the Management
+        /// service has finished processing the request, call Get Operation
+        /// Status. For more information on asynchronous operations, see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
         /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460809.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to change deployment configuration for.
+        /// Required. The cloud service to change deployment configuration for.
         /// </param>
         /// <param name='deploymentName'>
-        /// The deployment to change configuration for.
+        /// Required. The deployment to change configuration for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Change Configuration Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Begin Changing Configuration
+        /// Deployment By Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -168,7 +169,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/?comp=config";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/?comp=config";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -179,7 +191,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -342,25 +354,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Change Deployment Configuration operation initiates a change to
-        /// the deployment configuration.  The Change Deployment Configuration
-        /// operation is an asynchronous operation. To determine whether the
-        /// Management service has finished processing the request, call Get
-        /// Operation Status.  For more information on asynchronous
-        /// operations, see Tracking Asynchronous Service Management Requests.
+        /// The Begin Changing Deployment Configuration By Slot operation
+        /// initiates a change to the deployment configuration. This operation
+        /// is an asynchronous operation. To determine whether the Management
+        /// service has finished processing the request, call Get Operation
+        /// Status. For more information on asynchronous operations, see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
         /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460809.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to change deployment configuration for.
+        /// Required. The cloud service to change deployment configuration for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to change deployment configuration for.
+        /// Required. The slot to change deployment configuration for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Change Configuration Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Begin Changing Configuration
+        /// Deployment By Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -437,7 +450,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/?comp=config";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/?comp=config";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -448,7 +472,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -611,24 +635,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Create Deployment operation uploads a new service package and
-        /// creates a new deployment in the staging or production
-        /// environments.  The Create Deployment operation is an asynchronous
-        /// operation. To determine whether the management service has
-        /// finished processing the request, call Get Operation Status. For
-        /// more information on asynchronous operations, see Tracking
-        /// Asynchronous Service Management Requests.  (see
+        /// The Begin Creating Deployment operation uploads a new service
+        /// package and creates a new deployment in the staging or production
+        /// environments. This operation is an asynchronous operation. To
+        /// determine whether the management service has finished processing
+        /// the request, call Get Operation Status. For more information on
+        /// asynchronous operations, see Tracking Asynchronous Service
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460813.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to create a deployment for.
+        /// Required. The cloud service to create a deployment for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to create a deployment for.
+        /// Required. The slot to create a deployment for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Deployment operation.
+        /// Required. Parameters supplied to the Begin Creating Deployment
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -721,7 +748,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot;
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -732,7 +770,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -750,7 +788,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 createDeploymentElement.Add(nameElement);
                 
                 XElement packageUrlElement = new XElement(XName.Get("PackageUrl", "http://schemas.microsoft.com/windowsazure"));
-                packageUrlElement.Value = parameters.PackageUri.ToString();
+                packageUrlElement.Value = parameters.PackageUri.AbsoluteUri;
                 createDeploymentElement.Add(packageUrlElement);
                 
                 XElement labelElement = new XElement(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
@@ -907,23 +945,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Deployment operation deletes the specified deployment.
-        /// The Delete Deployment operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Begin Deleting Deployment By Name operation deletes the
+        /// specified deployment. This operation is an asynchronous operation.
+        /// To determine whether the Management service has finished
+        /// processing the request, call Get Operation Status. For more
+        /// information on asynchronous operations, see Tracking Asynchronous
+        /// Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460815.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <param name='cancellationToken'>
@@ -959,11 +999,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "?";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "?";
             if (deleteFromStorage == true)
             {
                 url = url + "comp=media";
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -974,7 +1025,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1039,20 +1090,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Deployment operation deletes the specified deployment.
-        /// The Delete Deployment operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Begin Deleting Deployment By Slot operation deletes the
+        /// specified deployment. This operation is an asynchronous operation.
+        /// To determine whether the Management service has finished
+        /// processing the request, call Get Operation Status. For more
+        /// information on asynchronous operations, see Tracking Asynchronous
+        /// Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460815.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1082,7 +1135,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot;
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1093,7 +1157,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1158,24 +1222,348 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reboot Role Instance operation requests a reboot of a role
-        /// instance that is running in a deployment.  The Reboot Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
+        /// The Delete Role Instances operation deletes a role instance from a
+        /// deployment in a cloud service.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469418.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of the cloud service.
+        /// </param>
+        /// <param name='deploymentSlot'>
+        /// Required. The name of the deployment slot.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. The parameters to delete the role.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationResponse> BeginDeletingRoleInstanceByBeploymentSlotAsync(string serviceName, string deploymentSlot, DeploymentDeleteRoleInstanceParameters parameters, CancellationToken cancellationToken)
+        {
+            // Validate
+            if (serviceName == null)
+            {
+                throw new ArgumentNullException("serviceName");
+            }
+            if (deploymentSlot == null)
+            {
+                throw new ArgumentNullException("deploymentSlot");
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException("parameters");
+            }
+            
+            // Tracing
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentSlot", deploymentSlot);
+                tracingParameters.Add("parameters", parameters);
+                Tracing.Enter(invocationId, this, "BeginDeletingRoleInstanceByBeploymentSlotAsync", tracingParameters);
+            }
+            
+            // Construct URL
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot.Trim() + "/roleinstances/?comp=delete";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
+            
+            // Create HTTP transport objects
+            HttpRequestMessage httpRequest = null;
+            try
+            {
+                httpRequest = new HttpRequestMessage();
+                httpRequest.Method = HttpMethod.Post;
+                httpRequest.RequestUri = new Uri(url);
+                
+                // Set Headers
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
+                
+                // Set Credentials
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                
+                // Serialize Request
+                string requestContent = null;
+                XDocument requestDoc = new XDocument();
+                
+                XElement deploymentDeleteRoleInstanceParametersElement = new XElement(XName.Get("DeploymentDeleteRoleInstanceParameters", "http://schemas.microsoft.com/windowsazure"));
+                requestDoc.Add(deploymentDeleteRoleInstanceParametersElement);
+                
+                if (parameters.Name != null)
+                {
+                    XElement roleInstancesSequenceElement = new XElement(XName.Get("RoleInstances", "http://schemas.microsoft.com/windowsazure"));
+                    foreach (string roleInstancesItem in parameters.Name)
+                    {
+                        XElement roleInstancesItemElement = new XElement(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                        roleInstancesItemElement.Value = roleInstancesItem;
+                        roleInstancesSequenceElement.Add(roleInstancesItemElement);
+                    }
+                    deploymentDeleteRoleInstanceParametersElement.Add(roleInstancesSequenceElement);
+                }
+                
+                requestContent = requestDoc.ToString();
+                httpRequest.Content = new StringContent(requestContent, Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/xml");
+                
+                // Send Request
+                HttpResponseMessage httpResponse = null;
+                try
+                {
+                    if (shouldTrace)
+                    {
+                        Tracing.SendRequest(invocationId, httpRequest);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    httpResponse = await this.Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                    if (shouldTrace)
+                    {
+                        Tracing.ReceiveResponse(invocationId, httpResponse);
+                    }
+                    HttpStatusCode statusCode = httpResponse.StatusCode;
+                    if (statusCode != HttpStatusCode.Accepted)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        CloudException ex = CloudException.Create(httpRequest, requestContent, httpResponse, await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false), CloudExceptionType.Xml);
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    
+                    // Create Result
+                    OperationResponse result = null;
+                    result = new OperationResponse();
+                    result.StatusCode = statusCode;
+                    if (httpResponse.Headers.Contains("x-ms-request-id"))
+                    {
+                        result.RequestId = httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                    }
+                    
+                    if (shouldTrace)
+                    {
+                        Tracing.Exit(invocationId, result);
+                    }
+                    return result;
+                }
+                finally
+                {
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (httpRequest != null)
+                {
+                    httpRequest.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Delete Role Instances operation deletes a role instance from a
+        /// deployment in a cloud service.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469418.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of the cloud service.
+        /// </param>
+        /// <param name='deploymentName'>
+        /// Required. The name of the deployment.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. The parameters to delete the role.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationResponse> BeginDeletingRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentDeleteRoleInstanceParameters parameters, CancellationToken cancellationToken)
+        {
+            // Validate
+            if (serviceName == null)
+            {
+                throw new ArgumentNullException("serviceName");
+            }
+            if (deploymentName == null)
+            {
+                throw new ArgumentNullException("deploymentName");
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException("parameters");
+            }
+            
+            // Tracing
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentName", deploymentName);
+                tracingParameters.Add("parameters", parameters);
+                Tracing.Enter(invocationId, this, "BeginDeletingRoleInstanceByDeploymentNameAsync", tracingParameters);
+            }
+            
+            // Construct URL
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/?comp=delete";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
+            
+            // Create HTTP transport objects
+            HttpRequestMessage httpRequest = null;
+            try
+            {
+                httpRequest = new HttpRequestMessage();
+                httpRequest.Method = HttpMethod.Post;
+                httpRequest.RequestUri = new Uri(url);
+                
+                // Set Headers
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
+                
+                // Set Credentials
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                
+                // Serialize Request
+                string requestContent = null;
+                XDocument requestDoc = new XDocument();
+                
+                XElement deploymentDeleteRoleInstanceParametersElement = new XElement(XName.Get("DeploymentDeleteRoleInstanceParameters", "http://schemas.microsoft.com/windowsazure"));
+                requestDoc.Add(deploymentDeleteRoleInstanceParametersElement);
+                
+                if (parameters.Name != null)
+                {
+                    XElement roleInstancesSequenceElement = new XElement(XName.Get("RoleInstances", "http://schemas.microsoft.com/windowsazure"));
+                    foreach (string roleInstancesItem in parameters.Name)
+                    {
+                        XElement roleInstancesItemElement = new XElement(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                        roleInstancesItemElement.Value = roleInstancesItem;
+                        roleInstancesSequenceElement.Add(roleInstancesItemElement);
+                    }
+                    deploymentDeleteRoleInstanceParametersElement.Add(roleInstancesSequenceElement);
+                }
+                
+                requestContent = requestDoc.ToString();
+                httpRequest.Content = new StringContent(requestContent, Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/xml");
+                
+                // Send Request
+                HttpResponseMessage httpResponse = null;
+                try
+                {
+                    if (shouldTrace)
+                    {
+                        Tracing.SendRequest(invocationId, httpRequest);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    httpResponse = await this.Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                    if (shouldTrace)
+                    {
+                        Tracing.ReceiveResponse(invocationId, httpResponse);
+                    }
+                    HttpStatusCode statusCode = httpResponse.StatusCode;
+                    if (statusCode != HttpStatusCode.Accepted)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        CloudException ex = CloudException.Create(httpRequest, requestContent, httpResponse, await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false), CloudExceptionType.Xml);
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    
+                    // Create Result
+                    OperationResponse result = null;
+                    result = new OperationResponse();
+                    result.StatusCode = statusCode;
+                    if (httpResponse.Headers.Contains("x-ms-request-id"))
+                    {
+                        result.RequestId = httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                    }
+                    
+                    if (shouldTrace)
+                    {
+                        Tracing.Exit(invocationId, result);
+                    }
+                    return result;
+                }
+                finally
+                {
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (httpRequest != null)
+                {
+                    httpRequest.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Begin Rebooting Role Instance By Deployment Name operation
+        /// requests a reboot of a role instance that is running in a
+        /// deployment. This operation is an asynchronous operation. To
+        /// determine whether the Management service has finished processing
+        /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441298.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1214,7 +1602,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + roleInstanceName + "?comp=reboot";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + roleInstanceName.Trim() + "?comp=reboot";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1225,7 +1624,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1290,24 +1689,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reboot Role Instance operation requests a reboot of a role
-        /// instance that is running in a deployment.  The Reboot Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
+        /// The Begin Rebooting Role Instance By Deployment Slot operation
+        /// requests a reboot of a role instance that is running in a
+        /// deployment. This operation is an asynchronous operation. To
+        /// determine whether the Management service has finished processing
+        /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441298.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1342,7 +1743,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/roleinstances/" + roleInstanceName + "?comp=reboot";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/roleinstances/" + roleInstanceName.Trim() + "?comp=reboot";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1353,7 +1765,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1418,24 +1830,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reimage Role Instance operation requests a reimage of a role
-        /// instance that is running in a deployment.  The Reimage Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
+        /// The Begin Reimaging Role Instance By Deployment Name operation
+        /// requests a reimage of a role instance that is running in a
+        /// deployment. This operation is an asynchronous operation. To
+        /// determine whether the Management service has finished processing
+        /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441292.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1474,7 +1888,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + roleInstanceName + "?comp=reimage";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + roleInstanceName.Trim() + "?comp=reimage";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1485,7 +1910,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1550,24 +1975,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reimage Role Instance operation requests a reimage of a role
-        /// instance that is running in a deployment.  The Reimage Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
+        /// The Begin Reimaging Role Instance By Deployment Slot operation
+        /// requests a reimage of a role instance that is running in a
+        /// deployment. This operation is an asynchronous operation. To
+        /// determine whether the Management service has finished processing
+        /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441292.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1602,7 +2029,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/roleinstances/" + roleInstanceName + "?comp=reimage";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/roleinstances/" + roleInstanceName.Trim() + "?comp=reimage";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1613,7 +2051,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1678,21 +2116,24 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Swap Deployment operation initiates a virtual IP address swap
-        /// between the staging and production deployment environments for a
-        /// service. If the service is currently running in the staging
-        /// environment, it will be swapped to the production environment. If
-        /// it is running in the production environment, it will be swapped to
-        /// staging. For more information on this type of upgrade, see
-        /// Performing Virtual IP Swap Upgrades.  (see
+        /// The Begin Swapping Deployment operation initiates a virtual IP
+        /// address swap between the staging and production deployment
+        /// environments for a service. If the service is currently running in
+        /// the staging environment, it will be swapped to the production
+        /// environment. If it is running in the production environment, it
+        /// will be swapped to staging. For more information on this type of
+        /// upgrade, see Performing Virtual IP Swap Upgrades at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee517253.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460814.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Swap Deployment operation.
+        /// Required. Parameters supplied to the Begin Swapping Deployment
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1731,7 +2172,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1742,7 +2194,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1829,24 +2281,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Update Deployment Status operation initiates a change in the
-        /// running status of a deployment. The status of a deployment can be
-        /// running or suspended.  The Update Deployment Status operation is
-        /// an asynchronous operation. To determine whether the Management
+        /// The Begin Updating Deployment Status By Deployment Name operation
+        /// initiates a change in the running status of a deployment. The
+        /// status of a deployment can be running or suspended. This operation
+        /// is an asynchronous operation. To determine whether the Management
         /// service has finished processing the request, call Get Operation
         /// Status. For more information on asynchronous operations, see
-        /// Tracking Asynchronous Service Management Requests.  (see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460808.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Deployment Status operation.
+        /// Required. Parameters supplied to the Begin Updating Deployment
+        /// Status By Deployment Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1886,7 +2341,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/?comp=status";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/?comp=status";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1897,7 +2363,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1977,24 +2443,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Update Deployment Status operation initiates a change in the
-        /// running status of a deployment. The status of a deployment can be
-        /// running or suspended.  The Update Deployment Status operation is
-        /// an asynchronous operation. To determine whether the Management
+        /// The Begin Updating Deployment Status By Deployment Slot operation
+        /// initiates a change in the running status of a deployment. The
+        /// status of a deployment can be running or suspended. This operation
+        /// is an asynchronous operation. To determine whether the Management
         /// service has finished processing the request, call Get Operation
         /// Status. For more information on asynchronous operations, see
-        /// Tracking Asynchronous Service Management Requests.  (see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460808.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Deployment Status operation.
+        /// Required. Parameters supplied to the Begin Updating Deployment
+        /// Status By Deployment Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2030,7 +2499,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/?comp=status";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/?comp=status";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2041,7 +2521,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2121,46 +2601,52 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Upgrade Deployment operation initiates an update of role
-        /// instances in a deployment using the package and configuration that
-        /// you specify. For more information about updating role instances,
-        /// see Update a Windows Azure Service.  The Upgrade Deployment
-        /// operation is an asynchronous operation. To determine whether the
-        /// request has been processed, call Get Operation Status. For more
-        /// information on asynchronous operations, see Tracking Asynchronous
-        /// Service Management Requests.To perform an automatic update of a
-        /// deployment, call Upgrade Deployment or Change Deployment
-        /// Configuration with the Mode element set to automatic. The update
-        /// proceeds from that point without a need for further input. You can
-        /// call Get Operation Status to determine when the update is
-        /// complete.  To perform a manual update, first call Upgrade
-        /// Deployment with the Mode element set to manual. Next, call Walk
-        /// Upgrade Domain to update each domain within the deployment. You
-        /// should make sure that the operation is complete by calling Get
-        /// Operation Status before updating the next domain.  Important: An
-        /// update that adds or removes role instances will result in a
-        /// configuration update to all roles that are deployed in the cloud
-        /// service. Existing role instances need to be notified of new role
-        /// instances so that all role instances can communicate together in
-        /// the cloud service.  By default, a cloud service is deployed with
-        /// five update domains, which are updated one at a time during an
-        /// in-place update. For information on modifying the number of update
-        /// domains in the service definition file, see Windows Azure Service
-        /// Definition Schema (.csdef File).  To determine the update domain
-        /// in which a particular instance is running in Windows Azure, use
-        /// the UpdateDomain property of the RoleInstance class. See the
-        /// Windows Azure Managed Library Reference for more information.
-        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
+        /// The Begin Upgrading Deployment By Name operation initiates an
+        /// update of role instances in a deployment using the package and
+        /// configuration that you specify. For more information about
+        /// updating role instances, see Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the request has been processed, call Get Operation Status. For
+        /// more information on asynchronous operations, see Tracking
+        /// Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// To perform an automatic update of a deployment, call Upgrade
+        /// Deployment or Change Deployment Configuration with the Mode
+        /// element set to automatic. The update proceeds from that point
+        /// without a need for further input. You can call Get Operation
+        /// Status to determine when the update is complete. To perform a
+        /// manual update, first call Upgrade Deployment with the Mode element
+        /// set to manual. Next, call Walk Upgrade Domain to update each
+        /// domain within the deployment. You should make sure that the
+        /// operation is complete by calling Get Operation Status before
+        /// updating the next domain. Important: An update that adds or
+        /// removes role instances will result in a configuration update to
+        /// all roles that are deployed in the cloud service. Existing role
+        /// instances need to be notified of new role instances so that all
+        /// role instances can communicate together in the cloud service. By
+        /// default, a cloud service is deployed with five update domains,
+        /// which are updated one at a time during an in-place update. For
+        /// information on modifying the number of update domains in the
+        /// service definition file, see the Azure Service Definition Schema
+        /// (.csdef File). To determine the update domain in which a
+        /// particular instance is running in Windows Azure, use the
+        /// UpdateDomain property of the RoleInstance class. See the Azure
+        /// Managed Library Reference at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179380.aspx
+        /// for more information.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to upgrade.
+        /// Required. The cloud service to upgrade.
         /// </param>
         /// <param name='deploymentName'>
-        /// The deployment to upgrade.
+        /// Required. The deployment to upgrade.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Upgrade Deployment operation.
+        /// Required. Parameters supplied to the Begin Upgrading Deployment By
+        /// Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2253,7 +2739,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/?comp=upgrade";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/?comp=upgrade";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2264,7 +2761,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2282,7 +2779,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 upgradeDeploymentElement.Add(modeElement);
                 
                 XElement packageUrlElement = new XElement(XName.Get("PackageUrl", "http://schemas.microsoft.com/windowsazure"));
-                packageUrlElement.Value = parameters.PackageUri.ToString();
+                packageUrlElement.Value = parameters.PackageUri.AbsoluteUri;
                 upgradeDeploymentElement.Add(packageUrlElement);
                 
                 XElement configurationElement = new XElement(XName.Get("Configuration", "http://schemas.microsoft.com/windowsazure"));
@@ -2436,46 +2933,52 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Upgrade Deployment operation initiates an update of role
-        /// instances in a deployment using the package and configuration that
-        /// you specify. For more information about updating role instances,
-        /// see Update a Windows Azure Service.  The Upgrade Deployment
+        /// The Begin Upgrading Deployment By Slot operation initiates an
+        /// update of role instances in a deployment using the package and
+        /// configuration that you specify. For more information about
+        /// updating role instances, see Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.This
         /// operation is an asynchronous operation. To determine whether the
         /// request has been processed, call Get Operation Status. For more
         /// information on asynchronous operations, see Tracking Asynchronous
-        /// Service Management Requests.  To perform an automatic update of a
-        /// deployment, call Upgrade Deployment or Change Deployment
-        /// Configuration with the Mode element set to automatic. The update
-        /// proceeds from that point without a need for further input. You can
-        /// call Get Operation Status to determine when the update is
-        /// complete.  To perform a manual update, first call Upgrade
-        /// Deployment with the Mode element set to manual. Next, call Walk
-        /// Upgrade Domain to update each domain within the deployment. You
-        /// should make sure that the operation is complete by calling Get
-        /// Operation Status before updating the next domain.  Important: An
-        /// update that adds or removes role instances will result in a
-        /// configuration update to all roles that are deployed in the cloud
-        /// service. Existing role instances need to be notified of new role
-        /// instances so that all role instances can communicate together in
-        /// the cloud service.  By default, a cloud service is deployed with
-        /// five update domains, which are updated one at a time during an
-        /// in-place update. For information on modifying the number of update
-        /// domains in the service definition file, see Windows Azure Service
-        /// Definition Schema (.csdef File).  To determine the update domain
-        /// in which a particular instance is running in Windows Azure, use
-        /// the UpdateDomain property of the RoleInstance class. See the
-        /// Windows Azure Managed Library Reference for more information.
-        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
+        /// Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// To perform an automatic update of a deployment, call Upgrade
+        /// Deployment or Change Deployment Configuration with the Mode
+        /// element set to automatic. The update proceeds from that point
+        /// without a need for further input. You can call Get Operation
+        /// Status to determine when the update is complete. To perform a
+        /// manual update, first call Upgrade Deployment with the Mode element
+        /// set to manual. Next, call Walk Upgrade Domain to update each
+        /// domain within the deployment. You should make sure that the
+        /// operation is complete by calling Get Operation Status before
+        /// updating the next domain. Important: An update that adds or
+        /// removes role instances will result in a configuration update to
+        /// all roles that are deployed in the cloud service. Existing role
+        /// instances need to be notified of new role instances so that all
+        /// role instances can communicate together in the cloud service. By
+        /// default, a cloud service is deployed with five update domains,
+        /// which are updated one at a time during an in-place update. For
+        /// information on modifying the number of update domains in the
+        /// service definition file, see the Azure Service Definition Schema
+        /// (.csdef File). To determine the update domain in which a
+        /// particular instance is running in Windows Azure, use the
+        /// UpdateDomain property of the RoleInstance class. See the Azure
+        /// Managed Library Reference at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179380.aspx
+        /// for more information.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to upgrade.
+        /// Required. The cloud service to upgrade.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to upgrade.
+        /// Required. The slot to upgrade.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Upgrade Deployment operation.
+        /// Required. Parameters supplied to the Begin Upgrading Deployment By
+        /// Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2564,7 +3067,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/?comp=upgrade";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/?comp=upgrade";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2575,7 +3089,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2593,7 +3107,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 upgradeDeploymentElement.Add(modeElement);
                 
                 XElement packageUrlElement = new XElement(XName.Get("PackageUrl", "http://schemas.microsoft.com/windowsazure"));
-                packageUrlElement.Value = parameters.PackageUri.ToString();
+                packageUrlElement.Value = parameters.PackageUri.AbsoluteUri;
                 upgradeDeploymentElement.Add(packageUrlElement);
                 
                 XElement configurationElement = new XElement(XName.Get("Configuration", "http://schemas.microsoft.com/windowsazure"));
@@ -2747,46 +3261,50 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Walk Upgrade Domain operation specifies an update domain in
-        /// which a role instance must be updated. For more information about
-        /// updating role instances, see Update a Windows Azure Service.  The
-        /// Walk Upgrade Domain operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status.  For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  Prior to calling the Walk Upgrade Domain
-        /// operation you must have called Upgrade Deployment, Change
-        /// Deployment Configuration, or Rollback Update Or Upgrade.  By
-        /// default, a service is deployed with five update domains, which are
-        /// updated one at a time during an in-place update. For information
-        /// on modifying the number of update domains in the service
-        /// definition file, see Windows Azure Service Definition Schema
-        /// (.csdef File).  To perform a manual update of your deployment,
-        /// proceed in this order:  Call Upgrade Deployment with the Mode
-        /// element set to manual.   Call Walk Upgrade Domain to update each
-        /// domain within the deployment. Update domains must be updated in
-        /// order. For example, begin with domain 0, proceed to domain 1, and
-        /// so on.  Important: An update that adds or removes role instances
-        /// will result in a configuration update to all roles that are
-        /// deployed in the cloud service. Existing role instances need to be
-        /// notified of new role instances so that all role instances can
-        /// communicate together in the cloud service.  While an update is in
-        /// progress, call Get Deployment to determine its status. If the
-        /// update is in progress, Get Deployment returns an UpgradeStatus
-        /// element that contains information about the update. If the update
-        /// is complete, or if no update is in progress, then the
-        /// UpgradeStatus element is null.  (see
+        /// The Begin Walking Upgrade Domain By Deployment Name operation
+        /// specifies an update domain in which a role instance must be
+        /// updated. For more information about updating role instances, see
+        /// Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the Management service has finished processing the request, call
+        /// Get Operation Status. For more information on asynchronous
+        /// operations, see Tracking Asynchronous Service Management Requests
+        /// at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// Prior to calling the Walk Upgrade Domain operation you must have
+        /// called Upgrade Deployment, Change Deployment Configuration, or
+        /// Rollback Update Or Upgrade. By default, a service is deployed with
+        /// five update domains, which are updated one at a time during an
+        /// in-place update. For information on modifying the number of update
+        /// domains in the service definition file, see the Azure Service
+        /// Definition Schema (.csdef File). To perform a manual update of
+        /// your deployment, proceed in this order: Call Upgrade Deployment
+        /// with the Mode element set to manual. Call Walk Upgrade Domain to
+        /// update each domain within the deployment. Update domains must be
+        /// updated in order. For example, begin with domain 0, proceed to
+        /// domain 1, and so on. Important: An update that adds or removes
+        /// role instances will result in a configuration update to all roles
+        /// that are deployed in the cloud service. Existing role instances
+        /// need to be notified of new role instances so that all role
+        /// instances can communicate together in the cloud service. While an
+        /// update is in progress, call Get Deployment to determine its
+        /// status. If the update is in progress, Get Deployment returns an
+        /// UpgradeStatus element that contains information about the update.
+        /// If the update is complete, or if no update is in progress, then
+        /// the UpgradeStatus element is null.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460800.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Walk Upgrade Domain operation.
+        /// Required. Parameters supplied to the Begin Walking Upgrade Domain
+        /// By Deployment Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2825,7 +3343,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "?comp=walkupgradedomain";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "?comp=walkupgradedomain";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2836,7 +3365,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2916,46 +3445,50 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Walk Upgrade Domain operation specifies an update domain in
-        /// which a role instance must be updated. For more information about
-        /// updating role instances, see Update a Windows Azure Service.  The
-        /// Walk Upgrade Domain operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status.  For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  Prior to calling the Walk Upgrade Domain
-        /// operation you must have called Upgrade Deployment, Change
-        /// Deployment Configuration, or Rollback Update Or Upgrade.  By
-        /// default, a service is deployed with five update domains, which are
-        /// updated one at a time during an in-place update. For information
-        /// on modifying the number of update domains in the service
-        /// definition file, see Windows Azure Service Definition Schema
-        /// (.csdef File).  To perform a manual update of your deployment,
-        /// proceed in this order:  Call Upgrade Deployment with the Mode
-        /// element set to manual.   Call Walk Upgrade Domain to update each
-        /// domain within the deployment. Update domains must be updated in
-        /// order. For example, begin with domain 0, proceed to domain 1, and
-        /// so on.  Important: An update that adds or removes role instances
-        /// will result in a configuration update to all roles that are
-        /// deployed in the cloud service. Existing role instances need to be
-        /// notified of new role instances so that all role instances can
-        /// communicate together in the cloud service.  While an update is in
-        /// progress, call Get Deployment to determine its status. If the
-        /// update is in progress, Get Deployment returns an UpgradeStatus
-        /// element that contains information about the update. If the update
-        /// is complete, or if no update is in progress, then the
-        /// UpgradeStatus element is null.  (see
+        /// The Begin Walking Upgrade Domain By Deployment Slot operation
+        /// specifies an update domain in which a role instance must be
+        /// updated. For more information about updating role instances, see
+        /// Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the Management service has finished processing the request, call
+        /// Get Operation Status. For more information on asynchronous
+        /// operations, see Tracking Asynchronous Service Management Requests
+        /// at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// Prior to calling the Walk Upgrade Domain operation you must have
+        /// called Upgrade Deployment, Change Deployment Configuration, or
+        /// Rollback Update Or Upgrade. By default, a service is deployed with
+        /// five update domains, which are updated one at a time during an
+        /// in-place update. For information on modifying the number of update
+        /// domains in the service definition file, see the Azure Service
+        /// Definition Schema (.csdef File). To perform a manual update of
+        /// your deployment, proceed in this order: Call Upgrade Deployment
+        /// with the Mode element set to manual. Call Walk Upgrade Domain to
+        /// update each domain within the deployment. Update domains must be
+        /// updated in order. For example, begin with domain 0, proceed to
+        /// domain 1, and so on. Important: An update that adds or removes
+        /// role instances will result in a configuration update to all roles
+        /// that are deployed in the cloud service. Existing role instances
+        /// need to be notified of new role instances so that all role
+        /// instances can communicate together in the cloud service. While an
+        /// update is in progress, call Get Deployment to determine its
+        /// status. If the update is in progress, Get Deployment returns an
+        /// UpgradeStatus element that contains information about the update.
+        /// If the update is complete, or if no update is in progress, then
+        /// the UpgradeStatus element is null.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460800.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Walk Upgrade Domain operation.
+        /// Required. Parameters supplied to the Begin Walking Upgrade Domain
+        /// By Deployment Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2990,7 +3523,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/?comp=walkupgradedomain";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/?comp=walkupgradedomain";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3001,7 +3545,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3081,25 +3625,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Change Deployment Configuration operation initiates a change to
-        /// the deployment configuration.  The Change Deployment Configuration
-        /// operation is an asynchronous operation. To determine whether the
-        /// Management service has finished processing the request, call Get
-        /// Operation Status.  For more information on asynchronous
-        /// operations, see Tracking Asynchronous Service Management Requests.
+        /// The Change Deployment Configuration By Name operation initiates a
+        /// change to the deployment configuration. This operation is an
+        /// asynchronous operation. To determine whether the Management
+        /// service has finished processing the request, call Get Operation
+        /// Status. For more information on asynchronous operations, see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
         /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460809.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to change deployment configuration for.
+        /// Required. The cloud service to change deployment configuration for.
         /// </param>
         /// <param name='deploymentName'>
-        /// The deployment to change configuration for.
+        /// Required. The deployment to change configuration for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Change Configuration Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Change ConfigurationDeployment
+        /// By Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3108,14 +3653,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ChangeConfigurationByNameAsync(string serviceName, string deploymentName, DeploymentChangeConfigurationParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ChangeConfigurationByNameAsync(string serviceName, string deploymentName, DeploymentChangeConfigurationParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -3139,7 +3684,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginChangingConfigurationByNameAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -3191,25 +3736,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Change Deployment Configuration operation initiates a change to
-        /// the deployment configuration.  The Change Deployment Configuration
-        /// operation is an asynchronous operation. To determine whether the
-        /// Management service has finished processing the request, call Get
-        /// Operation Status.  For more information on asynchronous
-        /// operations, see Tracking Asynchronous Service Management Requests.
+        /// The Change Deployment Configuration By Slot operation initiates a
+        /// change to the deployment configuration. This operation is an
+        /// asynchronous operation. To determine whether the Management
+        /// service has finished processing the request, call Get Operation
+        /// Status. For more information on asynchronous operations, see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
         /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460809.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to change deployment configuration for.
+        /// Required. The cloud service to change deployment configuration for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to change deployment configuration for.
+        /// Required. The slot to change deployment configuration for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Change Configuration Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Change Configuration
+        /// Deployment By Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3218,14 +3764,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ChangeConfigurationBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentChangeConfigurationParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ChangeConfigurationBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentChangeConfigurationParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -3249,7 +3795,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginChangingConfigurationBySlotAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -3303,22 +3849,24 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// <summary>
         /// The Create Deployment operation uploads a new service package and
         /// creates a new deployment in the staging or production
-        /// environments.  The Create Deployment operation is an asynchronous
-        /// operation. To determine whether the management service has
-        /// finished processing the request, call Get Operation Status. For
-        /// more information on asynchronous operations, see Tracking
-        /// Asynchronous Service Management Requests.  (see
+        /// environments. This operation is an asynchronous operation. To
+        /// determine whether the management service has finished processing
+        /// the request, call Get Operation Status. For more information on
+        /// asynchronous operations, see Tracking Asynchronous Service
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460813.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to create a deployment for.
+        /// Required. The cloud service to create a deployment for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to create a deployment for.
+        /// Required. The slot to create a deployment for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Deployment operation.
+        /// Required. Parameters supplied to the Create Deployment operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3327,14 +3875,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> CreateAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentCreateParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -3358,7 +3906,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginCreatingAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -3410,23 +3958,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Deployment operation deletes the specified deployment.
-        /// The Delete Deployment operation is an asynchronous operation. To
+        /// The Delete Deployment By Name operation deletes the specified
+        /// deployment. This operation is an asynchronous operation. To
         /// determine whether the Management service has finished processing
         /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460815.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <param name='cancellationToken'>
@@ -3436,14 +3986,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> DeleteByNameAsync(string serviceName, string deploymentName, bool deleteFromStorage, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteByNameAsync(string serviceName, string deploymentName, bool deleteFromStorage, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -3467,7 +4017,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginDeletingByNameAsync(serviceName, deploymentName, deleteFromStorage, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -3519,8 +4069,8 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Deployment operation deletes the specified deployment.
-        /// The Delete Deployment operation is an asynchronous operation. To
+        /// The Delete Deployment By Slot operation deletes the specified
+        /// deployment. This operation is an asynchronous operation. To
         /// determine whether the Management service has finished processing
         /// the request, call Get Operation Status. For more information on
         /// asynchronous operations, see Tracking Asynchronous Service
@@ -3529,10 +4079,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3541,14 +4091,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> DeleteBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -3571,7 +4121,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginDeletingBySlotAsync(serviceName, deploymentSlot, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -3623,16 +4173,228 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Get Deployment operation returns configuration information,
-        /// status, and system properties for a deployment.  (see
+        /// The Delete Role Instances operation deletes a role instance from a
+        /// deployment in a cloud service.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469418.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of the cloud service.
+        /// </param>
+        /// <param name='deploymentName'>
+        /// Required. The name of the deployment.
+        /// </param>
+        /// <param name='roleInstanceName'>
+        /// Required. The parameters to delete the role.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// The response body contains the status of the specified asynchronous
+        /// operation, indicating whether it has succeeded, is inprogress, or
+        /// has failed. Note that this status is distinct from the HTTP status
+        /// code returned for the Get Operation Status operation itself. If
+        /// the asynchronous operation succeeded, the response body includes
+        /// the HTTP status code for the successful request. If the
+        /// asynchronous operation failed, the response body includes the HTTP
+        /// status code for the failed request and error information regarding
+        /// the failure.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentDeleteRoleInstanceParameters roleInstanceName, CancellationToken cancellationToken)
+        {
+            ComputeManagementClient client = this.Client;
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentName", deploymentName);
+                tracingParameters.Add("roleInstanceName", roleInstanceName);
+                Tracing.Enter(invocationId, this, "DeleteRoleInstanceByDeploymentNameAsync", tracingParameters);
+            }
+            try
+            {
+                if (shouldTrace)
+                {
+                    client = this.Client.WithHandler(new ClientRequestTrackingHandler(invocationId));
+                }
+                
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationResponse response = await client.Deployments.BeginDeletingRoleInstanceByDeploymentNameAsync(serviceName, deploymentName, roleInstanceName, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                int delayInSeconds = 30;
+                while ((result.Status != OperationStatus.InProgress) == false)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await TaskEx.Delay(delayInSeconds * 1000, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                    delayInSeconds = 30;
+                }
+                
+                if (shouldTrace)
+                {
+                    Tracing.Exit(invocationId, result);
+                }
+                
+                if (result.Status != OperationStatus.Succeeded)
+                {
+                    if (result.Error != null)
+                    {
+                        CloudException ex = new CloudException(result.Error.Code + " : " + result.Error.Message);
+                        ex.ErrorCode = result.Error.Code;
+                        ex.ErrorMessage = result.Error.Message;
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    else
+                    {
+                        CloudException ex = new CloudException("");
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                }
+                
+                return result;
+            }
+            finally
+            {
+                if (client != null && shouldTrace)
+                {
+                    client.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Delete Role Instances operation deletes the role instances from
+        /// a deployment in a cloud service.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469418.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of the cloud service.
+        /// </param>
+        /// <param name='deploymentSlot'>
+        /// Required. The name of the deployment slot.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. The parameters to delete the role.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// The response body contains the status of the specified asynchronous
+        /// operation, indicating whether it has succeeded, is inprogress, or
+        /// has failed. Note that this status is distinct from the HTTP status
+        /// code returned for the Get Operation Status operation itself. If
+        /// the asynchronous operation succeeded, the response body includes
+        /// the HTTP status code for the successful request. If the
+        /// asynchronous operation failed, the response body includes the HTTP
+        /// status code for the failed request and error information regarding
+        /// the failure.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteRoleInstanceByDeploymentSlotAsync(string serviceName, string deploymentSlot, DeploymentDeleteRoleInstanceParameters parameters, CancellationToken cancellationToken)
+        {
+            ComputeManagementClient client = this.Client;
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentSlot", deploymentSlot);
+                tracingParameters.Add("parameters", parameters);
+                Tracing.Enter(invocationId, this, "DeleteRoleInstanceByDeploymentSlotAsync", tracingParameters);
+            }
+            try
+            {
+                if (shouldTrace)
+                {
+                    client = this.Client.WithHandler(new ClientRequestTrackingHandler(invocationId));
+                }
+                
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationStatusResponse response = await client.Deployments.DeleteRoleInstanceByDeploymentSlotAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
+                if (response.Status == OperationStatus.Succeeded)
+                {
+                    return response;
+                }
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                int delayInSeconds = 30;
+                while ((result.Status != OperationStatus.InProgress) == false)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await TaskEx.Delay(delayInSeconds * 1000, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                    delayInSeconds = 30;
+                }
+                
+                if (shouldTrace)
+                {
+                    Tracing.Exit(invocationId, result);
+                }
+                
+                if (result.Status != OperationStatus.Succeeded)
+                {
+                    if (result.Error != null)
+                    {
+                        CloudException ex = new CloudException(result.Error.Code + " : " + result.Error.Message);
+                        ex.ErrorCode = result.Error.Code;
+                        ex.ErrorMessage = result.Error.Message;
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    else
+                    {
+                        CloudException ex = new CloudException("");
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                }
+                
+                return result;
+            }
+            finally
+            {
+                if (client != null && shouldTrace)
+                {
+                    client.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Get Deployment By Name operation returns configuration
+        /// information, status, and system properties for a deployment.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460804.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3665,7 +4427,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3676,7 +4449,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3717,59 +4490,59 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement deploymentElement = responseDoc.Element(XName.Get("Deployment", "http://schemas.microsoft.com/windowsazure"));
-                    if (deploymentElement != null)
+                    if (deploymentElement != null && deploymentElement.IsEmpty == false)
                     {
                         XElement nameElement = deploymentElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                        if (nameElement != null)
+                        if (nameElement != null && nameElement.IsEmpty == false)
                         {
                             string nameInstance = nameElement.Value;
                             result.Name = nameInstance;
                         }
                         
                         XElement deploymentSlotElement = deploymentElement.Element(XName.Get("DeploymentSlot", "http://schemas.microsoft.com/windowsazure"));
-                        if (deploymentSlotElement != null)
+                        if (deploymentSlotElement != null && deploymentSlotElement.IsEmpty == false)
                         {
-                            DeploymentSlot deploymentSlotInstance = (DeploymentSlot)Enum.Parse(typeof(DeploymentSlot), deploymentSlotElement.Value, false);
+                            DeploymentSlot deploymentSlotInstance = ((DeploymentSlot)Enum.Parse(typeof(DeploymentSlot), deploymentSlotElement.Value, true));
                             result.DeploymentSlot = deploymentSlotInstance;
                         }
                         
                         XElement privateIDElement = deploymentElement.Element(XName.Get("PrivateID", "http://schemas.microsoft.com/windowsazure"));
-                        if (privateIDElement != null)
+                        if (privateIDElement != null && privateIDElement.IsEmpty == false)
                         {
                             string privateIDInstance = privateIDElement.Value;
                             result.PrivateId = privateIDInstance;
                         }
                         
                         XElement statusElement = deploymentElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                        if (statusElement != null)
+                        if (statusElement != null && statusElement.IsEmpty == false)
                         {
-                            DeploymentStatus statusInstance = (DeploymentStatus)Enum.Parse(typeof(DeploymentStatus), statusElement.Value, false);
+                            DeploymentStatus statusInstance = ((DeploymentStatus)Enum.Parse(typeof(DeploymentStatus), statusElement.Value, true));
                             result.Status = statusInstance;
                         }
                         
                         XElement labelElement = deploymentElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                        if (labelElement != null)
+                        if (labelElement != null && labelElement.IsEmpty == false)
                         {
                             string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                             result.Label = labelInstance;
                         }
                         
                         XElement urlElement = deploymentElement.Element(XName.Get("Url", "http://schemas.microsoft.com/windowsazure"));
-                        if (urlElement != null)
+                        if (urlElement != null && urlElement.IsEmpty == false)
                         {
                             Uri urlInstance = TypeConversion.TryParseUri(urlElement.Value);
                             result.Uri = urlInstance;
                         }
                         
                         XElement configurationElement = deploymentElement.Element(XName.Get("Configuration", "http://schemas.microsoft.com/windowsazure"));
-                        if (configurationElement != null)
+                        if (configurationElement != null && configurationElement.IsEmpty == false)
                         {
                             string configurationInstance = TypeConversion.FromBase64String(configurationElement.Value);
                             result.Configuration = configurationInstance;
                         }
                         
                         XElement roleInstanceListSequenceElement = deploymentElement.Element(XName.Get("RoleInstanceList", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleInstanceListSequenceElement != null)
+                        if (roleInstanceListSequenceElement != null && roleInstanceListSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement roleInstanceListElement in roleInstanceListSequenceElement.Elements(XName.Get("RoleInstance", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -3777,70 +4550,70 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.RoleInstances.Add(roleInstanceInstance);
                                 
                                 XElement roleNameElement = roleInstanceListElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleNameElement != null)
+                                if (roleNameElement != null && roleNameElement.IsEmpty == false)
                                 {
                                     string roleNameInstance = roleNameElement.Value;
                                     roleInstanceInstance.RoleName = roleNameInstance;
                                 }
                                 
                                 XElement instanceNameElement = roleInstanceListElement.Element(XName.Get("InstanceName", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceNameElement != null)
+                                if (instanceNameElement != null && instanceNameElement.IsEmpty == false)
                                 {
                                     string instanceNameInstance = instanceNameElement.Value;
                                     roleInstanceInstance.InstanceName = instanceNameInstance;
                                 }
                                 
                                 XElement instanceStatusElement = roleInstanceListElement.Element(XName.Get("InstanceStatus", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceStatusElement != null)
+                                if (instanceStatusElement != null && instanceStatusElement.IsEmpty == false)
                                 {
                                     string instanceStatusInstance = instanceStatusElement.Value;
                                     roleInstanceInstance.InstanceStatus = instanceStatusInstance;
                                 }
                                 
                                 XElement instanceUpgradeDomainElement = roleInstanceListElement.Element(XName.Get("InstanceUpgradeDomain", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceUpgradeDomainElement != null && string.IsNullOrEmpty(instanceUpgradeDomainElement.Value) == false)
+                                if (instanceUpgradeDomainElement != null && instanceUpgradeDomainElement.IsEmpty == false && string.IsNullOrEmpty(instanceUpgradeDomainElement.Value) == false)
                                 {
                                     int instanceUpgradeDomainInstance = int.Parse(instanceUpgradeDomainElement.Value, CultureInfo.InvariantCulture);
                                     roleInstanceInstance.InstanceUpgradeDomain = instanceUpgradeDomainInstance;
                                 }
                                 
                                 XElement instanceFaultDomainElement = roleInstanceListElement.Element(XName.Get("InstanceFaultDomain", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceFaultDomainElement != null && string.IsNullOrEmpty(instanceFaultDomainElement.Value) == false)
+                                if (instanceFaultDomainElement != null && instanceFaultDomainElement.IsEmpty == false && string.IsNullOrEmpty(instanceFaultDomainElement.Value) == false)
                                 {
                                     int instanceFaultDomainInstance = int.Parse(instanceFaultDomainElement.Value, CultureInfo.InvariantCulture);
                                     roleInstanceInstance.InstanceFaultDomain = instanceFaultDomainInstance;
                                 }
                                 
                                 XElement instanceSizeElement = roleInstanceListElement.Element(XName.Get("InstanceSize", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceSizeElement != null)
+                                if (instanceSizeElement != null && instanceSizeElement.IsEmpty == false)
                                 {
                                     string instanceSizeInstance = instanceSizeElement.Value;
                                     roleInstanceInstance.InstanceSize = instanceSizeInstance;
                                 }
                                 
                                 XElement instanceStateDetailsElement = roleInstanceListElement.Element(XName.Get("InstanceStateDetails", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceStateDetailsElement != null)
+                                if (instanceStateDetailsElement != null && instanceStateDetailsElement.IsEmpty == false)
                                 {
                                     string instanceStateDetailsInstance = instanceStateDetailsElement.Value;
                                     roleInstanceInstance.InstanceStateDetails = instanceStateDetailsInstance;
                                 }
                                 
                                 XElement instanceErrorCodeElement = roleInstanceListElement.Element(XName.Get("InstanceErrorCode", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceErrorCodeElement != null)
+                                if (instanceErrorCodeElement != null && instanceErrorCodeElement.IsEmpty == false)
                                 {
                                     string instanceErrorCodeInstance = instanceErrorCodeElement.Value;
                                     roleInstanceInstance.InstanceErrorCode = instanceErrorCodeInstance;
                                 }
                                 
                                 XElement ipAddressElement = roleInstanceListElement.Element(XName.Get("IpAddress", "http://schemas.microsoft.com/windowsazure"));
-                                if (ipAddressElement != null)
+                                if (ipAddressElement != null && ipAddressElement.IsEmpty == false)
                                 {
                                     string ipAddressInstance = ipAddressElement.Value;
                                     roleInstanceInstance.IPAddress = ipAddressInstance;
                                 }
                                 
                                 XElement instanceEndpointsSequenceElement = roleInstanceListElement.Element(XName.Get("InstanceEndpoints", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceEndpointsSequenceElement != null)
+                                if (instanceEndpointsSequenceElement != null && instanceEndpointsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement instanceEndpointsElement in instanceEndpointsSequenceElement.Elements(XName.Get("InstanceEndpoint", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -3848,35 +4621,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstanceInstance.InstanceEndpoints.Add(instanceEndpointInstance);
                                         
                                         XElement localPortElement = instanceEndpointsElement.Element(XName.Get("LocalPort", "http://schemas.microsoft.com/windowsazure"));
-                                        if (localPortElement != null && string.IsNullOrEmpty(localPortElement.Value) == false)
+                                        if (localPortElement != null && localPortElement.IsEmpty == false && string.IsNullOrEmpty(localPortElement.Value) == false)
                                         {
                                             int localPortInstance = int.Parse(localPortElement.Value, CultureInfo.InvariantCulture);
                                             instanceEndpointInstance.LocalPort = localPortInstance;
                                         }
                                         
                                         XElement nameElement2 = instanceEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                        if (nameElement2 != null)
+                                        if (nameElement2 != null && nameElement2.IsEmpty == false)
                                         {
                                             string nameInstance2 = nameElement2.Value;
                                             instanceEndpointInstance.Name = nameInstance2;
                                         }
                                         
                                         XElement publicPortElement = instanceEndpointsElement.Element(XName.Get("PublicPort", "http://schemas.microsoft.com/windowsazure"));
-                                        if (publicPortElement != null)
+                                        if (publicPortElement != null && publicPortElement.IsEmpty == false)
                                         {
                                             int publicPortInstance = int.Parse(publicPortElement.Value, CultureInfo.InvariantCulture);
                                             instanceEndpointInstance.Port = publicPortInstance;
                                         }
                                         
                                         XElement protocolElement = instanceEndpointsElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                        if (protocolElement != null)
+                                        if (protocolElement != null && protocolElement.IsEmpty == false)
                                         {
                                             string protocolInstance = protocolElement.Value;
                                             instanceEndpointInstance.Protocol = protocolInstance;
                                         }
                                         
                                         XElement vipElement = instanceEndpointsElement.Element(XName.Get("Vip", "http://schemas.microsoft.com/windowsazure"));
-                                        if (vipElement != null)
+                                        if (vipElement != null && vipElement.IsEmpty == false)
                                         {
                                             string vipInstance = vipElement.Value;
                                             instanceEndpointInstance.VirtualIPAddress = vipInstance;
@@ -3884,22 +4657,358 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                 }
                                 
-                                XElement powerStateElement = roleInstanceListElement.Element(XName.Get("PowerState", "http://schemas.microsoft.com/windowsazure"));
-                                if (powerStateElement != null)
+                                XElement guestAgentStatusElement = roleInstanceListElement.Element(XName.Get("GuestAgentStatus", "http://schemas.microsoft.com/windowsazure"));
+                                if (guestAgentStatusElement != null && guestAgentStatusElement.IsEmpty == false)
                                 {
-                                    RoleInstancePowerState powerStateInstance = (RoleInstancePowerState)Enum.Parse(typeof(RoleInstancePowerState), powerStateElement.Value, false);
+                                    GuestAgentStatus guestAgentStatusInstance = new GuestAgentStatus();
+                                    roleInstanceInstance.GuestAgentStatus = guestAgentStatusInstance;
+                                    
+                                    XElement protocolVersionElement = guestAgentStatusElement.Element(XName.Get("ProtocolVersion", "http://schemas.microsoft.com/windowsazure"));
+                                    if (protocolVersionElement != null && protocolVersionElement.IsEmpty == false)
+                                    {
+                                        string protocolVersionInstance = protocolVersionElement.Value;
+                                        guestAgentStatusInstance.ProtocolVersion = protocolVersionInstance;
+                                    }
+                                    
+                                    XElement timestampElement = guestAgentStatusElement.Element(XName.Get("Timestamp", "http://schemas.microsoft.com/windowsazure"));
+                                    if (timestampElement != null && timestampElement.IsEmpty == false && string.IsNullOrEmpty(timestampElement.Value) == false)
+                                    {
+                                        DateTime timestampInstance = DateTime.Parse(timestampElement.Value, CultureInfo.InvariantCulture);
+                                        guestAgentStatusInstance.Timestamp = timestampInstance;
+                                    }
+                                    
+                                    XElement guestAgentVersionElement = guestAgentStatusElement.Element(XName.Get("GuestAgentVersion", "http://schemas.microsoft.com/windowsazure"));
+                                    if (guestAgentVersionElement != null && guestAgentVersionElement.IsEmpty == false)
+                                    {
+                                        string guestAgentVersionInstance = guestAgentVersionElement.Value;
+                                        guestAgentStatusInstance.GuestAgentVersion = guestAgentVersionInstance;
+                                    }
+                                    
+                                    XElement statusElement2 = guestAgentStatusElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                    if (statusElement2 != null && statusElement2.IsEmpty == false)
+                                    {
+                                        string statusInstance2 = statusElement2.Value;
+                                        guestAgentStatusInstance.Status = statusInstance2;
+                                    }
+                                    
+                                    XElement codeElement = guestAgentStatusElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                    if (codeElement != null && codeElement.IsEmpty == false && string.IsNullOrEmpty(codeElement.Value) == false)
+                                    {
+                                        int codeInstance = int.Parse(codeElement.Value, CultureInfo.InvariantCulture);
+                                        guestAgentStatusInstance.Code = codeInstance;
+                                    }
+                                    
+                                    XElement messageElement = guestAgentStatusElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                    if (messageElement != null && messageElement.IsEmpty == false)
+                                    {
+                                        GuestAgentMessage messageInstance = new GuestAgentMessage();
+                                        guestAgentStatusInstance.Message = messageInstance;
+                                        
+                                        XElement messageResourceIdElement = messageElement.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageResourceIdElement != null && messageResourceIdElement.IsEmpty == false)
+                                        {
+                                            string messageResourceIdInstance = messageResourceIdElement.Value;
+                                            messageInstance.MessageResourceId = messageResourceIdInstance;
+                                        }
+                                        
+                                        XElement paramListSequenceElement = messageElement.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                        if (paramListSequenceElement != null && paramListSequenceElement.IsEmpty == false)
+                                        {
+                                            foreach (XElement paramListElement in paramListSequenceElement.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                            {
+                                                messageInstance.ParamList.Add(paramListElement.Value);
+                                            }
+                                        }
+                                    }
+                                    
+                                    XElement formattedMessageElement = guestAgentStatusElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                    if (formattedMessageElement != null && formattedMessageElement.IsEmpty == false)
+                                    {
+                                        GuestAgentFormattedMessage formattedMessageInstance = new GuestAgentFormattedMessage();
+                                        guestAgentStatusInstance.FormattedMessage = formattedMessageInstance;
+                                        
+                                        XElement languageElement = formattedMessageElement.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                        if (languageElement != null && languageElement.IsEmpty == false)
+                                        {
+                                            string languageInstance = languageElement.Value;
+                                            formattedMessageInstance.Language = languageInstance;
+                                        }
+                                        
+                                        XElement messageElement2 = formattedMessageElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageElement2 != null && messageElement2.IsEmpty == false)
+                                        {
+                                            string messageInstance2 = messageElement2.Value;
+                                            formattedMessageInstance.Message = messageInstance2;
+                                        }
+                                    }
+                                }
+                                
+                                XElement resourceExtensionStatusListSequenceElement = roleInstanceListElement.Element(XName.Get("ResourceExtensionStatusList", "http://schemas.microsoft.com/windowsazure"));
+                                if (resourceExtensionStatusListSequenceElement != null && resourceExtensionStatusListSequenceElement.IsEmpty == false)
+                                {
+                                    foreach (XElement resourceExtensionStatusListElement in resourceExtensionStatusListSequenceElement.Elements(XName.Get("ResourceExtensionStatus", "http://schemas.microsoft.com/windowsazure")))
+                                    {
+                                        ResourceExtensionStatus resourceExtensionStatusInstance = new ResourceExtensionStatus();
+                                        roleInstanceInstance.ResourceExtensionStatusList.Add(resourceExtensionStatusInstance);
+                                        
+                                        XElement handlerNameElement = resourceExtensionStatusListElement.Element(XName.Get("HandlerName", "http://schemas.microsoft.com/windowsazure"));
+                                        if (handlerNameElement != null && handlerNameElement.IsEmpty == false)
+                                        {
+                                            string handlerNameInstance = handlerNameElement.Value;
+                                            resourceExtensionStatusInstance.HandlerName = handlerNameInstance;
+                                        }
+                                        
+                                        XElement versionElement = resourceExtensionStatusListElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
+                                        if (versionElement != null && versionElement.IsEmpty == false)
+                                        {
+                                            string versionInstance = versionElement.Value;
+                                            resourceExtensionStatusInstance.Version = versionInstance;
+                                        }
+                                        
+                                        XElement statusElement3 = resourceExtensionStatusListElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                        if (statusElement3 != null && statusElement3.IsEmpty == false)
+                                        {
+                                            string statusInstance3 = statusElement3.Value;
+                                            resourceExtensionStatusInstance.Status = statusInstance3;
+                                        }
+                                        
+                                        XElement codeElement2 = resourceExtensionStatusListElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                        if (codeElement2 != null && codeElement2.IsEmpty == false && string.IsNullOrEmpty(codeElement2.Value) == false)
+                                        {
+                                            int codeInstance2 = int.Parse(codeElement2.Value, CultureInfo.InvariantCulture);
+                                            resourceExtensionStatusInstance.Code = codeInstance2;
+                                        }
+                                        
+                                        XElement messageElement3 = resourceExtensionStatusListElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageElement3 != null && messageElement3.IsEmpty == false)
+                                        {
+                                            GuestAgentMessage messageInstance3 = new GuestAgentMessage();
+                                            resourceExtensionStatusInstance.Message = messageInstance3;
+                                            
+                                            XElement messageResourceIdElement2 = messageElement3.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageResourceIdElement2 != null && messageResourceIdElement2.IsEmpty == false)
+                                            {
+                                                string messageResourceIdInstance2 = messageResourceIdElement2.Value;
+                                                messageInstance3.MessageResourceId = messageResourceIdInstance2;
+                                            }
+                                            
+                                            XElement paramListSequenceElement2 = messageElement3.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                            if (paramListSequenceElement2 != null && paramListSequenceElement2.IsEmpty == false)
+                                            {
+                                                foreach (XElement paramListElement2 in paramListSequenceElement2.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                {
+                                                    messageInstance3.ParamList.Add(paramListElement2.Value);
+                                                }
+                                            }
+                                        }
+                                        
+                                        XElement formattedMessageElement2 = resourceExtensionStatusListElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                        if (formattedMessageElement2 != null && formattedMessageElement2.IsEmpty == false)
+                                        {
+                                            GuestAgentFormattedMessage formattedMessageInstance2 = new GuestAgentFormattedMessage();
+                                            resourceExtensionStatusInstance.FormattedMessage = formattedMessageInstance2;
+                                            
+                                            XElement languageElement2 = formattedMessageElement2.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                            if (languageElement2 != null && languageElement2.IsEmpty == false)
+                                            {
+                                                string languageInstance2 = languageElement2.Value;
+                                                formattedMessageInstance2.Language = languageInstance2;
+                                            }
+                                            
+                                            XElement messageElement4 = formattedMessageElement2.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageElement4 != null && messageElement4.IsEmpty == false)
+                                            {
+                                                string messageInstance4 = messageElement4.Value;
+                                                formattedMessageInstance2.Message = messageInstance4;
+                                            }
+                                        }
+                                        
+                                        XElement extensionSettingStatusElement = resourceExtensionStatusListElement.Element(XName.Get("ExtensionSettingStatus", "http://schemas.microsoft.com/windowsazure"));
+                                        if (extensionSettingStatusElement != null && extensionSettingStatusElement.IsEmpty == false)
+                                        {
+                                            ResourceExtensionConfigurationStatus extensionSettingStatusInstance = new ResourceExtensionConfigurationStatus();
+                                            resourceExtensionStatusInstance.ExtensionSettingStatus = extensionSettingStatusInstance;
+                                            
+                                            XElement timestampElement2 = extensionSettingStatusElement.Element(XName.Get("Timestamp", "http://schemas.microsoft.com/windowsazure"));
+                                            if (timestampElement2 != null && timestampElement2.IsEmpty == false && string.IsNullOrEmpty(timestampElement2.Value) == false)
+                                            {
+                                                DateTime timestampInstance2 = DateTime.Parse(timestampElement2.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.Timestamp = timestampInstance2;
+                                            }
+                                            
+                                            XElement configurationAppliedTimeElement = extensionSettingStatusElement.Element(XName.Get("ConfigurationAppliedTime", "http://schemas.microsoft.com/windowsazure"));
+                                            if (configurationAppliedTimeElement != null && configurationAppliedTimeElement.IsEmpty == false && string.IsNullOrEmpty(configurationAppliedTimeElement.Value) == false)
+                                            {
+                                                DateTime configurationAppliedTimeInstance = DateTime.Parse(configurationAppliedTimeElement.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.ConfigurationAppliedTime = configurationAppliedTimeInstance;
+                                            }
+                                            
+                                            XElement nameElement3 = extensionSettingStatusElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                            if (nameElement3 != null && nameElement3.IsEmpty == false)
+                                            {
+                                                string nameInstance3 = nameElement3.Value;
+                                                extensionSettingStatusInstance.Name = nameInstance3;
+                                            }
+                                            
+                                            XElement operationElement = extensionSettingStatusElement.Element(XName.Get("Operation", "http://schemas.microsoft.com/windowsazure"));
+                                            if (operationElement != null && operationElement.IsEmpty == false)
+                                            {
+                                                string operationInstance = operationElement.Value;
+                                                extensionSettingStatusInstance.Operation = operationInstance;
+                                            }
+                                            
+                                            XElement statusElement4 = extensionSettingStatusElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                            if (statusElement4 != null && statusElement4.IsEmpty == false)
+                                            {
+                                                string statusInstance4 = statusElement4.Value;
+                                                extensionSettingStatusInstance.Status = statusInstance4;
+                                            }
+                                            
+                                            XElement codeElement3 = extensionSettingStatusElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                            if (codeElement3 != null && codeElement3.IsEmpty == false && string.IsNullOrEmpty(codeElement3.Value) == false)
+                                            {
+                                                int codeInstance3 = int.Parse(codeElement3.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.Code = codeInstance3;
+                                            }
+                                            
+                                            XElement messageElement5 = extensionSettingStatusElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageElement5 != null && messageElement5.IsEmpty == false)
+                                            {
+                                                GuestAgentMessage messageInstance5 = new GuestAgentMessage();
+                                                extensionSettingStatusInstance.Message = messageInstance5;
+                                                
+                                                XElement messageResourceIdElement3 = messageElement5.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                                if (messageResourceIdElement3 != null && messageResourceIdElement3.IsEmpty == false)
+                                                {
+                                                    string messageResourceIdInstance3 = messageResourceIdElement3.Value;
+                                                    messageInstance5.MessageResourceId = messageResourceIdInstance3;
+                                                }
+                                                
+                                                XElement paramListSequenceElement3 = messageElement5.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                                if (paramListSequenceElement3 != null && paramListSequenceElement3.IsEmpty == false)
+                                                {
+                                                    foreach (XElement paramListElement3 in paramListSequenceElement3.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                    {
+                                                        messageInstance5.ParamList.Add(paramListElement3.Value);
+                                                    }
+                                                }
+                                            }
+                                            
+                                            XElement formattedMessageElement3 = extensionSettingStatusElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                            if (formattedMessageElement3 != null && formattedMessageElement3.IsEmpty == false)
+                                            {
+                                                GuestAgentFormattedMessage formattedMessageInstance3 = new GuestAgentFormattedMessage();
+                                                extensionSettingStatusInstance.FormattedMessage = formattedMessageInstance3;
+                                                
+                                                XElement languageElement3 = formattedMessageElement3.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                                if (languageElement3 != null && languageElement3.IsEmpty == false)
+                                                {
+                                                    string languageInstance3 = languageElement3.Value;
+                                                    formattedMessageInstance3.Language = languageInstance3;
+                                                }
+                                                
+                                                XElement messageElement6 = formattedMessageElement3.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                if (messageElement6 != null && messageElement6.IsEmpty == false)
+                                                {
+                                                    string messageInstance6 = messageElement6.Value;
+                                                    formattedMessageInstance3.Message = messageInstance6;
+                                                }
+                                            }
+                                            
+                                            XElement subStatusListSequenceElement = extensionSettingStatusElement.Element(XName.Get("SubStatusList", "http://schemas.microsoft.com/windowsazure"));
+                                            if (subStatusListSequenceElement != null && subStatusListSequenceElement.IsEmpty == false)
+                                            {
+                                                foreach (XElement subStatusListElement in subStatusListSequenceElement.Elements(XName.Get("SubStatus", "http://schemas.microsoft.com/windowsazure")))
+                                                {
+                                                    ResourceExtensionSubStatus subStatusInstance = new ResourceExtensionSubStatus();
+                                                    extensionSettingStatusInstance.SubStatusList.Add(subStatusInstance);
+                                                    
+                                                    XElement nameElement4 = subStatusListElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (nameElement4 != null && nameElement4.IsEmpty == false)
+                                                    {
+                                                        string nameInstance4 = nameElement4.Value;
+                                                        subStatusInstance.Name = nameInstance4;
+                                                    }
+                                                    
+                                                    XElement statusElement5 = subStatusListElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (statusElement5 != null && statusElement5.IsEmpty == false)
+                                                    {
+                                                        string statusInstance5 = statusElement5.Value;
+                                                        subStatusInstance.Status = statusInstance5;
+                                                    }
+                                                    
+                                                    XElement codeElement4 = subStatusListElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (codeElement4 != null && codeElement4.IsEmpty == false && string.IsNullOrEmpty(codeElement4.Value) == false)
+                                                    {
+                                                        int codeInstance4 = int.Parse(codeElement4.Value, CultureInfo.InvariantCulture);
+                                                        subStatusInstance.Code = codeInstance4;
+                                                    }
+                                                    
+                                                    XElement messageElement7 = subStatusListElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (messageElement7 != null && messageElement7.IsEmpty == false)
+                                                    {
+                                                        GuestAgentMessage messageInstance7 = new GuestAgentMessage();
+                                                        subStatusInstance.Message = messageInstance7;
+                                                        
+                                                        XElement messageResourceIdElement4 = messageElement7.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (messageResourceIdElement4 != null && messageResourceIdElement4.IsEmpty == false)
+                                                        {
+                                                            string messageResourceIdInstance4 = messageResourceIdElement4.Value;
+                                                            messageInstance7.MessageResourceId = messageResourceIdInstance4;
+                                                        }
+                                                        
+                                                        XElement paramListSequenceElement4 = messageElement7.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (paramListSequenceElement4 != null && paramListSequenceElement4.IsEmpty == false)
+                                                        {
+                                                            foreach (XElement paramListElement4 in paramListSequenceElement4.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                            {
+                                                                messageInstance7.ParamList.Add(paramListElement4.Value);
+                                                            }
+                                                        }
+                                                    }
+                                                    
+                                                    XElement formattedMessageElement4 = subStatusListElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (formattedMessageElement4 != null && formattedMessageElement4.IsEmpty == false)
+                                                    {
+                                                        GuestAgentFormattedMessage formattedMessageInstance4 = new GuestAgentFormattedMessage();
+                                                        subStatusInstance.FormattedMessage = formattedMessageInstance4;
+                                                        
+                                                        XElement languageElement4 = formattedMessageElement4.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (languageElement4 != null && languageElement4.IsEmpty == false)
+                                                        {
+                                                            string languageInstance4 = languageElement4.Value;
+                                                            formattedMessageInstance4.Language = languageInstance4;
+                                                        }
+                                                        
+                                                        XElement messageElement8 = formattedMessageElement4.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (messageElement8 != null && messageElement8.IsEmpty == false)
+                                                        {
+                                                            string messageInstance8 = messageElement8.Value;
+                                                            formattedMessageInstance4.Message = messageInstance8;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                XElement powerStateElement = roleInstanceListElement.Element(XName.Get("PowerState", "http://schemas.microsoft.com/windowsazure"));
+                                if (powerStateElement != null && powerStateElement.IsEmpty == false)
+                                {
+                                    RoleInstancePowerState powerStateInstance = ((RoleInstancePowerState)Enum.Parse(typeof(RoleInstancePowerState), powerStateElement.Value, true));
                                     roleInstanceInstance.PowerState = powerStateInstance;
                                 }
                                 
                                 XElement hostNameElement = roleInstanceListElement.Element(XName.Get("HostName", "http://schemas.microsoft.com/windowsazure"));
-                                if (hostNameElement != null)
+                                if (hostNameElement != null && hostNameElement.IsEmpty == false)
                                 {
                                     string hostNameInstance = hostNameElement.Value;
                                     roleInstanceInstance.HostName = hostNameInstance;
                                 }
                                 
                                 XElement remoteAccessCertificateThumbprintElement = roleInstanceListElement.Element(XName.Get("RemoteAccessCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                if (remoteAccessCertificateThumbprintElement != null)
+                                if (remoteAccessCertificateThumbprintElement != null && remoteAccessCertificateThumbprintElement.IsEmpty == false)
                                 {
                                     string remoteAccessCertificateThumbprintInstance = remoteAccessCertificateThumbprintElement.Value;
                                     roleInstanceInstance.RemoteAccessCertificateThumbprint = remoteAccessCertificateThumbprintInstance;
@@ -3908,27 +5017,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement upgradeStatusElement = deploymentElement.Element(XName.Get("UpgradeStatus", "http://schemas.microsoft.com/windowsazure"));
-                        if (upgradeStatusElement != null)
+                        if (upgradeStatusElement != null && upgradeStatusElement.IsEmpty == false)
                         {
                             UpgradeStatus upgradeStatusInstance = new UpgradeStatus();
                             result.UpgradeStatus = upgradeStatusInstance;
                             
                             XElement upgradeTypeElement = upgradeStatusElement.Element(XName.Get("UpgradeType", "http://schemas.microsoft.com/windowsazure"));
-                            if (upgradeTypeElement != null)
+                            if (upgradeTypeElement != null && upgradeTypeElement.IsEmpty == false)
                             {
-                                DeploymentUpgradeType upgradeTypeInstance = (DeploymentUpgradeType)Enum.Parse(typeof(DeploymentUpgradeType), upgradeTypeElement.Value, false);
+                                DeploymentUpgradeType upgradeTypeInstance = ((DeploymentUpgradeType)Enum.Parse(typeof(DeploymentUpgradeType), upgradeTypeElement.Value, true));
                                 upgradeStatusInstance.UpgradeType = upgradeTypeInstance;
                             }
                             
                             XElement currentUpgradeDomainStateElement = upgradeStatusElement.Element(XName.Get("CurrentUpgradeDomainState", "http://schemas.microsoft.com/windowsazure"));
-                            if (currentUpgradeDomainStateElement != null)
+                            if (currentUpgradeDomainStateElement != null && currentUpgradeDomainStateElement.IsEmpty == false)
                             {
-                                UpgradeDomainState currentUpgradeDomainStateInstance = (UpgradeDomainState)Enum.Parse(typeof(UpgradeDomainState), currentUpgradeDomainStateElement.Value, false);
+                                UpgradeDomainState currentUpgradeDomainStateInstance = ((UpgradeDomainState)Enum.Parse(typeof(UpgradeDomainState), currentUpgradeDomainStateElement.Value, true));
                                 upgradeStatusInstance.CurrentUpgradeDomainState = currentUpgradeDomainStateInstance;
                             }
                             
                             XElement currentUpgradeDomainElement = upgradeStatusElement.Element(XName.Get("CurrentUpgradeDomain", "http://schemas.microsoft.com/windowsazure"));
-                            if (currentUpgradeDomainElement != null)
+                            if (currentUpgradeDomainElement != null && currentUpgradeDomainElement.IsEmpty == false)
                             {
                                 int currentUpgradeDomainInstance = int.Parse(currentUpgradeDomainElement.Value, CultureInfo.InvariantCulture);
                                 upgradeStatusInstance.CurrentUpgradeDomain = currentUpgradeDomainInstance;
@@ -3936,14 +5045,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement upgradeDomainCountElement = deploymentElement.Element(XName.Get("UpgradeDomainCount", "http://schemas.microsoft.com/windowsazure"));
-                        if (upgradeDomainCountElement != null)
+                        if (upgradeDomainCountElement != null && upgradeDomainCountElement.IsEmpty == false)
                         {
                             int upgradeDomainCountInstance = int.Parse(upgradeDomainCountElement.Value, CultureInfo.InvariantCulture);
                             result.UpgradeDomainCount = upgradeDomainCountInstance;
                         }
                         
                         XElement roleListSequenceElement = deploymentElement.Element(XName.Get("RoleList", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleListSequenceElement != null)
+                        if (roleListSequenceElement != null && roleListSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement roleListElement in roleListSequenceElement.Elements(XName.Get("Role", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -3951,28 +5060,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.Roles.Add(roleInstance);
                                 
                                 XElement roleNameElement2 = roleListElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleNameElement2 != null)
+                                if (roleNameElement2 != null && roleNameElement2.IsEmpty == false)
                                 {
                                     string roleNameInstance2 = roleNameElement2.Value;
                                     roleInstance.RoleName = roleNameInstance2;
                                 }
                                 
                                 XElement osVersionElement = roleListElement.Element(XName.Get("OsVersion", "http://schemas.microsoft.com/windowsazure"));
-                                if (osVersionElement != null)
+                                if (osVersionElement != null && osVersionElement.IsEmpty == false)
                                 {
                                     string osVersionInstance = osVersionElement.Value;
                                     roleInstance.OSVersion = osVersionInstance;
                                 }
                                 
                                 XElement roleTypeElement = roleListElement.Element(XName.Get("RoleType", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleTypeElement != null)
+                                if (roleTypeElement != null && roleTypeElement.IsEmpty == false)
                                 {
                                     string roleTypeInstance = roleTypeElement.Value;
                                     roleInstance.RoleType = roleTypeInstance;
                                 }
                                 
                                 XElement configurationSetsSequenceElement = roleListElement.Element(XName.Get("ConfigurationSets", "http://schemas.microsoft.com/windowsazure"));
-                                if (configurationSetsSequenceElement != null)
+                                if (configurationSetsSequenceElement != null && configurationSetsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement configurationSetsElement in configurationSetsSequenceElement.Elements(XName.Get("ConfigurationSet", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -3980,14 +5089,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.ConfigurationSets.Add(configurationSetInstance);
                                         
                                         XElement configurationSetTypeElement = configurationSetsElement.Element(XName.Get("ConfigurationSetType", "http://schemas.microsoft.com/windowsazure"));
-                                        if (configurationSetTypeElement != null)
+                                        if (configurationSetTypeElement != null && configurationSetTypeElement.IsEmpty == false)
                                         {
                                             string configurationSetTypeInstance = configurationSetTypeElement.Value;
                                             configurationSetInstance.ConfigurationSetType = configurationSetTypeInstance;
                                         }
                                         
                                         XElement inputEndpointsSequenceElement = configurationSetsElement.Element(XName.Get("InputEndpoints", "http://schemas.microsoft.com/windowsazure"));
-                                        if (inputEndpointsSequenceElement != null)
+                                        if (inputEndpointsSequenceElement != null && inputEndpointsSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement inputEndpointsElement in inputEndpointsSequenceElement.Elements(XName.Get("InputEndpoint", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -3995,69 +5104,69 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 configurationSetInstance.InputEndpoints.Add(inputEndpointInstance);
                                                 
                                                 XElement loadBalancedEndpointSetNameElement = inputEndpointsElement.Element(XName.Get("LoadBalancedEndpointSetName", "http://schemas.microsoft.com/windowsazure"));
-                                                if (loadBalancedEndpointSetNameElement != null)
+                                                if (loadBalancedEndpointSetNameElement != null && loadBalancedEndpointSetNameElement.IsEmpty == false)
                                                 {
                                                     string loadBalancedEndpointSetNameInstance = loadBalancedEndpointSetNameElement.Value;
                                                     inputEndpointInstance.LoadBalancedEndpointSetName = loadBalancedEndpointSetNameInstance;
                                                 }
                                                 
                                                 XElement localPortElement2 = inputEndpointsElement.Element(XName.Get("LocalPort", "http://schemas.microsoft.com/windowsazure"));
-                                                if (localPortElement2 != null && string.IsNullOrEmpty(localPortElement2.Value) == false)
+                                                if (localPortElement2 != null && localPortElement2.IsEmpty == false && string.IsNullOrEmpty(localPortElement2.Value) == false)
                                                 {
                                                     int localPortInstance2 = int.Parse(localPortElement2.Value, CultureInfo.InvariantCulture);
                                                     inputEndpointInstance.LocalPort = localPortInstance2;
                                                 }
                                                 
-                                                XElement nameElement3 = inputEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                                if (nameElement3 != null)
+                                                XElement nameElement5 = inputEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                                if (nameElement5 != null && nameElement5.IsEmpty == false)
                                                 {
-                                                    string nameInstance3 = nameElement3.Value;
-                                                    inputEndpointInstance.Name = nameInstance3;
+                                                    string nameInstance5 = nameElement5.Value;
+                                                    inputEndpointInstance.Name = nameInstance5;
                                                 }
                                                 
                                                 XElement portElement = inputEndpointsElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                                if (portElement != null && string.IsNullOrEmpty(portElement.Value) == false)
+                                                if (portElement != null && portElement.IsEmpty == false && string.IsNullOrEmpty(portElement.Value) == false)
                                                 {
                                                     int portInstance = int.Parse(portElement.Value, CultureInfo.InvariantCulture);
                                                     inputEndpointInstance.Port = portInstance;
                                                 }
                                                 
                                                 XElement loadBalancerProbeElement = inputEndpointsElement.Element(XName.Get("LoadBalancerProbe", "http://schemas.microsoft.com/windowsazure"));
-                                                if (loadBalancerProbeElement != null)
+                                                if (loadBalancerProbeElement != null && loadBalancerProbeElement.IsEmpty == false)
                                                 {
                                                     LoadBalancerProbe loadBalancerProbeInstance = new LoadBalancerProbe();
                                                     inputEndpointInstance.LoadBalancerProbe = loadBalancerProbeInstance;
                                                     
                                                     XElement pathElement = loadBalancerProbeElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement != null)
+                                                    if (pathElement != null && pathElement.IsEmpty == false)
                                                     {
                                                         string pathInstance = pathElement.Value;
                                                         loadBalancerProbeInstance.Path = pathInstance;
                                                     }
                                                     
                                                     XElement portElement2 = loadBalancerProbeElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (portElement2 != null)
+                                                    if (portElement2 != null && portElement2.IsEmpty == false)
                                                     {
                                                         int portInstance2 = int.Parse(portElement2.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.Port = portInstance2;
                                                     }
                                                     
                                                     XElement protocolElement2 = loadBalancerProbeElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (protocolElement2 != null)
+                                                    if (protocolElement2 != null && protocolElement2.IsEmpty == false)
                                                     {
                                                         LoadBalancerProbeTransportProtocol protocolInstance2 = ComputeManagementClient.ParseLoadBalancerProbeTransportProtocol(protocolElement2.Value);
                                                         loadBalancerProbeInstance.Protocol = protocolInstance2;
                                                     }
                                                     
                                                     XElement intervalInSecondsElement = loadBalancerProbeElement.Element(XName.Get("IntervalInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (intervalInSecondsElement != null && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
+                                                    if (intervalInSecondsElement != null && intervalInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
                                                     {
                                                         int intervalInSecondsInstance = int.Parse(intervalInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.IntervalInSeconds = intervalInSecondsInstance;
                                                     }
                                                     
                                                     XElement timeoutInSecondsElement = loadBalancerProbeElement.Element(XName.Get("TimeoutInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (timeoutInSecondsElement != null && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
+                                                    if (timeoutInSecondsElement != null && timeoutInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
                                                     {
                                                         int timeoutInSecondsInstance = int.Parse(timeoutInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.TimeoutInSeconds = timeoutInSecondsInstance;
@@ -4065,34 +5174,34 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 }
                                                 
                                                 XElement protocolElement3 = inputEndpointsElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                if (protocolElement3 != null)
+                                                if (protocolElement3 != null && protocolElement3.IsEmpty == false)
                                                 {
                                                     string protocolInstance3 = protocolElement3.Value;
                                                     inputEndpointInstance.Protocol = protocolInstance3;
                                                 }
                                                 
                                                 XElement vipElement2 = inputEndpointsElement.Element(XName.Get("Vip", "http://schemas.microsoft.com/windowsazure"));
-                                                if (vipElement2 != null)
+                                                if (vipElement2 != null && vipElement2.IsEmpty == false)
                                                 {
                                                     string vipInstance2 = vipElement2.Value;
                                                     inputEndpointInstance.VirtualIPAddress = vipInstance2;
                                                 }
                                                 
                                                 XElement enableDirectServerReturnElement = inputEndpointsElement.Element(XName.Get("EnableDirectServerReturn", "http://schemas.microsoft.com/windowsazure"));
-                                                if (enableDirectServerReturnElement != null && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
+                                                if (enableDirectServerReturnElement != null && enableDirectServerReturnElement.IsEmpty == false && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
                                                 {
                                                     bool enableDirectServerReturnInstance = bool.Parse(enableDirectServerReturnElement.Value);
                                                     inputEndpointInstance.EnableDirectServerReturn = enableDirectServerReturnInstance;
                                                 }
                                                 
                                                 XElement endpointAclElement = inputEndpointsElement.Element(XName.Get("EndpointAcl", "http://schemas.microsoft.com/windowsazure"));
-                                                if (endpointAclElement != null)
+                                                if (endpointAclElement != null && endpointAclElement.IsEmpty == false)
                                                 {
                                                     EndpointAcl endpointAclInstance = new EndpointAcl();
                                                     inputEndpointInstance.EndpointAcl = endpointAclInstance;
                                                     
                                                     XElement rulesSequenceElement = endpointAclElement.Element(XName.Get("Rules", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (rulesSequenceElement != null)
+                                                    if (rulesSequenceElement != null && rulesSequenceElement.IsEmpty == false)
                                                     {
                                                         foreach (XElement rulesElement in rulesSequenceElement.Elements(XName.Get("Rule", "http://schemas.microsoft.com/windowsazure")))
                                                         {
@@ -4100,28 +5209,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                             endpointAclInstance.Rules.Add(ruleInstance);
                                                             
                                                             XElement orderElement = rulesElement.Element(XName.Get("Order", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (orderElement != null && string.IsNullOrEmpty(orderElement.Value) == false)
+                                                            if (orderElement != null && orderElement.IsEmpty == false && string.IsNullOrEmpty(orderElement.Value) == false)
                                                             {
                                                                 int orderInstance = int.Parse(orderElement.Value, CultureInfo.InvariantCulture);
                                                                 ruleInstance.Order = orderInstance;
                                                             }
                                                             
                                                             XElement actionElement = rulesElement.Element(XName.Get("Action", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (actionElement != null)
+                                                            if (actionElement != null && actionElement.IsEmpty == false)
                                                             {
                                                                 string actionInstance = actionElement.Value;
                                                                 ruleInstance.Action = actionInstance;
                                                             }
                                                             
                                                             XElement remoteSubnetElement = rulesElement.Element(XName.Get("RemoteSubnet", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (remoteSubnetElement != null)
+                                                            if (remoteSubnetElement != null && remoteSubnetElement.IsEmpty == false)
                                                             {
                                                                 string remoteSubnetInstance = remoteSubnetElement.Value;
                                                                 ruleInstance.RemoteSubnet = remoteSubnetInstance;
                                                             }
                                                             
                                                             XElement descriptionElement = rulesElement.Element(XName.Get("Description", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (descriptionElement != null)
+                                                            if (descriptionElement != null && descriptionElement.IsEmpty == false)
                                                             {
                                                                 string descriptionInstance = descriptionElement.Value;
                                                                 ruleInstance.Description = descriptionInstance;
@@ -4133,7 +5242,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement subnetNamesSequenceElement = configurationSetsElement.Element(XName.Get("SubnetNames", "http://schemas.microsoft.com/windowsazure"));
-                                        if (subnetNamesSequenceElement != null)
+                                        if (subnetNamesSequenceElement != null && subnetNamesSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement subnetNamesElement in subnetNamesSequenceElement.Elements(XName.Get("SubnetName", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -4142,75 +5251,75 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement staticVirtualNetworkIPAddressElement = configurationSetsElement.Element(XName.Get("StaticVirtualNetworkIPAddress", "http://schemas.microsoft.com/windowsazure"));
-                                        if (staticVirtualNetworkIPAddressElement != null)
+                                        if (staticVirtualNetworkIPAddressElement != null && staticVirtualNetworkIPAddressElement.IsEmpty == false)
                                         {
                                             string staticVirtualNetworkIPAddressInstance = staticVirtualNetworkIPAddressElement.Value;
                                             configurationSetInstance.StaticVirtualNetworkIPAddress = staticVirtualNetworkIPAddressInstance;
                                         }
                                         
                                         XElement computerNameElement = configurationSetsElement.Element(XName.Get("ComputerName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (computerNameElement != null)
+                                        if (computerNameElement != null && computerNameElement.IsEmpty == false)
                                         {
                                             string computerNameInstance = computerNameElement.Value;
                                             configurationSetInstance.ComputerName = computerNameInstance;
                                         }
                                         
                                         XElement adminPasswordElement = configurationSetsElement.Element(XName.Get("AdminPassword", "http://schemas.microsoft.com/windowsazure"));
-                                        if (adminPasswordElement != null)
+                                        if (adminPasswordElement != null && adminPasswordElement.IsEmpty == false)
                                         {
                                             string adminPasswordInstance = adminPasswordElement.Value;
                                             configurationSetInstance.AdminPassword = adminPasswordInstance;
                                         }
                                         
                                         XElement resetPasswordOnFirstLogonElement = configurationSetsElement.Element(XName.Get("ResetPasswordOnFirstLogon", "http://schemas.microsoft.com/windowsazure"));
-                                        if (resetPasswordOnFirstLogonElement != null && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
+                                        if (resetPasswordOnFirstLogonElement != null && resetPasswordOnFirstLogonElement.IsEmpty == false && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
                                         {
                                             bool resetPasswordOnFirstLogonInstance = bool.Parse(resetPasswordOnFirstLogonElement.Value);
                                             configurationSetInstance.ResetPasswordOnFirstLogon = resetPasswordOnFirstLogonInstance;
                                         }
                                         
                                         XElement enableAutomaticUpdatesElement = configurationSetsElement.Element(XName.Get("EnableAutomaticUpdates", "http://schemas.microsoft.com/windowsazure"));
-                                        if (enableAutomaticUpdatesElement != null && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
+                                        if (enableAutomaticUpdatesElement != null && enableAutomaticUpdatesElement.IsEmpty == false && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
                                         {
                                             bool enableAutomaticUpdatesInstance = bool.Parse(enableAutomaticUpdatesElement.Value);
                                             configurationSetInstance.EnableAutomaticUpdates = enableAutomaticUpdatesInstance;
                                         }
                                         
                                         XElement timeZoneElement = configurationSetsElement.Element(XName.Get("TimeZone", "http://schemas.microsoft.com/windowsazure"));
-                                        if (timeZoneElement != null)
+                                        if (timeZoneElement != null && timeZoneElement.IsEmpty == false)
                                         {
                                             string timeZoneInstance = timeZoneElement.Value;
                                             configurationSetInstance.TimeZone = timeZoneInstance;
                                         }
                                         
                                         XElement domainJoinElement = configurationSetsElement.Element(XName.Get("DomainJoin", "http://schemas.microsoft.com/windowsazure"));
-                                        if (domainJoinElement != null)
+                                        if (domainJoinElement != null && domainJoinElement.IsEmpty == false)
                                         {
                                             DomainJoinSettings domainJoinInstance = new DomainJoinSettings();
                                             configurationSetInstance.DomainJoin = domainJoinInstance;
                                             
                                             XElement credentialsElement = domainJoinElement.Element(XName.Get("Credentials", "http://schemas.microsoft.com/windowsazure"));
-                                            if (credentialsElement != null)
+                                            if (credentialsElement != null && credentialsElement.IsEmpty == false)
                                             {
                                                 DomainJoinCredentials credentialsInstance = new DomainJoinCredentials();
                                                 domainJoinInstance.Credentials = credentialsInstance;
                                                 
                                                 XElement domainElement = credentialsElement.Element(XName.Get("Domain", "http://schemas.microsoft.com/windowsazure"));
-                                                if (domainElement != null)
+                                                if (domainElement != null && domainElement.IsEmpty == false)
                                                 {
                                                     string domainInstance = domainElement.Value;
                                                     credentialsInstance.Domain = domainInstance;
                                                 }
                                                 
                                                 XElement usernameElement = credentialsElement.Element(XName.Get("Username", "http://schemas.microsoft.com/windowsazure"));
-                                                if (usernameElement != null)
+                                                if (usernameElement != null && usernameElement.IsEmpty == false)
                                                 {
                                                     string usernameInstance = usernameElement.Value;
                                                     credentialsInstance.UserName = usernameInstance;
                                                 }
                                                 
                                                 XElement passwordElement = credentialsElement.Element(XName.Get("Password", "http://schemas.microsoft.com/windowsazure"));
-                                                if (passwordElement != null)
+                                                if (passwordElement != null && passwordElement.IsEmpty == false)
                                                 {
                                                     string passwordInstance = passwordElement.Value;
                                                     credentialsInstance.Password = passwordInstance;
@@ -4218,27 +5327,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             }
                                             
                                             XElement joinDomainElement = domainJoinElement.Element(XName.Get("JoinDomain", "http://schemas.microsoft.com/windowsazure"));
-                                            if (joinDomainElement != null)
+                                            if (joinDomainElement != null && joinDomainElement.IsEmpty == false)
                                             {
                                                 string joinDomainInstance = joinDomainElement.Value;
                                                 domainJoinInstance.DomainToJoin = joinDomainInstance;
                                             }
                                             
                                             XElement machineObjectOUElement = domainJoinElement.Element(XName.Get("MachineObjectOU", "http://schemas.microsoft.com/windowsazure"));
-                                            if (machineObjectOUElement != null)
+                                            if (machineObjectOUElement != null && machineObjectOUElement.IsEmpty == false)
                                             {
                                                 string machineObjectOUInstance = machineObjectOUElement.Value;
                                                 domainJoinInstance.LdapMachineObjectOU = machineObjectOUInstance;
                                             }
                                             
                                             XElement provisioningElement = domainJoinElement.Element(XName.Get("Provisioning", "http://schemas.microsoft.com/windowsazure"));
-                                            if (provisioningElement != null)
+                                            if (provisioningElement != null && provisioningElement.IsEmpty == false)
                                             {
                                                 DomainJoinProvisioning provisioningInstance = new DomainJoinProvisioning();
                                                 domainJoinInstance.Provisioning = provisioningInstance;
                                                 
                                                 XElement accountDataElement = provisioningElement.Element(XName.Get("AccountData", "http://schemas.microsoft.com/windowsazure"));
-                                                if (accountDataElement != null)
+                                                if (accountDataElement != null && accountDataElement.IsEmpty == false)
                                                 {
                                                     string accountDataInstance = accountDataElement.Value;
                                                     provisioningInstance.AccountData = accountDataInstance;
@@ -4247,7 +5356,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement storedCertificateSettingsSequenceElement = configurationSetsElement.Element(XName.Get("StoredCertificateSettings", "http://schemas.microsoft.com/windowsazure"));
-                                        if (storedCertificateSettingsSequenceElement != null)
+                                        if (storedCertificateSettingsSequenceElement != null && storedCertificateSettingsSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement storedCertificateSettingsElement in storedCertificateSettingsSequenceElement.Elements(XName.Get("CertificateSetting", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -4255,19 +5364,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 configurationSetInstance.StoredCertificateSettings.Add(certificateSettingInstance);
                                                 
                                                 XElement storeLocationElement = storedCertificateSettingsElement.Element(XName.Get("StoreLocation", "http://schemas.microsoft.com/windowsazure"));
-                                                if (storeLocationElement != null)
+                                                if (storeLocationElement != null && storeLocationElement.IsEmpty == false)
                                                 {
                                                 }
                                                 
                                                 XElement storeNameElement = storedCertificateSettingsElement.Element(XName.Get("StoreName", "http://schemas.microsoft.com/windowsazure"));
-                                                if (storeNameElement != null)
+                                                if (storeNameElement != null && storeNameElement.IsEmpty == false)
                                                 {
                                                     string storeNameInstance = storeNameElement.Value;
                                                     certificateSettingInstance.StoreName = storeNameInstance;
                                                 }
                                                 
                                                 XElement thumbprintElement = storedCertificateSettingsElement.Element(XName.Get("Thumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                                if (thumbprintElement != null)
+                                                if (thumbprintElement != null && thumbprintElement.IsEmpty == false)
                                                 {
                                                     string thumbprintInstance = thumbprintElement.Value;
                                                     certificateSettingInstance.Thumbprint = thumbprintInstance;
@@ -4276,13 +5385,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement winRMElement = configurationSetsElement.Element(XName.Get("WinRM", "http://schemas.microsoft.com/windowsazure"));
-                                        if (winRMElement != null)
+                                        if (winRMElement != null && winRMElement.IsEmpty == false)
                                         {
                                             WindowsRemoteManagementSettings winRMInstance = new WindowsRemoteManagementSettings();
                                             configurationSetInstance.WindowsRemoteManagement = winRMInstance;
                                             
                                             XElement listenersSequenceElement = winRMElement.Element(XName.Get("Listeners", "http://schemas.microsoft.com/windowsazure"));
-                                            if (listenersSequenceElement != null)
+                                            if (listenersSequenceElement != null && listenersSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement listenersElement in listenersSequenceElement.Elements(XName.Get("Listener", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -4290,14 +5399,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     winRMInstance.Listeners.Add(listenerInstance);
                                                     
                                                     XElement protocolElement4 = listenersElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (protocolElement4 != null)
+                                                    if (protocolElement4 != null && protocolElement4.IsEmpty == false)
                                                     {
-                                                        VirtualMachineWindowsRemoteManagementListenerType protocolInstance4 = (VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement4.Value, false);
+                                                        VirtualMachineWindowsRemoteManagementListenerType protocolInstance4 = ((VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement4.Value, true));
                                                         listenerInstance.ListenerType = protocolInstance4;
                                                     }
                                                     
                                                     XElement certificateThumbprintElement = listenersElement.Element(XName.Get("CertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (certificateThumbprintElement != null)
+                                                    if (certificateThumbprintElement != null && certificateThumbprintElement.IsEmpty == false)
                                                     {
                                                         string certificateThumbprintInstance = certificateThumbprintElement.Value;
                                                         listenerInstance.CertificateThumbprint = certificateThumbprintInstance;
@@ -4307,48 +5416,48 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement adminUsernameElement = configurationSetsElement.Element(XName.Get("AdminUsername", "http://schemas.microsoft.com/windowsazure"));
-                                        if (adminUsernameElement != null)
+                                        if (adminUsernameElement != null && adminUsernameElement.IsEmpty == false)
                                         {
                                             string adminUsernameInstance = adminUsernameElement.Value;
                                             configurationSetInstance.AdminUserName = adminUsernameInstance;
                                         }
                                         
                                         XElement hostNameElement2 = configurationSetsElement.Element(XName.Get("HostName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (hostNameElement2 != null)
+                                        if (hostNameElement2 != null && hostNameElement2.IsEmpty == false)
                                         {
                                             string hostNameInstance2 = hostNameElement2.Value;
                                             configurationSetInstance.HostName = hostNameInstance2;
                                         }
                                         
                                         XElement userNameElement = configurationSetsElement.Element(XName.Get("UserName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (userNameElement != null)
+                                        if (userNameElement != null && userNameElement.IsEmpty == false)
                                         {
                                             string userNameInstance = userNameElement.Value;
                                             configurationSetInstance.UserName = userNameInstance;
                                         }
                                         
                                         XElement userPasswordElement = configurationSetsElement.Element(XName.Get("UserPassword", "http://schemas.microsoft.com/windowsazure"));
-                                        if (userPasswordElement != null)
+                                        if (userPasswordElement != null && userPasswordElement.IsEmpty == false)
                                         {
                                             string userPasswordInstance = userPasswordElement.Value;
                                             configurationSetInstance.UserPassword = userPasswordInstance;
                                         }
                                         
                                         XElement disableSshPasswordAuthenticationElement = configurationSetsElement.Element(XName.Get("DisableSshPasswordAuthentication", "http://schemas.microsoft.com/windowsazure"));
-                                        if (disableSshPasswordAuthenticationElement != null && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
+                                        if (disableSshPasswordAuthenticationElement != null && disableSshPasswordAuthenticationElement.IsEmpty == false && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
                                         {
                                             bool disableSshPasswordAuthenticationInstance = bool.Parse(disableSshPasswordAuthenticationElement.Value);
                                             configurationSetInstance.DisableSshPasswordAuthentication = disableSshPasswordAuthenticationInstance;
                                         }
                                         
                                         XElement sSHElement = configurationSetsElement.Element(XName.Get("SSH", "http://schemas.microsoft.com/windowsazure"));
-                                        if (sSHElement != null)
+                                        if (sSHElement != null && sSHElement.IsEmpty == false)
                                         {
                                             SshSettings sSHInstance = new SshSettings();
                                             configurationSetInstance.SshSettings = sSHInstance;
                                             
                                             XElement publicKeysSequenceElement = sSHElement.Element(XName.Get("PublicKeys", "http://schemas.microsoft.com/windowsazure"));
-                                            if (publicKeysSequenceElement != null)
+                                            if (publicKeysSequenceElement != null && publicKeysSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement publicKeysElement in publicKeysSequenceElement.Elements(XName.Get("PublicKey", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -4356,14 +5465,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     sSHInstance.PublicKeys.Add(publicKeyInstance);
                                                     
                                                     XElement fingerprintElement = publicKeysElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (fingerprintElement != null)
+                                                    if (fingerprintElement != null && fingerprintElement.IsEmpty == false)
                                                     {
                                                         string fingerprintInstance = fingerprintElement.Value;
                                                         publicKeyInstance.Fingerprint = fingerprintInstance;
                                                     }
                                                     
                                                     XElement pathElement2 = publicKeysElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement2 != null)
+                                                    if (pathElement2 != null && pathElement2.IsEmpty == false)
                                                     {
                                                         string pathInstance2 = pathElement2.Value;
                                                         publicKeyInstance.Path = pathInstance2;
@@ -4372,7 +5481,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             }
                                             
                                             XElement keyPairsSequenceElement = sSHElement.Element(XName.Get("KeyPairs", "http://schemas.microsoft.com/windowsazure"));
-                                            if (keyPairsSequenceElement != null)
+                                            if (keyPairsSequenceElement != null && keyPairsSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement keyPairsElement in keyPairsSequenceElement.Elements(XName.Get("KeyPair", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -4380,14 +5489,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     sSHInstance.KeyPairs.Add(keyPairInstance);
                                                     
                                                     XElement fingerprintElement2 = keyPairsElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (fingerprintElement2 != null)
+                                                    if (fingerprintElement2 != null && fingerprintElement2.IsEmpty == false)
                                                     {
                                                         string fingerprintInstance2 = fingerprintElement2.Value;
                                                         keyPairInstance.Fingerprint = fingerprintInstance2;
                                                     }
                                                     
                                                     XElement pathElement3 = keyPairsElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement3 != null)
+                                                    if (pathElement3 != null && pathElement3.IsEmpty == false)
                                                     {
                                                         string pathInstance3 = pathElement3.Value;
                                                         keyPairInstance.Path = pathInstance3;
@@ -4395,11 +5504,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 }
                                             }
                                         }
+                                        
+                                        XElement customDataElement = configurationSetsElement.Element(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                                        if (customDataElement != null && customDataElement.IsEmpty == false)
+                                        {
+                                            string customDataInstance = customDataElement.Value;
+                                            configurationSetInstance.CustomData = customDataInstance;
+                                        }
                                     }
                                 }
                                 
                                 XElement resourceExtensionReferencesSequenceElement = roleListElement.Element(XName.Get("ResourceExtensionReferences", "http://schemas.microsoft.com/windowsazure"));
-                                if (resourceExtensionReferencesSequenceElement != null)
+                                if (resourceExtensionReferencesSequenceElement != null && resourceExtensionReferencesSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement resourceExtensionReferencesElement in resourceExtensionReferencesSequenceElement.Elements(XName.Get("ResourceExtensionReference", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -4407,35 +5523,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.ResourceExtensionReferences.Add(resourceExtensionReferenceInstance);
                                         
                                         XElement referenceNameElement = resourceExtensionReferencesElement.Element(XName.Get("ReferenceName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (referenceNameElement != null)
+                                        if (referenceNameElement != null && referenceNameElement.IsEmpty == false)
                                         {
                                             string referenceNameInstance = referenceNameElement.Value;
                                             resourceExtensionReferenceInstance.ReferenceName = referenceNameInstance;
                                         }
                                         
                                         XElement publisherElement = resourceExtensionReferencesElement.Element(XName.Get("Publisher", "http://schemas.microsoft.com/windowsazure"));
-                                        if (publisherElement != null)
+                                        if (publisherElement != null && publisherElement.IsEmpty == false)
                                         {
                                             string publisherInstance = publisherElement.Value;
                                             resourceExtensionReferenceInstance.Publisher = publisherInstance;
                                         }
                                         
-                                        XElement nameElement4 = resourceExtensionReferencesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                        if (nameElement4 != null)
+                                        XElement nameElement6 = resourceExtensionReferencesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                        if (nameElement6 != null && nameElement6.IsEmpty == false)
                                         {
-                                            string nameInstance4 = nameElement4.Value;
-                                            resourceExtensionReferenceInstance.Name = nameInstance4;
+                                            string nameInstance6 = nameElement6.Value;
+                                            resourceExtensionReferenceInstance.Name = nameInstance6;
                                         }
                                         
-                                        XElement versionElement = resourceExtensionReferencesElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
-                                        if (versionElement != null)
+                                        XElement versionElement2 = resourceExtensionReferencesElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
+                                        if (versionElement2 != null && versionElement2.IsEmpty == false)
                                         {
-                                            string versionInstance = versionElement.Value;
-                                            resourceExtensionReferenceInstance.Version = versionInstance;
+                                            string versionInstance2 = versionElement2.Value;
+                                            resourceExtensionReferenceInstance.Version = versionInstance2;
                                         }
                                         
                                         XElement resourceExtensionParameterValuesSequenceElement = resourceExtensionReferencesElement.Element(XName.Get("ResourceExtensionParameterValues", "http://schemas.microsoft.com/windowsazure"));
-                                        if (resourceExtensionParameterValuesSequenceElement != null)
+                                        if (resourceExtensionParameterValuesSequenceElement != null && resourceExtensionParameterValuesSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement resourceExtensionParameterValuesElement in resourceExtensionParameterValuesSequenceElement.Elements(XName.Get("ResourceExtensionParameterValue", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -4443,21 +5559,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 resourceExtensionReferenceInstance.ResourceExtensionParameterValues.Add(resourceExtensionParameterValueInstance);
                                                 
                                                 XElement keyElement = resourceExtensionParameterValuesElement.Element(XName.Get("Key", "http://schemas.microsoft.com/windowsazure"));
-                                                if (keyElement != null)
+                                                if (keyElement != null && keyElement.IsEmpty == false)
                                                 {
                                                     string keyInstance = keyElement.Value;
                                                     resourceExtensionParameterValueInstance.Key = keyInstance;
                                                 }
                                                 
                                                 XElement valueElement = resourceExtensionParameterValuesElement.Element(XName.Get("Value", "http://schemas.microsoft.com/windowsazure"));
-                                                if (valueElement != null)
+                                                if (valueElement != null && valueElement.IsEmpty == false)
                                                 {
                                                     string valueInstance = TypeConversion.FromBase64String(valueElement.Value);
                                                     resourceExtensionParameterValueInstance.Value = valueInstance;
                                                 }
                                                 
                                                 XElement typeElement = resourceExtensionParameterValuesElement.Element(XName.Get("Type", "http://schemas.microsoft.com/windowsazure"));
-                                                if (typeElement != null)
+                                                if (typeElement != null && typeElement.IsEmpty == false)
                                                 {
                                                     string typeInstance = typeElement.Value;
                                                     resourceExtensionParameterValueInstance.Type = typeInstance;
@@ -4466,7 +5582,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement stateElement = resourceExtensionReferencesElement.Element(XName.Get("State", "http://schemas.microsoft.com/windowsazure"));
-                                        if (stateElement != null)
+                                        if (stateElement != null && stateElement.IsEmpty == false)
                                         {
                                             string stateInstance = stateElement.Value;
                                             resourceExtensionReferenceInstance.State = stateInstance;
@@ -4474,15 +5590,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                 }
                                 
+                                XElement vMImageNameElement = roleListElement.Element(XName.Get("VMImageName", "http://schemas.microsoft.com/windowsazure"));
+                                if (vMImageNameElement != null && vMImageNameElement.IsEmpty == false)
+                                {
+                                    string vMImageNameInstance = vMImageNameElement.Value;
+                                    roleInstance.VMImageName = vMImageNameInstance;
+                                }
+                                
                                 XElement availabilitySetNameElement = roleListElement.Element(XName.Get("AvailabilitySetName", "http://schemas.microsoft.com/windowsazure"));
-                                if (availabilitySetNameElement != null)
+                                if (availabilitySetNameElement != null && availabilitySetNameElement.IsEmpty == false)
                                 {
                                     string availabilitySetNameInstance = availabilitySetNameElement.Value;
                                     roleInstance.AvailabilitySetName = availabilitySetNameInstance;
                                 }
                                 
                                 XElement dataVirtualHardDisksSequenceElement = roleListElement.Element(XName.Get("DataVirtualHardDisks", "http://schemas.microsoft.com/windowsazure"));
-                                if (dataVirtualHardDisksSequenceElement != null)
+                                if (dataVirtualHardDisksSequenceElement != null && dataVirtualHardDisksSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement dataVirtualHardDisksElement in dataVirtualHardDisksSequenceElement.Elements(XName.Get("DataVirtualHardDisk", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -4490,99 +5613,106 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.DataVirtualHardDisks.Add(dataVirtualHardDiskInstance);
                                         
                                         XElement hostCachingElement = dataVirtualHardDisksElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                                        if (hostCachingElement != null && string.IsNullOrEmpty(hostCachingElement.Value) == false)
+                                        if (hostCachingElement != null && hostCachingElement.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement.Value) == false)
                                         {
-                                            VirtualHardDiskHostCaching hostCachingInstance = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, false);
+                                            VirtualHardDiskHostCaching hostCachingInstance = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, true));
                                             dataVirtualHardDiskInstance.HostCaching = hostCachingInstance;
                                         }
                                         
                                         XElement diskLabelElement = dataVirtualHardDisksElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                        if (diskLabelElement != null)
+                                        if (diskLabelElement != null && diskLabelElement.IsEmpty == false)
                                         {
                                             string diskLabelInstance = diskLabelElement.Value;
-                                            dataVirtualHardDiskInstance.DiskLabel = diskLabelInstance;
+                                            dataVirtualHardDiskInstance.Label = diskLabelInstance;
                                         }
                                         
                                         XElement diskNameElement = dataVirtualHardDisksElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (diskNameElement != null)
+                                        if (diskNameElement != null && diskNameElement.IsEmpty == false)
                                         {
                                             string diskNameInstance = diskNameElement.Value;
                                             dataVirtualHardDiskInstance.Name = diskNameInstance;
                                         }
                                         
                                         XElement lunElement = dataVirtualHardDisksElement.Element(XName.Get("Lun", "http://schemas.microsoft.com/windowsazure"));
-                                        if (lunElement != null && string.IsNullOrEmpty(lunElement.Value) == false)
+                                        if (lunElement != null && lunElement.IsEmpty == false && string.IsNullOrEmpty(lunElement.Value) == false)
                                         {
                                             int lunInstance = int.Parse(lunElement.Value, CultureInfo.InvariantCulture);
                                             dataVirtualHardDiskInstance.LogicalUnitNumber = lunInstance;
                                         }
                                         
                                         XElement logicalDiskSizeInGBElement = dataVirtualHardDisksElement.Element(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                                        if (logicalDiskSizeInGBElement != null)
+                                        if (logicalDiskSizeInGBElement != null && logicalDiskSizeInGBElement.IsEmpty == false && string.IsNullOrEmpty(logicalDiskSizeInGBElement.Value) == false)
                                         {
                                             int logicalDiskSizeInGBInstance = int.Parse(logicalDiskSizeInGBElement.Value, CultureInfo.InvariantCulture);
                                             dataVirtualHardDiskInstance.LogicalDiskSizeInGB = logicalDiskSizeInGBInstance;
                                         }
                                         
                                         XElement mediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                        if (mediaLinkElement != null)
+                                        if (mediaLinkElement != null && mediaLinkElement.IsEmpty == false)
                                         {
                                             Uri mediaLinkInstance = TypeConversion.TryParseUri(mediaLinkElement.Value);
                                             dataVirtualHardDiskInstance.MediaLink = mediaLinkInstance;
+                                        }
+                                        
+                                        XElement sourceMediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                                        if (sourceMediaLinkElement != null && sourceMediaLinkElement.IsEmpty == false)
+                                        {
+                                            Uri sourceMediaLinkInstance = TypeConversion.TryParseUri(sourceMediaLinkElement.Value);
+                                            dataVirtualHardDiskInstance.SourceMediaLink = sourceMediaLinkInstance;
                                         }
                                     }
                                 }
                                 
                                 XElement labelElement2 = roleListElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                                if (labelElement2 != null)
+                                if (labelElement2 != null && labelElement2.IsEmpty == false)
                                 {
                                     string labelInstance2 = labelElement2.Value;
                                     roleInstance.Label = labelInstance2;
                                 }
                                 
                                 XElement oSVirtualHardDiskElement = roleListElement.Element(XName.Get("OSVirtualHardDisk", "http://schemas.microsoft.com/windowsazure"));
-                                if (oSVirtualHardDiskElement != null)
+                                if (oSVirtualHardDiskElement != null && oSVirtualHardDiskElement.IsEmpty == false)
                                 {
                                     OSVirtualHardDisk oSVirtualHardDiskInstance = new OSVirtualHardDisk();
                                     roleInstance.OSVirtualHardDisk = oSVirtualHardDiskInstance;
                                     
                                     XElement hostCachingElement2 = oSVirtualHardDiskElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                                    if (hostCachingElement2 != null && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
+                                    if (hostCachingElement2 != null && hostCachingElement2.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
                                     {
-                                        VirtualHardDiskHostCaching hostCachingInstance2 = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, false);
+                                        VirtualHardDiskHostCaching hostCachingInstance2 = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, true));
                                         oSVirtualHardDiskInstance.HostCaching = hostCachingInstance2;
                                     }
                                     
                                     XElement diskLabelElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                    if (diskLabelElement2 != null)
+                                    if (diskLabelElement2 != null && diskLabelElement2.IsEmpty == false)
                                     {
                                         string diskLabelInstance2 = diskLabelElement2.Value;
                                         oSVirtualHardDiskInstance.Label = diskLabelInstance2;
                                     }
                                     
                                     XElement diskNameElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (diskNameElement2 != null)
+                                    if (diskNameElement2 != null && diskNameElement2.IsEmpty == false)
                                     {
                                         string diskNameInstance2 = diskNameElement2.Value;
                                         oSVirtualHardDiskInstance.Name = diskNameInstance2;
                                     }
                                     
                                     XElement mediaLinkElement2 = oSVirtualHardDiskElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                    if (mediaLinkElement2 != null)
+                                    if (mediaLinkElement2 != null && mediaLinkElement2.IsEmpty == false)
                                     {
                                         Uri mediaLinkInstance2 = TypeConversion.TryParseUri(mediaLinkElement2.Value);
                                         oSVirtualHardDiskInstance.MediaLink = mediaLinkInstance2;
                                     }
                                     
                                     XElement sourceImageNameElement = oSVirtualHardDiskElement.Element(XName.Get("SourceImageName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (sourceImageNameElement != null)
+                                    if (sourceImageNameElement != null && sourceImageNameElement.IsEmpty == false)
                                     {
                                         string sourceImageNameInstance = sourceImageNameElement.Value;
                                         oSVirtualHardDiskInstance.SourceImageName = sourceImageNameInstance;
                                     }
                                     
                                     XElement osElement = oSVirtualHardDiskElement.Element(XName.Get("OS", "http://schemas.microsoft.com/windowsazure"));
-                                    if (osElement != null)
+                                    if (osElement != null && osElement.IsEmpty == false)
                                     {
                                         string osInstance = osElement.Value;
                                         oSVirtualHardDiskInstance.OperatingSystem = osInstance;
@@ -4590,21 +5720,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement roleSizeElement = roleListElement.Element(XName.Get("RoleSize", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleSizeElement != null)
+                                if (roleSizeElement != null && roleSizeElement.IsEmpty == false)
                                 {
                                     string roleSizeInstance = roleSizeElement.Value;
                                     roleInstance.RoleSize = roleSizeInstance;
                                 }
                                 
                                 XElement provisionGuestAgentElement = roleListElement.Element(XName.Get("ProvisionGuestAgent", "http://schemas.microsoft.com/windowsazure"));
-                                if (provisionGuestAgentElement != null && string.IsNullOrEmpty(provisionGuestAgentElement.Value) == false)
+                                if (provisionGuestAgentElement != null && provisionGuestAgentElement.IsEmpty == false && string.IsNullOrEmpty(provisionGuestAgentElement.Value) == false)
                                 {
                                     bool provisionGuestAgentInstance = bool.Parse(provisionGuestAgentElement.Value);
                                     roleInstance.ProvisionGuestAgent = provisionGuestAgentInstance;
                                 }
                                 
                                 XElement defaultWinRmCertificateThumbprintElement = roleListElement.Element(XName.Get("DefaultWinRmCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                if (defaultWinRmCertificateThumbprintElement != null)
+                                if (defaultWinRmCertificateThumbprintElement != null && defaultWinRmCertificateThumbprintElement.IsEmpty == false)
                                 {
                                     string defaultWinRmCertificateThumbprintInstance = defaultWinRmCertificateThumbprintElement.Value;
                                     roleInstance.DefaultWinRmCertificateThumbprint = defaultWinRmCertificateThumbprintInstance;
@@ -4613,49 +5743,49 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement sdkVersionElement = deploymentElement.Element(XName.Get("SdkVersion", "http://schemas.microsoft.com/windowsazure"));
-                        if (sdkVersionElement != null)
+                        if (sdkVersionElement != null && sdkVersionElement.IsEmpty == false)
                         {
                             string sdkVersionInstance = sdkVersionElement.Value;
                             result.SdkVersion = sdkVersionInstance;
                         }
                         
                         XElement lockedElement = deploymentElement.Element(XName.Get("Locked", "http://schemas.microsoft.com/windowsazure"));
-                        if (lockedElement != null)
+                        if (lockedElement != null && lockedElement.IsEmpty == false)
                         {
                             bool lockedInstance = bool.Parse(lockedElement.Value);
                             result.Locked = lockedInstance;
                         }
                         
                         XElement rollbackAllowedElement = deploymentElement.Element(XName.Get("RollbackAllowed", "http://schemas.microsoft.com/windowsazure"));
-                        if (rollbackAllowedElement != null)
+                        if (rollbackAllowedElement != null && rollbackAllowedElement.IsEmpty == false)
                         {
                             bool rollbackAllowedInstance = bool.Parse(rollbackAllowedElement.Value);
                             result.RollbackAllowed = rollbackAllowedInstance;
                         }
                         
                         XElement createdTimeElement = deploymentElement.Element(XName.Get("CreatedTime", "http://schemas.microsoft.com/windowsazure"));
-                        if (createdTimeElement != null)
+                        if (createdTimeElement != null && createdTimeElement.IsEmpty == false)
                         {
                             DateTime createdTimeInstance = DateTime.Parse(createdTimeElement.Value, CultureInfo.InvariantCulture);
                             result.CreatedTime = createdTimeInstance;
                         }
                         
                         XElement lastModifiedTimeElement = deploymentElement.Element(XName.Get("LastModifiedTime", "http://schemas.microsoft.com/windowsazure"));
-                        if (lastModifiedTimeElement != null)
+                        if (lastModifiedTimeElement != null && lastModifiedTimeElement.IsEmpty == false)
                         {
                             DateTime lastModifiedTimeInstance = DateTime.Parse(lastModifiedTimeElement.Value, CultureInfo.InvariantCulture);
                             result.LastModifiedTime = lastModifiedTimeInstance;
                         }
                         
                         XElement virtualNetworkNameElement = deploymentElement.Element(XName.Get("VirtualNetworkName", "http://schemas.microsoft.com/windowsazure"));
-                        if (virtualNetworkNameElement != null)
+                        if (virtualNetworkNameElement != null && virtualNetworkNameElement.IsEmpty == false)
                         {
                             string virtualNetworkNameInstance = virtualNetworkNameElement.Value;
                             result.VirtualNetworkName = virtualNetworkNameInstance;
                         }
                         
                         XElement extendedPropertiesSequenceElement = deploymentElement.Element(XName.Get("ExtendedProperties", "http://schemas.microsoft.com/windowsazure"));
-                        if (extendedPropertiesSequenceElement != null)
+                        if (extendedPropertiesSequenceElement != null && extendedPropertiesSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement extendedPropertiesElement in extendedPropertiesSequenceElement.Elements(XName.Get("ExtendedProperty", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -4666,35 +5796,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement persistentVMDowntimeElement = deploymentElement.Element(XName.Get("PersistentVMDowntime", "http://schemas.microsoft.com/windowsazure"));
-                        if (persistentVMDowntimeElement != null)
+                        if (persistentVMDowntimeElement != null && persistentVMDowntimeElement.IsEmpty == false)
                         {
                             PersistentVMDowntime persistentVMDowntimeInstance = new PersistentVMDowntime();
                             result.PersistentVMDowntime = persistentVMDowntimeInstance;
                             
                             XElement startTimeElement = persistentVMDowntimeElement.Element(XName.Get("StartTime", "http://schemas.microsoft.com/windowsazure"));
-                            if (startTimeElement != null)
+                            if (startTimeElement != null && startTimeElement.IsEmpty == false)
                             {
                                 DateTime startTimeInstance = DateTime.Parse(startTimeElement.Value, CultureInfo.InvariantCulture);
                                 persistentVMDowntimeInstance.StartTime = startTimeInstance;
                             }
                             
                             XElement endTimeElement = persistentVMDowntimeElement.Element(XName.Get("EndTime", "http://schemas.microsoft.com/windowsazure"));
-                            if (endTimeElement != null)
+                            if (endTimeElement != null && endTimeElement.IsEmpty == false)
                             {
                                 DateTime endTimeInstance = DateTime.Parse(endTimeElement.Value, CultureInfo.InvariantCulture);
                                 persistentVMDowntimeInstance.EndTime = endTimeInstance;
                             }
                             
-                            XElement statusElement2 = persistentVMDowntimeElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                            if (statusElement2 != null)
+                            XElement statusElement6 = persistentVMDowntimeElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                            if (statusElement6 != null && statusElement6.IsEmpty == false)
                             {
-                                string statusInstance2 = statusElement2.Value;
-                                persistentVMDowntimeInstance.Status = statusInstance2;
+                                string statusInstance6 = statusElement6.Value;
+                                persistentVMDowntimeInstance.Status = statusInstance6;
                             }
                         }
                         
                         XElement virtualIPsSequenceElement = deploymentElement.Element(XName.Get("VirtualIPs", "http://schemas.microsoft.com/windowsazure"));
-                        if (virtualIPsSequenceElement != null)
+                        if (virtualIPsSequenceElement != null && virtualIPsSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement virtualIPsElement in virtualIPsSequenceElement.Elements(XName.Get("VirtualIP", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -4702,21 +5832,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.VirtualIPAddresses.Add(virtualIPInstance);
                                 
                                 XElement addressElement = virtualIPsElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                                if (addressElement != null)
+                                if (addressElement != null && addressElement.IsEmpty == false)
                                 {
                                     string addressInstance = addressElement.Value;
                                     virtualIPInstance.Address = addressInstance;
                                 }
                                 
-                                XElement nameElement5 = virtualIPsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                if (nameElement5 != null)
+                                XElement nameElement7 = virtualIPsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                if (nameElement7 != null && nameElement7.IsEmpty == false)
                                 {
-                                    string nameInstance5 = nameElement5.Value;
-                                    virtualIPInstance.Name = nameInstance5;
+                                    string nameInstance7 = nameElement7.Value;
+                                    virtualIPInstance.Name = nameInstance7;
                                 }
                                 
                                 XElement isDnsProgrammedElement = virtualIPsElement.Element(XName.Get("IsDnsProgrammed", "http://schemas.microsoft.com/windowsazure"));
-                                if (isDnsProgrammedElement != null && string.IsNullOrEmpty(isDnsProgrammedElement.Value) == false)
+                                if (isDnsProgrammedElement != null && isDnsProgrammedElement.IsEmpty == false && string.IsNullOrEmpty(isDnsProgrammedElement.Value) == false)
                                 {
                                     bool isDnsProgrammedInstance = bool.Parse(isDnsProgrammedElement.Value);
                                     virtualIPInstance.IsDnsProgrammed = isDnsProgrammedInstance;
@@ -4725,35 +5855,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement reservedIPNameElement = deploymentElement.Element(XName.Get("ReservedIPName", "http://schemas.microsoft.com/windowsazure"));
-                        if (reservedIPNameElement != null)
+                        if (reservedIPNameElement != null && reservedIPNameElement.IsEmpty == false)
                         {
                             string reservedIPNameInstance = reservedIPNameElement.Value;
                             result.ReservedIPName = reservedIPNameInstance;
                         }
                         
                         XElement dnsElement = deploymentElement.Element(XName.Get("Dns", "http://schemas.microsoft.com/windowsazure"));
-                        if (dnsElement != null)
+                        if (dnsElement != null && dnsElement.IsEmpty == false)
                         {
                             DnsSettings dnsInstance = new DnsSettings();
                             result.DnsSettings = dnsInstance;
                             
                             XElement dnsServersSequenceElement = dnsElement.Element(XName.Get("DnsServers", "http://schemas.microsoft.com/windowsazure"));
-                            if (dnsServersSequenceElement != null)
+                            if (dnsServersSequenceElement != null && dnsServersSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement dnsServersElement in dnsServersSequenceElement.Elements(XName.Get("DnsServer", "http://schemas.microsoft.com/windowsazure")))
                                 {
                                     DnsServer dnsServerInstance = new DnsServer();
                                     dnsInstance.DnsServers.Add(dnsServerInstance);
                                     
-                                    XElement nameElement6 = dnsServersElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                    if (nameElement6 != null)
+                                    XElement nameElement8 = dnsServersElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                    if (nameElement8 != null && nameElement8.IsEmpty == false)
                                     {
-                                        string nameInstance6 = nameElement6.Value;
-                                        dnsServerInstance.Name = nameInstance6;
+                                        string nameInstance8 = nameElement8.Value;
+                                        dnsServerInstance.Name = nameInstance8;
                                     }
                                     
                                     XElement addressElement2 = dnsServersElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                                    if (addressElement2 != null)
+                                    if (addressElement2 != null && addressElement2.IsEmpty == false)
                                     {
                                         string addressInstance2 = addressElement2.Value;
                                         dnsServerInstance.Address = addressInstance2;
@@ -4763,13 +5893,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement extensionConfigurationElement = deploymentElement.Element(XName.Get("ExtensionConfiguration", "http://schemas.microsoft.com/windowsazure"));
-                        if (extensionConfigurationElement != null)
+                        if (extensionConfigurationElement != null && extensionConfigurationElement.IsEmpty == false)
                         {
                             ExtensionConfiguration extensionConfigurationInstance = new ExtensionConfiguration();
                             result.ExtensionConfiguration = extensionConfigurationInstance;
                             
                             XElement allRolesSequenceElement = extensionConfigurationElement.Element(XName.Get("AllRoles", "http://schemas.microsoft.com/windowsazure"));
-                            if (allRolesSequenceElement != null)
+                            if (allRolesSequenceElement != null && allRolesSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement allRolesElement in allRolesSequenceElement.Elements(XName.Get("Extension", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -4777,7 +5907,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     extensionConfigurationInstance.AllRoles.Add(extensionInstance);
                                     
                                     XElement idElement = allRolesElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                                    if (idElement != null)
+                                    if (idElement != null && idElement.IsEmpty == false)
                                     {
                                         string idInstance = idElement.Value;
                                         extensionInstance.Id = idInstance;
@@ -4786,7 +5916,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             }
                             
                             XElement namedRolesSequenceElement = extensionConfigurationElement.Element(XName.Get("NamedRoles", "http://schemas.microsoft.com/windowsazure"));
-                            if (namedRolesSequenceElement != null)
+                            if (namedRolesSequenceElement != null && namedRolesSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement namedRolesElement in namedRolesSequenceElement.Elements(XName.Get("Role", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -4794,14 +5924,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     extensionConfigurationInstance.NamedRoles.Add(roleInstance2);
                                     
                                     XElement roleNameElement3 = namedRolesElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (roleNameElement3 != null)
+                                    if (roleNameElement3 != null && roleNameElement3.IsEmpty == false)
                                     {
                                         string roleNameInstance3 = roleNameElement3.Value;
                                         roleInstance2.RoleName = roleNameInstance3;
                                     }
                                     
                                     XElement extensionsSequenceElement = namedRolesElement.Element(XName.Get("Extensions", "http://schemas.microsoft.com/windowsazure"));
-                                    if (extensionsSequenceElement != null)
+                                    if (extensionsSequenceElement != null && extensionsSequenceElement.IsEmpty == false)
                                     {
                                         foreach (XElement extensionsElement in extensionsSequenceElement.Elements(XName.Get("Extension", "http://schemas.microsoft.com/windowsazure")))
                                         {
@@ -4809,7 +5939,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             roleInstance2.Extensions.Add(extensionInstance2);
                                             
                                             XElement idElement2 = extensionsElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                                            if (idElement2 != null)
+                                            if (idElement2 != null && idElement2.IsEmpty == false)
                                             {
                                                 string idInstance2 = idElement2.Value;
                                                 extensionInstance2.Id = idInstance2;
@@ -4851,16 +5981,16 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Get Deployment operation returns configuration information,
-        /// status, and system properties for a deployment.  (see
+        /// The Get Deployment By Slot operation returns configuration
+        /// information, status, and system properties for a deployment.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460804.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4889,7 +6019,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot;
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -4900,7 +6041,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -4941,59 +6082,59 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement deploymentElement = responseDoc.Element(XName.Get("Deployment", "http://schemas.microsoft.com/windowsazure"));
-                    if (deploymentElement != null)
+                    if (deploymentElement != null && deploymentElement.IsEmpty == false)
                     {
                         XElement nameElement = deploymentElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                        if (nameElement != null)
+                        if (nameElement != null && nameElement.IsEmpty == false)
                         {
                             string nameInstance = nameElement.Value;
                             result.Name = nameInstance;
                         }
                         
                         XElement deploymentSlotElement = deploymentElement.Element(XName.Get("DeploymentSlot", "http://schemas.microsoft.com/windowsazure"));
-                        if (deploymentSlotElement != null)
+                        if (deploymentSlotElement != null && deploymentSlotElement.IsEmpty == false)
                         {
-                            DeploymentSlot deploymentSlotInstance = (DeploymentSlot)Enum.Parse(typeof(DeploymentSlot), deploymentSlotElement.Value, false);
+                            DeploymentSlot deploymentSlotInstance = ((DeploymentSlot)Enum.Parse(typeof(DeploymentSlot), deploymentSlotElement.Value, true));
                             result.DeploymentSlot = deploymentSlotInstance;
                         }
                         
                         XElement privateIDElement = deploymentElement.Element(XName.Get("PrivateID", "http://schemas.microsoft.com/windowsazure"));
-                        if (privateIDElement != null)
+                        if (privateIDElement != null && privateIDElement.IsEmpty == false)
                         {
                             string privateIDInstance = privateIDElement.Value;
                             result.PrivateId = privateIDInstance;
                         }
                         
                         XElement statusElement = deploymentElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                        if (statusElement != null)
+                        if (statusElement != null && statusElement.IsEmpty == false)
                         {
-                            DeploymentStatus statusInstance = (DeploymentStatus)Enum.Parse(typeof(DeploymentStatus), statusElement.Value, false);
+                            DeploymentStatus statusInstance = ((DeploymentStatus)Enum.Parse(typeof(DeploymentStatus), statusElement.Value, true));
                             result.Status = statusInstance;
                         }
                         
                         XElement labelElement = deploymentElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                        if (labelElement != null)
+                        if (labelElement != null && labelElement.IsEmpty == false)
                         {
                             string labelInstance = TypeConversion.FromBase64String(labelElement.Value);
                             result.Label = labelInstance;
                         }
                         
                         XElement urlElement = deploymentElement.Element(XName.Get("Url", "http://schemas.microsoft.com/windowsazure"));
-                        if (urlElement != null)
+                        if (urlElement != null && urlElement.IsEmpty == false)
                         {
                             Uri urlInstance = TypeConversion.TryParseUri(urlElement.Value);
                             result.Uri = urlInstance;
                         }
                         
                         XElement configurationElement = deploymentElement.Element(XName.Get("Configuration", "http://schemas.microsoft.com/windowsazure"));
-                        if (configurationElement != null)
+                        if (configurationElement != null && configurationElement.IsEmpty == false)
                         {
                             string configurationInstance = TypeConversion.FromBase64String(configurationElement.Value);
                             result.Configuration = configurationInstance;
                         }
                         
                         XElement roleInstanceListSequenceElement = deploymentElement.Element(XName.Get("RoleInstanceList", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleInstanceListSequenceElement != null)
+                        if (roleInstanceListSequenceElement != null && roleInstanceListSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement roleInstanceListElement in roleInstanceListSequenceElement.Elements(XName.Get("RoleInstance", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5001,70 +6142,70 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.RoleInstances.Add(roleInstanceInstance);
                                 
                                 XElement roleNameElement = roleInstanceListElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleNameElement != null)
+                                if (roleNameElement != null && roleNameElement.IsEmpty == false)
                                 {
                                     string roleNameInstance = roleNameElement.Value;
                                     roleInstanceInstance.RoleName = roleNameInstance;
                                 }
                                 
                                 XElement instanceNameElement = roleInstanceListElement.Element(XName.Get("InstanceName", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceNameElement != null)
+                                if (instanceNameElement != null && instanceNameElement.IsEmpty == false)
                                 {
                                     string instanceNameInstance = instanceNameElement.Value;
                                     roleInstanceInstance.InstanceName = instanceNameInstance;
                                 }
                                 
                                 XElement instanceStatusElement = roleInstanceListElement.Element(XName.Get("InstanceStatus", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceStatusElement != null)
+                                if (instanceStatusElement != null && instanceStatusElement.IsEmpty == false)
                                 {
                                     string instanceStatusInstance = instanceStatusElement.Value;
                                     roleInstanceInstance.InstanceStatus = instanceStatusInstance;
                                 }
                                 
                                 XElement instanceUpgradeDomainElement = roleInstanceListElement.Element(XName.Get("InstanceUpgradeDomain", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceUpgradeDomainElement != null && string.IsNullOrEmpty(instanceUpgradeDomainElement.Value) == false)
+                                if (instanceUpgradeDomainElement != null && instanceUpgradeDomainElement.IsEmpty == false && string.IsNullOrEmpty(instanceUpgradeDomainElement.Value) == false)
                                 {
                                     int instanceUpgradeDomainInstance = int.Parse(instanceUpgradeDomainElement.Value, CultureInfo.InvariantCulture);
                                     roleInstanceInstance.InstanceUpgradeDomain = instanceUpgradeDomainInstance;
                                 }
                                 
                                 XElement instanceFaultDomainElement = roleInstanceListElement.Element(XName.Get("InstanceFaultDomain", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceFaultDomainElement != null && string.IsNullOrEmpty(instanceFaultDomainElement.Value) == false)
+                                if (instanceFaultDomainElement != null && instanceFaultDomainElement.IsEmpty == false && string.IsNullOrEmpty(instanceFaultDomainElement.Value) == false)
                                 {
                                     int instanceFaultDomainInstance = int.Parse(instanceFaultDomainElement.Value, CultureInfo.InvariantCulture);
                                     roleInstanceInstance.InstanceFaultDomain = instanceFaultDomainInstance;
                                 }
                                 
                                 XElement instanceSizeElement = roleInstanceListElement.Element(XName.Get("InstanceSize", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceSizeElement != null)
+                                if (instanceSizeElement != null && instanceSizeElement.IsEmpty == false)
                                 {
                                     string instanceSizeInstance = instanceSizeElement.Value;
                                     roleInstanceInstance.InstanceSize = instanceSizeInstance;
                                 }
                                 
                                 XElement instanceStateDetailsElement = roleInstanceListElement.Element(XName.Get("InstanceStateDetails", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceStateDetailsElement != null)
+                                if (instanceStateDetailsElement != null && instanceStateDetailsElement.IsEmpty == false)
                                 {
                                     string instanceStateDetailsInstance = instanceStateDetailsElement.Value;
                                     roleInstanceInstance.InstanceStateDetails = instanceStateDetailsInstance;
                                 }
                                 
                                 XElement instanceErrorCodeElement = roleInstanceListElement.Element(XName.Get("InstanceErrorCode", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceErrorCodeElement != null)
+                                if (instanceErrorCodeElement != null && instanceErrorCodeElement.IsEmpty == false)
                                 {
                                     string instanceErrorCodeInstance = instanceErrorCodeElement.Value;
                                     roleInstanceInstance.InstanceErrorCode = instanceErrorCodeInstance;
                                 }
                                 
                                 XElement ipAddressElement = roleInstanceListElement.Element(XName.Get("IpAddress", "http://schemas.microsoft.com/windowsazure"));
-                                if (ipAddressElement != null)
+                                if (ipAddressElement != null && ipAddressElement.IsEmpty == false)
                                 {
                                     string ipAddressInstance = ipAddressElement.Value;
                                     roleInstanceInstance.IPAddress = ipAddressInstance;
                                 }
                                 
                                 XElement instanceEndpointsSequenceElement = roleInstanceListElement.Element(XName.Get("InstanceEndpoints", "http://schemas.microsoft.com/windowsazure"));
-                                if (instanceEndpointsSequenceElement != null)
+                                if (instanceEndpointsSequenceElement != null && instanceEndpointsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement instanceEndpointsElement in instanceEndpointsSequenceElement.Elements(XName.Get("InstanceEndpoint", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5072,35 +6213,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstanceInstance.InstanceEndpoints.Add(instanceEndpointInstance);
                                         
                                         XElement localPortElement = instanceEndpointsElement.Element(XName.Get("LocalPort", "http://schemas.microsoft.com/windowsazure"));
-                                        if (localPortElement != null && string.IsNullOrEmpty(localPortElement.Value) == false)
+                                        if (localPortElement != null && localPortElement.IsEmpty == false && string.IsNullOrEmpty(localPortElement.Value) == false)
                                         {
                                             int localPortInstance = int.Parse(localPortElement.Value, CultureInfo.InvariantCulture);
                                             instanceEndpointInstance.LocalPort = localPortInstance;
                                         }
                                         
                                         XElement nameElement2 = instanceEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                        if (nameElement2 != null)
+                                        if (nameElement2 != null && nameElement2.IsEmpty == false)
                                         {
                                             string nameInstance2 = nameElement2.Value;
                                             instanceEndpointInstance.Name = nameInstance2;
                                         }
                                         
                                         XElement publicPortElement = instanceEndpointsElement.Element(XName.Get("PublicPort", "http://schemas.microsoft.com/windowsazure"));
-                                        if (publicPortElement != null)
+                                        if (publicPortElement != null && publicPortElement.IsEmpty == false)
                                         {
                                             int publicPortInstance = int.Parse(publicPortElement.Value, CultureInfo.InvariantCulture);
                                             instanceEndpointInstance.Port = publicPortInstance;
                                         }
                                         
                                         XElement protocolElement = instanceEndpointsElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                        if (protocolElement != null)
+                                        if (protocolElement != null && protocolElement.IsEmpty == false)
                                         {
                                             string protocolInstance = protocolElement.Value;
                                             instanceEndpointInstance.Protocol = protocolInstance;
                                         }
                                         
                                         XElement vipElement = instanceEndpointsElement.Element(XName.Get("Vip", "http://schemas.microsoft.com/windowsazure"));
-                                        if (vipElement != null)
+                                        if (vipElement != null && vipElement.IsEmpty == false)
                                         {
                                             string vipInstance = vipElement.Value;
                                             instanceEndpointInstance.VirtualIPAddress = vipInstance;
@@ -5108,22 +6249,358 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                 }
                                 
-                                XElement powerStateElement = roleInstanceListElement.Element(XName.Get("PowerState", "http://schemas.microsoft.com/windowsazure"));
-                                if (powerStateElement != null)
+                                XElement guestAgentStatusElement = roleInstanceListElement.Element(XName.Get("GuestAgentStatus", "http://schemas.microsoft.com/windowsazure"));
+                                if (guestAgentStatusElement != null && guestAgentStatusElement.IsEmpty == false)
                                 {
-                                    RoleInstancePowerState powerStateInstance = (RoleInstancePowerState)Enum.Parse(typeof(RoleInstancePowerState), powerStateElement.Value, false);
+                                    GuestAgentStatus guestAgentStatusInstance = new GuestAgentStatus();
+                                    roleInstanceInstance.GuestAgentStatus = guestAgentStatusInstance;
+                                    
+                                    XElement protocolVersionElement = guestAgentStatusElement.Element(XName.Get("ProtocolVersion", "http://schemas.microsoft.com/windowsazure"));
+                                    if (protocolVersionElement != null && protocolVersionElement.IsEmpty == false)
+                                    {
+                                        string protocolVersionInstance = protocolVersionElement.Value;
+                                        guestAgentStatusInstance.ProtocolVersion = protocolVersionInstance;
+                                    }
+                                    
+                                    XElement timestampElement = guestAgentStatusElement.Element(XName.Get("Timestamp", "http://schemas.microsoft.com/windowsazure"));
+                                    if (timestampElement != null && timestampElement.IsEmpty == false && string.IsNullOrEmpty(timestampElement.Value) == false)
+                                    {
+                                        DateTime timestampInstance = DateTime.Parse(timestampElement.Value, CultureInfo.InvariantCulture);
+                                        guestAgentStatusInstance.Timestamp = timestampInstance;
+                                    }
+                                    
+                                    XElement guestAgentVersionElement = guestAgentStatusElement.Element(XName.Get("GuestAgentVersion", "http://schemas.microsoft.com/windowsazure"));
+                                    if (guestAgentVersionElement != null && guestAgentVersionElement.IsEmpty == false)
+                                    {
+                                        string guestAgentVersionInstance = guestAgentVersionElement.Value;
+                                        guestAgentStatusInstance.GuestAgentVersion = guestAgentVersionInstance;
+                                    }
+                                    
+                                    XElement statusElement2 = guestAgentStatusElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                    if (statusElement2 != null && statusElement2.IsEmpty == false)
+                                    {
+                                        string statusInstance2 = statusElement2.Value;
+                                        guestAgentStatusInstance.Status = statusInstance2;
+                                    }
+                                    
+                                    XElement codeElement = guestAgentStatusElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                    if (codeElement != null && codeElement.IsEmpty == false && string.IsNullOrEmpty(codeElement.Value) == false)
+                                    {
+                                        int codeInstance = int.Parse(codeElement.Value, CultureInfo.InvariantCulture);
+                                        guestAgentStatusInstance.Code = codeInstance;
+                                    }
+                                    
+                                    XElement messageElement = guestAgentStatusElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                    if (messageElement != null && messageElement.IsEmpty == false)
+                                    {
+                                        GuestAgentMessage messageInstance = new GuestAgentMessage();
+                                        guestAgentStatusInstance.Message = messageInstance;
+                                        
+                                        XElement messageResourceIdElement = messageElement.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageResourceIdElement != null && messageResourceIdElement.IsEmpty == false)
+                                        {
+                                            string messageResourceIdInstance = messageResourceIdElement.Value;
+                                            messageInstance.MessageResourceId = messageResourceIdInstance;
+                                        }
+                                        
+                                        XElement paramListSequenceElement = messageElement.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                        if (paramListSequenceElement != null && paramListSequenceElement.IsEmpty == false)
+                                        {
+                                            foreach (XElement paramListElement in paramListSequenceElement.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                            {
+                                                messageInstance.ParamList.Add(paramListElement.Value);
+                                            }
+                                        }
+                                    }
+                                    
+                                    XElement formattedMessageElement = guestAgentStatusElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                    if (formattedMessageElement != null && formattedMessageElement.IsEmpty == false)
+                                    {
+                                        GuestAgentFormattedMessage formattedMessageInstance = new GuestAgentFormattedMessage();
+                                        guestAgentStatusInstance.FormattedMessage = formattedMessageInstance;
+                                        
+                                        XElement languageElement = formattedMessageElement.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                        if (languageElement != null && languageElement.IsEmpty == false)
+                                        {
+                                            string languageInstance = languageElement.Value;
+                                            formattedMessageInstance.Language = languageInstance;
+                                        }
+                                        
+                                        XElement messageElement2 = formattedMessageElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageElement2 != null && messageElement2.IsEmpty == false)
+                                        {
+                                            string messageInstance2 = messageElement2.Value;
+                                            formattedMessageInstance.Message = messageInstance2;
+                                        }
+                                    }
+                                }
+                                
+                                XElement resourceExtensionStatusListSequenceElement = roleInstanceListElement.Element(XName.Get("ResourceExtensionStatusList", "http://schemas.microsoft.com/windowsazure"));
+                                if (resourceExtensionStatusListSequenceElement != null && resourceExtensionStatusListSequenceElement.IsEmpty == false)
+                                {
+                                    foreach (XElement resourceExtensionStatusListElement in resourceExtensionStatusListSequenceElement.Elements(XName.Get("ResourceExtensionStatus", "http://schemas.microsoft.com/windowsazure")))
+                                    {
+                                        ResourceExtensionStatus resourceExtensionStatusInstance = new ResourceExtensionStatus();
+                                        roleInstanceInstance.ResourceExtensionStatusList.Add(resourceExtensionStatusInstance);
+                                        
+                                        XElement handlerNameElement = resourceExtensionStatusListElement.Element(XName.Get("HandlerName", "http://schemas.microsoft.com/windowsazure"));
+                                        if (handlerNameElement != null && handlerNameElement.IsEmpty == false)
+                                        {
+                                            string handlerNameInstance = handlerNameElement.Value;
+                                            resourceExtensionStatusInstance.HandlerName = handlerNameInstance;
+                                        }
+                                        
+                                        XElement versionElement = resourceExtensionStatusListElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
+                                        if (versionElement != null && versionElement.IsEmpty == false)
+                                        {
+                                            string versionInstance = versionElement.Value;
+                                            resourceExtensionStatusInstance.Version = versionInstance;
+                                        }
+                                        
+                                        XElement statusElement3 = resourceExtensionStatusListElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                        if (statusElement3 != null && statusElement3.IsEmpty == false)
+                                        {
+                                            string statusInstance3 = statusElement3.Value;
+                                            resourceExtensionStatusInstance.Status = statusInstance3;
+                                        }
+                                        
+                                        XElement codeElement2 = resourceExtensionStatusListElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                        if (codeElement2 != null && codeElement2.IsEmpty == false && string.IsNullOrEmpty(codeElement2.Value) == false)
+                                        {
+                                            int codeInstance2 = int.Parse(codeElement2.Value, CultureInfo.InvariantCulture);
+                                            resourceExtensionStatusInstance.Code = codeInstance2;
+                                        }
+                                        
+                                        XElement messageElement3 = resourceExtensionStatusListElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                        if (messageElement3 != null && messageElement3.IsEmpty == false)
+                                        {
+                                            GuestAgentMessage messageInstance3 = new GuestAgentMessage();
+                                            resourceExtensionStatusInstance.Message = messageInstance3;
+                                            
+                                            XElement messageResourceIdElement2 = messageElement3.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageResourceIdElement2 != null && messageResourceIdElement2.IsEmpty == false)
+                                            {
+                                                string messageResourceIdInstance2 = messageResourceIdElement2.Value;
+                                                messageInstance3.MessageResourceId = messageResourceIdInstance2;
+                                            }
+                                            
+                                            XElement paramListSequenceElement2 = messageElement3.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                            if (paramListSequenceElement2 != null && paramListSequenceElement2.IsEmpty == false)
+                                            {
+                                                foreach (XElement paramListElement2 in paramListSequenceElement2.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                {
+                                                    messageInstance3.ParamList.Add(paramListElement2.Value);
+                                                }
+                                            }
+                                        }
+                                        
+                                        XElement formattedMessageElement2 = resourceExtensionStatusListElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                        if (formattedMessageElement2 != null && formattedMessageElement2.IsEmpty == false)
+                                        {
+                                            GuestAgentFormattedMessage formattedMessageInstance2 = new GuestAgentFormattedMessage();
+                                            resourceExtensionStatusInstance.FormattedMessage = formattedMessageInstance2;
+                                            
+                                            XElement languageElement2 = formattedMessageElement2.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                            if (languageElement2 != null && languageElement2.IsEmpty == false)
+                                            {
+                                                string languageInstance2 = languageElement2.Value;
+                                                formattedMessageInstance2.Language = languageInstance2;
+                                            }
+                                            
+                                            XElement messageElement4 = formattedMessageElement2.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageElement4 != null && messageElement4.IsEmpty == false)
+                                            {
+                                                string messageInstance4 = messageElement4.Value;
+                                                formattedMessageInstance2.Message = messageInstance4;
+                                            }
+                                        }
+                                        
+                                        XElement extensionSettingStatusElement = resourceExtensionStatusListElement.Element(XName.Get("ExtensionSettingStatus", "http://schemas.microsoft.com/windowsazure"));
+                                        if (extensionSettingStatusElement != null && extensionSettingStatusElement.IsEmpty == false)
+                                        {
+                                            ResourceExtensionConfigurationStatus extensionSettingStatusInstance = new ResourceExtensionConfigurationStatus();
+                                            resourceExtensionStatusInstance.ExtensionSettingStatus = extensionSettingStatusInstance;
+                                            
+                                            XElement timestampElement2 = extensionSettingStatusElement.Element(XName.Get("Timestamp", "http://schemas.microsoft.com/windowsazure"));
+                                            if (timestampElement2 != null && timestampElement2.IsEmpty == false && string.IsNullOrEmpty(timestampElement2.Value) == false)
+                                            {
+                                                DateTime timestampInstance2 = DateTime.Parse(timestampElement2.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.Timestamp = timestampInstance2;
+                                            }
+                                            
+                                            XElement configurationAppliedTimeElement = extensionSettingStatusElement.Element(XName.Get("ConfigurationAppliedTime", "http://schemas.microsoft.com/windowsazure"));
+                                            if (configurationAppliedTimeElement != null && configurationAppliedTimeElement.IsEmpty == false && string.IsNullOrEmpty(configurationAppliedTimeElement.Value) == false)
+                                            {
+                                                DateTime configurationAppliedTimeInstance = DateTime.Parse(configurationAppliedTimeElement.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.ConfigurationAppliedTime = configurationAppliedTimeInstance;
+                                            }
+                                            
+                                            XElement nameElement3 = extensionSettingStatusElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                            if (nameElement3 != null && nameElement3.IsEmpty == false)
+                                            {
+                                                string nameInstance3 = nameElement3.Value;
+                                                extensionSettingStatusInstance.Name = nameInstance3;
+                                            }
+                                            
+                                            XElement operationElement = extensionSettingStatusElement.Element(XName.Get("Operation", "http://schemas.microsoft.com/windowsazure"));
+                                            if (operationElement != null && operationElement.IsEmpty == false)
+                                            {
+                                                string operationInstance = operationElement.Value;
+                                                extensionSettingStatusInstance.Operation = operationInstance;
+                                            }
+                                            
+                                            XElement statusElement4 = extensionSettingStatusElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                            if (statusElement4 != null && statusElement4.IsEmpty == false)
+                                            {
+                                                string statusInstance4 = statusElement4.Value;
+                                                extensionSettingStatusInstance.Status = statusInstance4;
+                                            }
+                                            
+                                            XElement codeElement3 = extensionSettingStatusElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                            if (codeElement3 != null && codeElement3.IsEmpty == false && string.IsNullOrEmpty(codeElement3.Value) == false)
+                                            {
+                                                int codeInstance3 = int.Parse(codeElement3.Value, CultureInfo.InvariantCulture);
+                                                extensionSettingStatusInstance.Code = codeInstance3;
+                                            }
+                                            
+                                            XElement messageElement5 = extensionSettingStatusElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                            if (messageElement5 != null && messageElement5.IsEmpty == false)
+                                            {
+                                                GuestAgentMessage messageInstance5 = new GuestAgentMessage();
+                                                extensionSettingStatusInstance.Message = messageInstance5;
+                                                
+                                                XElement messageResourceIdElement3 = messageElement5.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                                if (messageResourceIdElement3 != null && messageResourceIdElement3.IsEmpty == false)
+                                                {
+                                                    string messageResourceIdInstance3 = messageResourceIdElement3.Value;
+                                                    messageInstance5.MessageResourceId = messageResourceIdInstance3;
+                                                }
+                                                
+                                                XElement paramListSequenceElement3 = messageElement5.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                                if (paramListSequenceElement3 != null && paramListSequenceElement3.IsEmpty == false)
+                                                {
+                                                    foreach (XElement paramListElement3 in paramListSequenceElement3.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                    {
+                                                        messageInstance5.ParamList.Add(paramListElement3.Value);
+                                                    }
+                                                }
+                                            }
+                                            
+                                            XElement formattedMessageElement3 = extensionSettingStatusElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                            if (formattedMessageElement3 != null && formattedMessageElement3.IsEmpty == false)
+                                            {
+                                                GuestAgentFormattedMessage formattedMessageInstance3 = new GuestAgentFormattedMessage();
+                                                extensionSettingStatusInstance.FormattedMessage = formattedMessageInstance3;
+                                                
+                                                XElement languageElement3 = formattedMessageElement3.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                                if (languageElement3 != null && languageElement3.IsEmpty == false)
+                                                {
+                                                    string languageInstance3 = languageElement3.Value;
+                                                    formattedMessageInstance3.Language = languageInstance3;
+                                                }
+                                                
+                                                XElement messageElement6 = formattedMessageElement3.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                if (messageElement6 != null && messageElement6.IsEmpty == false)
+                                                {
+                                                    string messageInstance6 = messageElement6.Value;
+                                                    formattedMessageInstance3.Message = messageInstance6;
+                                                }
+                                            }
+                                            
+                                            XElement subStatusListSequenceElement = extensionSettingStatusElement.Element(XName.Get("SubStatusList", "http://schemas.microsoft.com/windowsazure"));
+                                            if (subStatusListSequenceElement != null && subStatusListSequenceElement.IsEmpty == false)
+                                            {
+                                                foreach (XElement subStatusListElement in subStatusListSequenceElement.Elements(XName.Get("SubStatus", "http://schemas.microsoft.com/windowsazure")))
+                                                {
+                                                    ResourceExtensionSubStatus subStatusInstance = new ResourceExtensionSubStatus();
+                                                    extensionSettingStatusInstance.SubStatusList.Add(subStatusInstance);
+                                                    
+                                                    XElement nameElement4 = subStatusListElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (nameElement4 != null && nameElement4.IsEmpty == false)
+                                                    {
+                                                        string nameInstance4 = nameElement4.Value;
+                                                        subStatusInstance.Name = nameInstance4;
+                                                    }
+                                                    
+                                                    XElement statusElement5 = subStatusListElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (statusElement5 != null && statusElement5.IsEmpty == false)
+                                                    {
+                                                        string statusInstance5 = statusElement5.Value;
+                                                        subStatusInstance.Status = statusInstance5;
+                                                    }
+                                                    
+                                                    XElement codeElement4 = subStatusListElement.Element(XName.Get("Code", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (codeElement4 != null && codeElement4.IsEmpty == false && string.IsNullOrEmpty(codeElement4.Value) == false)
+                                                    {
+                                                        int codeInstance4 = int.Parse(codeElement4.Value, CultureInfo.InvariantCulture);
+                                                        subStatusInstance.Code = codeInstance4;
+                                                    }
+                                                    
+                                                    XElement messageElement7 = subStatusListElement.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (messageElement7 != null && messageElement7.IsEmpty == false)
+                                                    {
+                                                        GuestAgentMessage messageInstance7 = new GuestAgentMessage();
+                                                        subStatusInstance.Message = messageInstance7;
+                                                        
+                                                        XElement messageResourceIdElement4 = messageElement7.Element(XName.Get("MessageResourceId", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (messageResourceIdElement4 != null && messageResourceIdElement4.IsEmpty == false)
+                                                        {
+                                                            string messageResourceIdInstance4 = messageResourceIdElement4.Value;
+                                                            messageInstance7.MessageResourceId = messageResourceIdInstance4;
+                                                        }
+                                                        
+                                                        XElement paramListSequenceElement4 = messageElement7.Element(XName.Get("ParamList", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (paramListSequenceElement4 != null && paramListSequenceElement4.IsEmpty == false)
+                                                        {
+                                                            foreach (XElement paramListElement4 in paramListSequenceElement4.Elements(XName.Get("Param", "http://schemas.microsoft.com/windowsazure")))
+                                                            {
+                                                                messageInstance7.ParamList.Add(paramListElement4.Value);
+                                                            }
+                                                        }
+                                                    }
+                                                    
+                                                    XElement formattedMessageElement4 = subStatusListElement.Element(XName.Get("FormattedMessage", "http://schemas.microsoft.com/windowsazure"));
+                                                    if (formattedMessageElement4 != null && formattedMessageElement4.IsEmpty == false)
+                                                    {
+                                                        GuestAgentFormattedMessage formattedMessageInstance4 = new GuestAgentFormattedMessage();
+                                                        subStatusInstance.FormattedMessage = formattedMessageInstance4;
+                                                        
+                                                        XElement languageElement4 = formattedMessageElement4.Element(XName.Get("Language", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (languageElement4 != null && languageElement4.IsEmpty == false)
+                                                        {
+                                                            string languageInstance4 = languageElement4.Value;
+                                                            formattedMessageInstance4.Language = languageInstance4;
+                                                        }
+                                                        
+                                                        XElement messageElement8 = formattedMessageElement4.Element(XName.Get("Message", "http://schemas.microsoft.com/windowsazure"));
+                                                        if (messageElement8 != null && messageElement8.IsEmpty == false)
+                                                        {
+                                                            string messageInstance8 = messageElement8.Value;
+                                                            formattedMessageInstance4.Message = messageInstance8;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                XElement powerStateElement = roleInstanceListElement.Element(XName.Get("PowerState", "http://schemas.microsoft.com/windowsazure"));
+                                if (powerStateElement != null && powerStateElement.IsEmpty == false)
+                                {
+                                    RoleInstancePowerState powerStateInstance = ((RoleInstancePowerState)Enum.Parse(typeof(RoleInstancePowerState), powerStateElement.Value, true));
                                     roleInstanceInstance.PowerState = powerStateInstance;
                                 }
                                 
                                 XElement hostNameElement = roleInstanceListElement.Element(XName.Get("HostName", "http://schemas.microsoft.com/windowsazure"));
-                                if (hostNameElement != null)
+                                if (hostNameElement != null && hostNameElement.IsEmpty == false)
                                 {
                                     string hostNameInstance = hostNameElement.Value;
                                     roleInstanceInstance.HostName = hostNameInstance;
                                 }
                                 
                                 XElement remoteAccessCertificateThumbprintElement = roleInstanceListElement.Element(XName.Get("RemoteAccessCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                if (remoteAccessCertificateThumbprintElement != null)
+                                if (remoteAccessCertificateThumbprintElement != null && remoteAccessCertificateThumbprintElement.IsEmpty == false)
                                 {
                                     string remoteAccessCertificateThumbprintInstance = remoteAccessCertificateThumbprintElement.Value;
                                     roleInstanceInstance.RemoteAccessCertificateThumbprint = remoteAccessCertificateThumbprintInstance;
@@ -5132,27 +6609,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement upgradeStatusElement = deploymentElement.Element(XName.Get("UpgradeStatus", "http://schemas.microsoft.com/windowsazure"));
-                        if (upgradeStatusElement != null)
+                        if (upgradeStatusElement != null && upgradeStatusElement.IsEmpty == false)
                         {
                             UpgradeStatus upgradeStatusInstance = new UpgradeStatus();
                             result.UpgradeStatus = upgradeStatusInstance;
                             
                             XElement upgradeTypeElement = upgradeStatusElement.Element(XName.Get("UpgradeType", "http://schemas.microsoft.com/windowsazure"));
-                            if (upgradeTypeElement != null)
+                            if (upgradeTypeElement != null && upgradeTypeElement.IsEmpty == false)
                             {
-                                DeploymentUpgradeType upgradeTypeInstance = (DeploymentUpgradeType)Enum.Parse(typeof(DeploymentUpgradeType), upgradeTypeElement.Value, false);
+                                DeploymentUpgradeType upgradeTypeInstance = ((DeploymentUpgradeType)Enum.Parse(typeof(DeploymentUpgradeType), upgradeTypeElement.Value, true));
                                 upgradeStatusInstance.UpgradeType = upgradeTypeInstance;
                             }
                             
                             XElement currentUpgradeDomainStateElement = upgradeStatusElement.Element(XName.Get("CurrentUpgradeDomainState", "http://schemas.microsoft.com/windowsazure"));
-                            if (currentUpgradeDomainStateElement != null)
+                            if (currentUpgradeDomainStateElement != null && currentUpgradeDomainStateElement.IsEmpty == false)
                             {
-                                UpgradeDomainState currentUpgradeDomainStateInstance = (UpgradeDomainState)Enum.Parse(typeof(UpgradeDomainState), currentUpgradeDomainStateElement.Value, false);
+                                UpgradeDomainState currentUpgradeDomainStateInstance = ((UpgradeDomainState)Enum.Parse(typeof(UpgradeDomainState), currentUpgradeDomainStateElement.Value, true));
                                 upgradeStatusInstance.CurrentUpgradeDomainState = currentUpgradeDomainStateInstance;
                             }
                             
                             XElement currentUpgradeDomainElement = upgradeStatusElement.Element(XName.Get("CurrentUpgradeDomain", "http://schemas.microsoft.com/windowsazure"));
-                            if (currentUpgradeDomainElement != null)
+                            if (currentUpgradeDomainElement != null && currentUpgradeDomainElement.IsEmpty == false)
                             {
                                 int currentUpgradeDomainInstance = int.Parse(currentUpgradeDomainElement.Value, CultureInfo.InvariantCulture);
                                 upgradeStatusInstance.CurrentUpgradeDomain = currentUpgradeDomainInstance;
@@ -5160,14 +6637,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement upgradeDomainCountElement = deploymentElement.Element(XName.Get("UpgradeDomainCount", "http://schemas.microsoft.com/windowsazure"));
-                        if (upgradeDomainCountElement != null)
+                        if (upgradeDomainCountElement != null && upgradeDomainCountElement.IsEmpty == false)
                         {
                             int upgradeDomainCountInstance = int.Parse(upgradeDomainCountElement.Value, CultureInfo.InvariantCulture);
                             result.UpgradeDomainCount = upgradeDomainCountInstance;
                         }
                         
                         XElement roleListSequenceElement = deploymentElement.Element(XName.Get("RoleList", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleListSequenceElement != null)
+                        if (roleListSequenceElement != null && roleListSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement roleListElement in roleListSequenceElement.Elements(XName.Get("Role", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5175,28 +6652,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.Roles.Add(roleInstance);
                                 
                                 XElement roleNameElement2 = roleListElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleNameElement2 != null)
+                                if (roleNameElement2 != null && roleNameElement2.IsEmpty == false)
                                 {
                                     string roleNameInstance2 = roleNameElement2.Value;
                                     roleInstance.RoleName = roleNameInstance2;
                                 }
                                 
                                 XElement osVersionElement = roleListElement.Element(XName.Get("OsVersion", "http://schemas.microsoft.com/windowsazure"));
-                                if (osVersionElement != null)
+                                if (osVersionElement != null && osVersionElement.IsEmpty == false)
                                 {
                                     string osVersionInstance = osVersionElement.Value;
                                     roleInstance.OSVersion = osVersionInstance;
                                 }
                                 
                                 XElement roleTypeElement = roleListElement.Element(XName.Get("RoleType", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleTypeElement != null)
+                                if (roleTypeElement != null && roleTypeElement.IsEmpty == false)
                                 {
                                     string roleTypeInstance = roleTypeElement.Value;
                                     roleInstance.RoleType = roleTypeInstance;
                                 }
                                 
                                 XElement configurationSetsSequenceElement = roleListElement.Element(XName.Get("ConfigurationSets", "http://schemas.microsoft.com/windowsazure"));
-                                if (configurationSetsSequenceElement != null)
+                                if (configurationSetsSequenceElement != null && configurationSetsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement configurationSetsElement in configurationSetsSequenceElement.Elements(XName.Get("ConfigurationSet", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5204,14 +6681,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.ConfigurationSets.Add(configurationSetInstance);
                                         
                                         XElement configurationSetTypeElement = configurationSetsElement.Element(XName.Get("ConfigurationSetType", "http://schemas.microsoft.com/windowsazure"));
-                                        if (configurationSetTypeElement != null)
+                                        if (configurationSetTypeElement != null && configurationSetTypeElement.IsEmpty == false)
                                         {
                                             string configurationSetTypeInstance = configurationSetTypeElement.Value;
                                             configurationSetInstance.ConfigurationSetType = configurationSetTypeInstance;
                                         }
                                         
                                         XElement inputEndpointsSequenceElement = configurationSetsElement.Element(XName.Get("InputEndpoints", "http://schemas.microsoft.com/windowsazure"));
-                                        if (inputEndpointsSequenceElement != null)
+                                        if (inputEndpointsSequenceElement != null && inputEndpointsSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement inputEndpointsElement in inputEndpointsSequenceElement.Elements(XName.Get("InputEndpoint", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -5219,69 +6696,69 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 configurationSetInstance.InputEndpoints.Add(inputEndpointInstance);
                                                 
                                                 XElement loadBalancedEndpointSetNameElement = inputEndpointsElement.Element(XName.Get("LoadBalancedEndpointSetName", "http://schemas.microsoft.com/windowsazure"));
-                                                if (loadBalancedEndpointSetNameElement != null)
+                                                if (loadBalancedEndpointSetNameElement != null && loadBalancedEndpointSetNameElement.IsEmpty == false)
                                                 {
                                                     string loadBalancedEndpointSetNameInstance = loadBalancedEndpointSetNameElement.Value;
                                                     inputEndpointInstance.LoadBalancedEndpointSetName = loadBalancedEndpointSetNameInstance;
                                                 }
                                                 
                                                 XElement localPortElement2 = inputEndpointsElement.Element(XName.Get("LocalPort", "http://schemas.microsoft.com/windowsazure"));
-                                                if (localPortElement2 != null && string.IsNullOrEmpty(localPortElement2.Value) == false)
+                                                if (localPortElement2 != null && localPortElement2.IsEmpty == false && string.IsNullOrEmpty(localPortElement2.Value) == false)
                                                 {
                                                     int localPortInstance2 = int.Parse(localPortElement2.Value, CultureInfo.InvariantCulture);
                                                     inputEndpointInstance.LocalPort = localPortInstance2;
                                                 }
                                                 
-                                                XElement nameElement3 = inputEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                                if (nameElement3 != null)
+                                                XElement nameElement5 = inputEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                                if (nameElement5 != null && nameElement5.IsEmpty == false)
                                                 {
-                                                    string nameInstance3 = nameElement3.Value;
-                                                    inputEndpointInstance.Name = nameInstance3;
+                                                    string nameInstance5 = nameElement5.Value;
+                                                    inputEndpointInstance.Name = nameInstance5;
                                                 }
                                                 
                                                 XElement portElement = inputEndpointsElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                                if (portElement != null && string.IsNullOrEmpty(portElement.Value) == false)
+                                                if (portElement != null && portElement.IsEmpty == false && string.IsNullOrEmpty(portElement.Value) == false)
                                                 {
                                                     int portInstance = int.Parse(portElement.Value, CultureInfo.InvariantCulture);
                                                     inputEndpointInstance.Port = portInstance;
                                                 }
                                                 
                                                 XElement loadBalancerProbeElement = inputEndpointsElement.Element(XName.Get("LoadBalancerProbe", "http://schemas.microsoft.com/windowsazure"));
-                                                if (loadBalancerProbeElement != null)
+                                                if (loadBalancerProbeElement != null && loadBalancerProbeElement.IsEmpty == false)
                                                 {
                                                     LoadBalancerProbe loadBalancerProbeInstance = new LoadBalancerProbe();
                                                     inputEndpointInstance.LoadBalancerProbe = loadBalancerProbeInstance;
                                                     
                                                     XElement pathElement = loadBalancerProbeElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement != null)
+                                                    if (pathElement != null && pathElement.IsEmpty == false)
                                                     {
                                                         string pathInstance = pathElement.Value;
                                                         loadBalancerProbeInstance.Path = pathInstance;
                                                     }
                                                     
                                                     XElement portElement2 = loadBalancerProbeElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (portElement2 != null)
+                                                    if (portElement2 != null && portElement2.IsEmpty == false)
                                                     {
                                                         int portInstance2 = int.Parse(portElement2.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.Port = portInstance2;
                                                     }
                                                     
                                                     XElement protocolElement2 = loadBalancerProbeElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (protocolElement2 != null)
+                                                    if (protocolElement2 != null && protocolElement2.IsEmpty == false)
                                                     {
                                                         LoadBalancerProbeTransportProtocol protocolInstance2 = ComputeManagementClient.ParseLoadBalancerProbeTransportProtocol(protocolElement2.Value);
                                                         loadBalancerProbeInstance.Protocol = protocolInstance2;
                                                     }
                                                     
                                                     XElement intervalInSecondsElement = loadBalancerProbeElement.Element(XName.Get("IntervalInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (intervalInSecondsElement != null && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
+                                                    if (intervalInSecondsElement != null && intervalInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
                                                     {
                                                         int intervalInSecondsInstance = int.Parse(intervalInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.IntervalInSeconds = intervalInSecondsInstance;
                                                     }
                                                     
                                                     XElement timeoutInSecondsElement = loadBalancerProbeElement.Element(XName.Get("TimeoutInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (timeoutInSecondsElement != null && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
+                                                    if (timeoutInSecondsElement != null && timeoutInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
                                                     {
                                                         int timeoutInSecondsInstance = int.Parse(timeoutInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                         loadBalancerProbeInstance.TimeoutInSeconds = timeoutInSecondsInstance;
@@ -5289,34 +6766,34 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 }
                                                 
                                                 XElement protocolElement3 = inputEndpointsElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                if (protocolElement3 != null)
+                                                if (protocolElement3 != null && protocolElement3.IsEmpty == false)
                                                 {
                                                     string protocolInstance3 = protocolElement3.Value;
                                                     inputEndpointInstance.Protocol = protocolInstance3;
                                                 }
                                                 
                                                 XElement vipElement2 = inputEndpointsElement.Element(XName.Get("Vip", "http://schemas.microsoft.com/windowsazure"));
-                                                if (vipElement2 != null)
+                                                if (vipElement2 != null && vipElement2.IsEmpty == false)
                                                 {
                                                     string vipInstance2 = vipElement2.Value;
                                                     inputEndpointInstance.VirtualIPAddress = vipInstance2;
                                                 }
                                                 
                                                 XElement enableDirectServerReturnElement = inputEndpointsElement.Element(XName.Get("EnableDirectServerReturn", "http://schemas.microsoft.com/windowsazure"));
-                                                if (enableDirectServerReturnElement != null && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
+                                                if (enableDirectServerReturnElement != null && enableDirectServerReturnElement.IsEmpty == false && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
                                                 {
                                                     bool enableDirectServerReturnInstance = bool.Parse(enableDirectServerReturnElement.Value);
                                                     inputEndpointInstance.EnableDirectServerReturn = enableDirectServerReturnInstance;
                                                 }
                                                 
                                                 XElement endpointAclElement = inputEndpointsElement.Element(XName.Get("EndpointAcl", "http://schemas.microsoft.com/windowsazure"));
-                                                if (endpointAclElement != null)
+                                                if (endpointAclElement != null && endpointAclElement.IsEmpty == false)
                                                 {
                                                     EndpointAcl endpointAclInstance = new EndpointAcl();
                                                     inputEndpointInstance.EndpointAcl = endpointAclInstance;
                                                     
                                                     XElement rulesSequenceElement = endpointAclElement.Element(XName.Get("Rules", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (rulesSequenceElement != null)
+                                                    if (rulesSequenceElement != null && rulesSequenceElement.IsEmpty == false)
                                                     {
                                                         foreach (XElement rulesElement in rulesSequenceElement.Elements(XName.Get("Rule", "http://schemas.microsoft.com/windowsazure")))
                                                         {
@@ -5324,28 +6801,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                             endpointAclInstance.Rules.Add(ruleInstance);
                                                             
                                                             XElement orderElement = rulesElement.Element(XName.Get("Order", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (orderElement != null && string.IsNullOrEmpty(orderElement.Value) == false)
+                                                            if (orderElement != null && orderElement.IsEmpty == false && string.IsNullOrEmpty(orderElement.Value) == false)
                                                             {
                                                                 int orderInstance = int.Parse(orderElement.Value, CultureInfo.InvariantCulture);
                                                                 ruleInstance.Order = orderInstance;
                                                             }
                                                             
                                                             XElement actionElement = rulesElement.Element(XName.Get("Action", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (actionElement != null)
+                                                            if (actionElement != null && actionElement.IsEmpty == false)
                                                             {
                                                                 string actionInstance = actionElement.Value;
                                                                 ruleInstance.Action = actionInstance;
                                                             }
                                                             
                                                             XElement remoteSubnetElement = rulesElement.Element(XName.Get("RemoteSubnet", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (remoteSubnetElement != null)
+                                                            if (remoteSubnetElement != null && remoteSubnetElement.IsEmpty == false)
                                                             {
                                                                 string remoteSubnetInstance = remoteSubnetElement.Value;
                                                                 ruleInstance.RemoteSubnet = remoteSubnetInstance;
                                                             }
                                                             
                                                             XElement descriptionElement = rulesElement.Element(XName.Get("Description", "http://schemas.microsoft.com/windowsazure"));
-                                                            if (descriptionElement != null)
+                                                            if (descriptionElement != null && descriptionElement.IsEmpty == false)
                                                             {
                                                                 string descriptionInstance = descriptionElement.Value;
                                                                 ruleInstance.Description = descriptionInstance;
@@ -5357,7 +6834,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement subnetNamesSequenceElement = configurationSetsElement.Element(XName.Get("SubnetNames", "http://schemas.microsoft.com/windowsazure"));
-                                        if (subnetNamesSequenceElement != null)
+                                        if (subnetNamesSequenceElement != null && subnetNamesSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement subnetNamesElement in subnetNamesSequenceElement.Elements(XName.Get("SubnetName", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -5366,75 +6843,75 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement staticVirtualNetworkIPAddressElement = configurationSetsElement.Element(XName.Get("StaticVirtualNetworkIPAddress", "http://schemas.microsoft.com/windowsazure"));
-                                        if (staticVirtualNetworkIPAddressElement != null)
+                                        if (staticVirtualNetworkIPAddressElement != null && staticVirtualNetworkIPAddressElement.IsEmpty == false)
                                         {
                                             string staticVirtualNetworkIPAddressInstance = staticVirtualNetworkIPAddressElement.Value;
                                             configurationSetInstance.StaticVirtualNetworkIPAddress = staticVirtualNetworkIPAddressInstance;
                                         }
                                         
                                         XElement computerNameElement = configurationSetsElement.Element(XName.Get("ComputerName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (computerNameElement != null)
+                                        if (computerNameElement != null && computerNameElement.IsEmpty == false)
                                         {
                                             string computerNameInstance = computerNameElement.Value;
                                             configurationSetInstance.ComputerName = computerNameInstance;
                                         }
                                         
                                         XElement adminPasswordElement = configurationSetsElement.Element(XName.Get("AdminPassword", "http://schemas.microsoft.com/windowsazure"));
-                                        if (adminPasswordElement != null)
+                                        if (adminPasswordElement != null && adminPasswordElement.IsEmpty == false)
                                         {
                                             string adminPasswordInstance = adminPasswordElement.Value;
                                             configurationSetInstance.AdminPassword = adminPasswordInstance;
                                         }
                                         
                                         XElement resetPasswordOnFirstLogonElement = configurationSetsElement.Element(XName.Get("ResetPasswordOnFirstLogon", "http://schemas.microsoft.com/windowsazure"));
-                                        if (resetPasswordOnFirstLogonElement != null && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
+                                        if (resetPasswordOnFirstLogonElement != null && resetPasswordOnFirstLogonElement.IsEmpty == false && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
                                         {
                                             bool resetPasswordOnFirstLogonInstance = bool.Parse(resetPasswordOnFirstLogonElement.Value);
                                             configurationSetInstance.ResetPasswordOnFirstLogon = resetPasswordOnFirstLogonInstance;
                                         }
                                         
                                         XElement enableAutomaticUpdatesElement = configurationSetsElement.Element(XName.Get("EnableAutomaticUpdates", "http://schemas.microsoft.com/windowsazure"));
-                                        if (enableAutomaticUpdatesElement != null && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
+                                        if (enableAutomaticUpdatesElement != null && enableAutomaticUpdatesElement.IsEmpty == false && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
                                         {
                                             bool enableAutomaticUpdatesInstance = bool.Parse(enableAutomaticUpdatesElement.Value);
                                             configurationSetInstance.EnableAutomaticUpdates = enableAutomaticUpdatesInstance;
                                         }
                                         
                                         XElement timeZoneElement = configurationSetsElement.Element(XName.Get("TimeZone", "http://schemas.microsoft.com/windowsazure"));
-                                        if (timeZoneElement != null)
+                                        if (timeZoneElement != null && timeZoneElement.IsEmpty == false)
                                         {
                                             string timeZoneInstance = timeZoneElement.Value;
                                             configurationSetInstance.TimeZone = timeZoneInstance;
                                         }
                                         
                                         XElement domainJoinElement = configurationSetsElement.Element(XName.Get("DomainJoin", "http://schemas.microsoft.com/windowsazure"));
-                                        if (domainJoinElement != null)
+                                        if (domainJoinElement != null && domainJoinElement.IsEmpty == false)
                                         {
                                             DomainJoinSettings domainJoinInstance = new DomainJoinSettings();
                                             configurationSetInstance.DomainJoin = domainJoinInstance;
                                             
                                             XElement credentialsElement = domainJoinElement.Element(XName.Get("Credentials", "http://schemas.microsoft.com/windowsazure"));
-                                            if (credentialsElement != null)
+                                            if (credentialsElement != null && credentialsElement.IsEmpty == false)
                                             {
                                                 DomainJoinCredentials credentialsInstance = new DomainJoinCredentials();
                                                 domainJoinInstance.Credentials = credentialsInstance;
                                                 
                                                 XElement domainElement = credentialsElement.Element(XName.Get("Domain", "http://schemas.microsoft.com/windowsazure"));
-                                                if (domainElement != null)
+                                                if (domainElement != null && domainElement.IsEmpty == false)
                                                 {
                                                     string domainInstance = domainElement.Value;
                                                     credentialsInstance.Domain = domainInstance;
                                                 }
                                                 
                                                 XElement usernameElement = credentialsElement.Element(XName.Get("Username", "http://schemas.microsoft.com/windowsazure"));
-                                                if (usernameElement != null)
+                                                if (usernameElement != null && usernameElement.IsEmpty == false)
                                                 {
                                                     string usernameInstance = usernameElement.Value;
                                                     credentialsInstance.UserName = usernameInstance;
                                                 }
                                                 
                                                 XElement passwordElement = credentialsElement.Element(XName.Get("Password", "http://schemas.microsoft.com/windowsazure"));
-                                                if (passwordElement != null)
+                                                if (passwordElement != null && passwordElement.IsEmpty == false)
                                                 {
                                                     string passwordInstance = passwordElement.Value;
                                                     credentialsInstance.Password = passwordInstance;
@@ -5442,27 +6919,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             }
                                             
                                             XElement joinDomainElement = domainJoinElement.Element(XName.Get("JoinDomain", "http://schemas.microsoft.com/windowsazure"));
-                                            if (joinDomainElement != null)
+                                            if (joinDomainElement != null && joinDomainElement.IsEmpty == false)
                                             {
                                                 string joinDomainInstance = joinDomainElement.Value;
                                                 domainJoinInstance.DomainToJoin = joinDomainInstance;
                                             }
                                             
                                             XElement machineObjectOUElement = domainJoinElement.Element(XName.Get("MachineObjectOU", "http://schemas.microsoft.com/windowsazure"));
-                                            if (machineObjectOUElement != null)
+                                            if (machineObjectOUElement != null && machineObjectOUElement.IsEmpty == false)
                                             {
                                                 string machineObjectOUInstance = machineObjectOUElement.Value;
                                                 domainJoinInstance.LdapMachineObjectOU = machineObjectOUInstance;
                                             }
                                             
                                             XElement provisioningElement = domainJoinElement.Element(XName.Get("Provisioning", "http://schemas.microsoft.com/windowsazure"));
-                                            if (provisioningElement != null)
+                                            if (provisioningElement != null && provisioningElement.IsEmpty == false)
                                             {
                                                 DomainJoinProvisioning provisioningInstance = new DomainJoinProvisioning();
                                                 domainJoinInstance.Provisioning = provisioningInstance;
                                                 
                                                 XElement accountDataElement = provisioningElement.Element(XName.Get("AccountData", "http://schemas.microsoft.com/windowsazure"));
-                                                if (accountDataElement != null)
+                                                if (accountDataElement != null && accountDataElement.IsEmpty == false)
                                                 {
                                                     string accountDataInstance = accountDataElement.Value;
                                                     provisioningInstance.AccountData = accountDataInstance;
@@ -5471,7 +6948,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement storedCertificateSettingsSequenceElement = configurationSetsElement.Element(XName.Get("StoredCertificateSettings", "http://schemas.microsoft.com/windowsazure"));
-                                        if (storedCertificateSettingsSequenceElement != null)
+                                        if (storedCertificateSettingsSequenceElement != null && storedCertificateSettingsSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement storedCertificateSettingsElement in storedCertificateSettingsSequenceElement.Elements(XName.Get("CertificateSetting", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -5479,19 +6956,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 configurationSetInstance.StoredCertificateSettings.Add(certificateSettingInstance);
                                                 
                                                 XElement storeLocationElement = storedCertificateSettingsElement.Element(XName.Get("StoreLocation", "http://schemas.microsoft.com/windowsazure"));
-                                                if (storeLocationElement != null)
+                                                if (storeLocationElement != null && storeLocationElement.IsEmpty == false)
                                                 {
                                                 }
                                                 
                                                 XElement storeNameElement = storedCertificateSettingsElement.Element(XName.Get("StoreName", "http://schemas.microsoft.com/windowsazure"));
-                                                if (storeNameElement != null)
+                                                if (storeNameElement != null && storeNameElement.IsEmpty == false)
                                                 {
                                                     string storeNameInstance = storeNameElement.Value;
                                                     certificateSettingInstance.StoreName = storeNameInstance;
                                                 }
                                                 
                                                 XElement thumbprintElement = storedCertificateSettingsElement.Element(XName.Get("Thumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                                if (thumbprintElement != null)
+                                                if (thumbprintElement != null && thumbprintElement.IsEmpty == false)
                                                 {
                                                     string thumbprintInstance = thumbprintElement.Value;
                                                     certificateSettingInstance.Thumbprint = thumbprintInstance;
@@ -5500,13 +6977,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement winRMElement = configurationSetsElement.Element(XName.Get("WinRM", "http://schemas.microsoft.com/windowsazure"));
-                                        if (winRMElement != null)
+                                        if (winRMElement != null && winRMElement.IsEmpty == false)
                                         {
                                             WindowsRemoteManagementSettings winRMInstance = new WindowsRemoteManagementSettings();
                                             configurationSetInstance.WindowsRemoteManagement = winRMInstance;
                                             
                                             XElement listenersSequenceElement = winRMElement.Element(XName.Get("Listeners", "http://schemas.microsoft.com/windowsazure"));
-                                            if (listenersSequenceElement != null)
+                                            if (listenersSequenceElement != null && listenersSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement listenersElement in listenersSequenceElement.Elements(XName.Get("Listener", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -5514,14 +6991,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     winRMInstance.Listeners.Add(listenerInstance);
                                                     
                                                     XElement protocolElement4 = listenersElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (protocolElement4 != null)
+                                                    if (protocolElement4 != null && protocolElement4.IsEmpty == false)
                                                     {
-                                                        VirtualMachineWindowsRemoteManagementListenerType protocolInstance4 = (VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement4.Value, false);
+                                                        VirtualMachineWindowsRemoteManagementListenerType protocolInstance4 = ((VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement4.Value, true));
                                                         listenerInstance.ListenerType = protocolInstance4;
                                                     }
                                                     
                                                     XElement certificateThumbprintElement = listenersElement.Element(XName.Get("CertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (certificateThumbprintElement != null)
+                                                    if (certificateThumbprintElement != null && certificateThumbprintElement.IsEmpty == false)
                                                     {
                                                         string certificateThumbprintInstance = certificateThumbprintElement.Value;
                                                         listenerInstance.CertificateThumbprint = certificateThumbprintInstance;
@@ -5531,48 +7008,48 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement adminUsernameElement = configurationSetsElement.Element(XName.Get("AdminUsername", "http://schemas.microsoft.com/windowsazure"));
-                                        if (adminUsernameElement != null)
+                                        if (adminUsernameElement != null && adminUsernameElement.IsEmpty == false)
                                         {
                                             string adminUsernameInstance = adminUsernameElement.Value;
                                             configurationSetInstance.AdminUserName = adminUsernameInstance;
                                         }
                                         
                                         XElement hostNameElement2 = configurationSetsElement.Element(XName.Get("HostName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (hostNameElement2 != null)
+                                        if (hostNameElement2 != null && hostNameElement2.IsEmpty == false)
                                         {
                                             string hostNameInstance2 = hostNameElement2.Value;
                                             configurationSetInstance.HostName = hostNameInstance2;
                                         }
                                         
                                         XElement userNameElement = configurationSetsElement.Element(XName.Get("UserName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (userNameElement != null)
+                                        if (userNameElement != null && userNameElement.IsEmpty == false)
                                         {
                                             string userNameInstance = userNameElement.Value;
                                             configurationSetInstance.UserName = userNameInstance;
                                         }
                                         
                                         XElement userPasswordElement = configurationSetsElement.Element(XName.Get("UserPassword", "http://schemas.microsoft.com/windowsazure"));
-                                        if (userPasswordElement != null)
+                                        if (userPasswordElement != null && userPasswordElement.IsEmpty == false)
                                         {
                                             string userPasswordInstance = userPasswordElement.Value;
                                             configurationSetInstance.UserPassword = userPasswordInstance;
                                         }
                                         
                                         XElement disableSshPasswordAuthenticationElement = configurationSetsElement.Element(XName.Get("DisableSshPasswordAuthentication", "http://schemas.microsoft.com/windowsazure"));
-                                        if (disableSshPasswordAuthenticationElement != null && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
+                                        if (disableSshPasswordAuthenticationElement != null && disableSshPasswordAuthenticationElement.IsEmpty == false && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
                                         {
                                             bool disableSshPasswordAuthenticationInstance = bool.Parse(disableSshPasswordAuthenticationElement.Value);
                                             configurationSetInstance.DisableSshPasswordAuthentication = disableSshPasswordAuthenticationInstance;
                                         }
                                         
                                         XElement sSHElement = configurationSetsElement.Element(XName.Get("SSH", "http://schemas.microsoft.com/windowsazure"));
-                                        if (sSHElement != null)
+                                        if (sSHElement != null && sSHElement.IsEmpty == false)
                                         {
                                             SshSettings sSHInstance = new SshSettings();
                                             configurationSetInstance.SshSettings = sSHInstance;
                                             
                                             XElement publicKeysSequenceElement = sSHElement.Element(XName.Get("PublicKeys", "http://schemas.microsoft.com/windowsazure"));
-                                            if (publicKeysSequenceElement != null)
+                                            if (publicKeysSequenceElement != null && publicKeysSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement publicKeysElement in publicKeysSequenceElement.Elements(XName.Get("PublicKey", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -5580,14 +7057,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     sSHInstance.PublicKeys.Add(publicKeyInstance);
                                                     
                                                     XElement fingerprintElement = publicKeysElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (fingerprintElement != null)
+                                                    if (fingerprintElement != null && fingerprintElement.IsEmpty == false)
                                                     {
                                                         string fingerprintInstance = fingerprintElement.Value;
                                                         publicKeyInstance.Fingerprint = fingerprintInstance;
                                                     }
                                                     
                                                     XElement pathElement2 = publicKeysElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement2 != null)
+                                                    if (pathElement2 != null && pathElement2.IsEmpty == false)
                                                     {
                                                         string pathInstance2 = pathElement2.Value;
                                                         publicKeyInstance.Path = pathInstance2;
@@ -5596,7 +7073,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             }
                                             
                                             XElement keyPairsSequenceElement = sSHElement.Element(XName.Get("KeyPairs", "http://schemas.microsoft.com/windowsazure"));
-                                            if (keyPairsSequenceElement != null)
+                                            if (keyPairsSequenceElement != null && keyPairsSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement keyPairsElement in keyPairsSequenceElement.Elements(XName.Get("KeyPair", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -5604,14 +7081,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     sSHInstance.KeyPairs.Add(keyPairInstance);
                                                     
                                                     XElement fingerprintElement2 = keyPairsElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (fingerprintElement2 != null)
+                                                    if (fingerprintElement2 != null && fingerprintElement2.IsEmpty == false)
                                                     {
                                                         string fingerprintInstance2 = fingerprintElement2.Value;
                                                         keyPairInstance.Fingerprint = fingerprintInstance2;
                                                     }
                                                     
                                                     XElement pathElement3 = keyPairsElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (pathElement3 != null)
+                                                    if (pathElement3 != null && pathElement3.IsEmpty == false)
                                                     {
                                                         string pathInstance3 = pathElement3.Value;
                                                         keyPairInstance.Path = pathInstance3;
@@ -5619,11 +7096,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 }
                                             }
                                         }
+                                        
+                                        XElement customDataElement = configurationSetsElement.Element(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                                        if (customDataElement != null && customDataElement.IsEmpty == false)
+                                        {
+                                            string customDataInstance = customDataElement.Value;
+                                            configurationSetInstance.CustomData = customDataInstance;
+                                        }
                                     }
                                 }
                                 
                                 XElement resourceExtensionReferencesSequenceElement = roleListElement.Element(XName.Get("ResourceExtensionReferences", "http://schemas.microsoft.com/windowsazure"));
-                                if (resourceExtensionReferencesSequenceElement != null)
+                                if (resourceExtensionReferencesSequenceElement != null && resourceExtensionReferencesSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement resourceExtensionReferencesElement in resourceExtensionReferencesSequenceElement.Elements(XName.Get("ResourceExtensionReference", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5631,35 +7115,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.ResourceExtensionReferences.Add(resourceExtensionReferenceInstance);
                                         
                                         XElement referenceNameElement = resourceExtensionReferencesElement.Element(XName.Get("ReferenceName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (referenceNameElement != null)
+                                        if (referenceNameElement != null && referenceNameElement.IsEmpty == false)
                                         {
                                             string referenceNameInstance = referenceNameElement.Value;
                                             resourceExtensionReferenceInstance.ReferenceName = referenceNameInstance;
                                         }
                                         
                                         XElement publisherElement = resourceExtensionReferencesElement.Element(XName.Get("Publisher", "http://schemas.microsoft.com/windowsazure"));
-                                        if (publisherElement != null)
+                                        if (publisherElement != null && publisherElement.IsEmpty == false)
                                         {
                                             string publisherInstance = publisherElement.Value;
                                             resourceExtensionReferenceInstance.Publisher = publisherInstance;
                                         }
                                         
-                                        XElement nameElement4 = resourceExtensionReferencesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                        if (nameElement4 != null)
+                                        XElement nameElement6 = resourceExtensionReferencesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                        if (nameElement6 != null && nameElement6.IsEmpty == false)
                                         {
-                                            string nameInstance4 = nameElement4.Value;
-                                            resourceExtensionReferenceInstance.Name = nameInstance4;
+                                            string nameInstance6 = nameElement6.Value;
+                                            resourceExtensionReferenceInstance.Name = nameInstance6;
                                         }
                                         
-                                        XElement versionElement = resourceExtensionReferencesElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
-                                        if (versionElement != null)
+                                        XElement versionElement2 = resourceExtensionReferencesElement.Element(XName.Get("Version", "http://schemas.microsoft.com/windowsazure"));
+                                        if (versionElement2 != null && versionElement2.IsEmpty == false)
                                         {
-                                            string versionInstance = versionElement.Value;
-                                            resourceExtensionReferenceInstance.Version = versionInstance;
+                                            string versionInstance2 = versionElement2.Value;
+                                            resourceExtensionReferenceInstance.Version = versionInstance2;
                                         }
                                         
                                         XElement resourceExtensionParameterValuesSequenceElement = resourceExtensionReferencesElement.Element(XName.Get("ResourceExtensionParameterValues", "http://schemas.microsoft.com/windowsazure"));
-                                        if (resourceExtensionParameterValuesSequenceElement != null)
+                                        if (resourceExtensionParameterValuesSequenceElement != null && resourceExtensionParameterValuesSequenceElement.IsEmpty == false)
                                         {
                                             foreach (XElement resourceExtensionParameterValuesElement in resourceExtensionParameterValuesSequenceElement.Elements(XName.Get("ResourceExtensionParameterValue", "http://schemas.microsoft.com/windowsazure")))
                                             {
@@ -5667,21 +7151,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                 resourceExtensionReferenceInstance.ResourceExtensionParameterValues.Add(resourceExtensionParameterValueInstance);
                                                 
                                                 XElement keyElement = resourceExtensionParameterValuesElement.Element(XName.Get("Key", "http://schemas.microsoft.com/windowsazure"));
-                                                if (keyElement != null)
+                                                if (keyElement != null && keyElement.IsEmpty == false)
                                                 {
                                                     string keyInstance = keyElement.Value;
                                                     resourceExtensionParameterValueInstance.Key = keyInstance;
                                                 }
                                                 
                                                 XElement valueElement = resourceExtensionParameterValuesElement.Element(XName.Get("Value", "http://schemas.microsoft.com/windowsazure"));
-                                                if (valueElement != null)
+                                                if (valueElement != null && valueElement.IsEmpty == false)
                                                 {
                                                     string valueInstance = TypeConversion.FromBase64String(valueElement.Value);
                                                     resourceExtensionParameterValueInstance.Value = valueInstance;
                                                 }
                                                 
                                                 XElement typeElement = resourceExtensionParameterValuesElement.Element(XName.Get("Type", "http://schemas.microsoft.com/windowsazure"));
-                                                if (typeElement != null)
+                                                if (typeElement != null && typeElement.IsEmpty == false)
                                                 {
                                                     string typeInstance = typeElement.Value;
                                                     resourceExtensionParameterValueInstance.Type = typeInstance;
@@ -5690,7 +7174,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement stateElement = resourceExtensionReferencesElement.Element(XName.Get("State", "http://schemas.microsoft.com/windowsazure"));
-                                        if (stateElement != null)
+                                        if (stateElement != null && stateElement.IsEmpty == false)
                                         {
                                             string stateInstance = stateElement.Value;
                                             resourceExtensionReferenceInstance.State = stateInstance;
@@ -5698,15 +7182,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                 }
                                 
+                                XElement vMImageNameElement = roleListElement.Element(XName.Get("VMImageName", "http://schemas.microsoft.com/windowsazure"));
+                                if (vMImageNameElement != null && vMImageNameElement.IsEmpty == false)
+                                {
+                                    string vMImageNameInstance = vMImageNameElement.Value;
+                                    roleInstance.VMImageName = vMImageNameInstance;
+                                }
+                                
                                 XElement availabilitySetNameElement = roleListElement.Element(XName.Get("AvailabilitySetName", "http://schemas.microsoft.com/windowsazure"));
-                                if (availabilitySetNameElement != null)
+                                if (availabilitySetNameElement != null && availabilitySetNameElement.IsEmpty == false)
                                 {
                                     string availabilitySetNameInstance = availabilitySetNameElement.Value;
                                     roleInstance.AvailabilitySetName = availabilitySetNameInstance;
                                 }
                                 
                                 XElement dataVirtualHardDisksSequenceElement = roleListElement.Element(XName.Get("DataVirtualHardDisks", "http://schemas.microsoft.com/windowsazure"));
-                                if (dataVirtualHardDisksSequenceElement != null)
+                                if (dataVirtualHardDisksSequenceElement != null && dataVirtualHardDisksSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement dataVirtualHardDisksElement in dataVirtualHardDisksSequenceElement.Elements(XName.Get("DataVirtualHardDisk", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5714,99 +7205,106 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         roleInstance.DataVirtualHardDisks.Add(dataVirtualHardDiskInstance);
                                         
                                         XElement hostCachingElement = dataVirtualHardDisksElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                                        if (hostCachingElement != null && string.IsNullOrEmpty(hostCachingElement.Value) == false)
+                                        if (hostCachingElement != null && hostCachingElement.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement.Value) == false)
                                         {
-                                            VirtualHardDiskHostCaching hostCachingInstance = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, false);
+                                            VirtualHardDiskHostCaching hostCachingInstance = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, true));
                                             dataVirtualHardDiskInstance.HostCaching = hostCachingInstance;
                                         }
                                         
                                         XElement diskLabelElement = dataVirtualHardDisksElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                        if (diskLabelElement != null)
+                                        if (diskLabelElement != null && diskLabelElement.IsEmpty == false)
                                         {
                                             string diskLabelInstance = diskLabelElement.Value;
-                                            dataVirtualHardDiskInstance.DiskLabel = diskLabelInstance;
+                                            dataVirtualHardDiskInstance.Label = diskLabelInstance;
                                         }
                                         
                                         XElement diskNameElement = dataVirtualHardDisksElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (diskNameElement != null)
+                                        if (diskNameElement != null && diskNameElement.IsEmpty == false)
                                         {
                                             string diskNameInstance = diskNameElement.Value;
                                             dataVirtualHardDiskInstance.Name = diskNameInstance;
                                         }
                                         
                                         XElement lunElement = dataVirtualHardDisksElement.Element(XName.Get("Lun", "http://schemas.microsoft.com/windowsazure"));
-                                        if (lunElement != null && string.IsNullOrEmpty(lunElement.Value) == false)
+                                        if (lunElement != null && lunElement.IsEmpty == false && string.IsNullOrEmpty(lunElement.Value) == false)
                                         {
                                             int lunInstance = int.Parse(lunElement.Value, CultureInfo.InvariantCulture);
                                             dataVirtualHardDiskInstance.LogicalUnitNumber = lunInstance;
                                         }
                                         
                                         XElement logicalDiskSizeInGBElement = dataVirtualHardDisksElement.Element(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                                        if (logicalDiskSizeInGBElement != null)
+                                        if (logicalDiskSizeInGBElement != null && logicalDiskSizeInGBElement.IsEmpty == false && string.IsNullOrEmpty(logicalDiskSizeInGBElement.Value) == false)
                                         {
                                             int logicalDiskSizeInGBInstance = int.Parse(logicalDiskSizeInGBElement.Value, CultureInfo.InvariantCulture);
                                             dataVirtualHardDiskInstance.LogicalDiskSizeInGB = logicalDiskSizeInGBInstance;
                                         }
                                         
                                         XElement mediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                        if (mediaLinkElement != null)
+                                        if (mediaLinkElement != null && mediaLinkElement.IsEmpty == false)
                                         {
                                             Uri mediaLinkInstance = TypeConversion.TryParseUri(mediaLinkElement.Value);
                                             dataVirtualHardDiskInstance.MediaLink = mediaLinkInstance;
+                                        }
+                                        
+                                        XElement sourceMediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                                        if (sourceMediaLinkElement != null && sourceMediaLinkElement.IsEmpty == false)
+                                        {
+                                            Uri sourceMediaLinkInstance = TypeConversion.TryParseUri(sourceMediaLinkElement.Value);
+                                            dataVirtualHardDiskInstance.SourceMediaLink = sourceMediaLinkInstance;
                                         }
                                     }
                                 }
                                 
                                 XElement labelElement2 = roleListElement.Element(XName.Get("Label", "http://schemas.microsoft.com/windowsazure"));
-                                if (labelElement2 != null)
+                                if (labelElement2 != null && labelElement2.IsEmpty == false)
                                 {
                                     string labelInstance2 = labelElement2.Value;
                                     roleInstance.Label = labelInstance2;
                                 }
                                 
                                 XElement oSVirtualHardDiskElement = roleListElement.Element(XName.Get("OSVirtualHardDisk", "http://schemas.microsoft.com/windowsazure"));
-                                if (oSVirtualHardDiskElement != null)
+                                if (oSVirtualHardDiskElement != null && oSVirtualHardDiskElement.IsEmpty == false)
                                 {
                                     OSVirtualHardDisk oSVirtualHardDiskInstance = new OSVirtualHardDisk();
                                     roleInstance.OSVirtualHardDisk = oSVirtualHardDiskInstance;
                                     
                                     XElement hostCachingElement2 = oSVirtualHardDiskElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                                    if (hostCachingElement2 != null && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
+                                    if (hostCachingElement2 != null && hostCachingElement2.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
                                     {
-                                        VirtualHardDiskHostCaching hostCachingInstance2 = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, false);
+                                        VirtualHardDiskHostCaching hostCachingInstance2 = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, true));
                                         oSVirtualHardDiskInstance.HostCaching = hostCachingInstance2;
                                     }
                                     
                                     XElement diskLabelElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                    if (diskLabelElement2 != null)
+                                    if (diskLabelElement2 != null && diskLabelElement2.IsEmpty == false)
                                     {
                                         string diskLabelInstance2 = diskLabelElement2.Value;
                                         oSVirtualHardDiskInstance.Label = diskLabelInstance2;
                                     }
                                     
                                     XElement diskNameElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (diskNameElement2 != null)
+                                    if (diskNameElement2 != null && diskNameElement2.IsEmpty == false)
                                     {
                                         string diskNameInstance2 = diskNameElement2.Value;
                                         oSVirtualHardDiskInstance.Name = diskNameInstance2;
                                     }
                                     
                                     XElement mediaLinkElement2 = oSVirtualHardDiskElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                    if (mediaLinkElement2 != null)
+                                    if (mediaLinkElement2 != null && mediaLinkElement2.IsEmpty == false)
                                     {
                                         Uri mediaLinkInstance2 = TypeConversion.TryParseUri(mediaLinkElement2.Value);
                                         oSVirtualHardDiskInstance.MediaLink = mediaLinkInstance2;
                                     }
                                     
                                     XElement sourceImageNameElement = oSVirtualHardDiskElement.Element(XName.Get("SourceImageName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (sourceImageNameElement != null)
+                                    if (sourceImageNameElement != null && sourceImageNameElement.IsEmpty == false)
                                     {
                                         string sourceImageNameInstance = sourceImageNameElement.Value;
                                         oSVirtualHardDiskInstance.SourceImageName = sourceImageNameInstance;
                                     }
                                     
                                     XElement osElement = oSVirtualHardDiskElement.Element(XName.Get("OS", "http://schemas.microsoft.com/windowsazure"));
-                                    if (osElement != null)
+                                    if (osElement != null && osElement.IsEmpty == false)
                                     {
                                         string osInstance = osElement.Value;
                                         oSVirtualHardDiskInstance.OperatingSystem = osInstance;
@@ -5814,21 +7312,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement roleSizeElement = roleListElement.Element(XName.Get("RoleSize", "http://schemas.microsoft.com/windowsazure"));
-                                if (roleSizeElement != null)
+                                if (roleSizeElement != null && roleSizeElement.IsEmpty == false)
                                 {
                                     string roleSizeInstance = roleSizeElement.Value;
                                     roleInstance.RoleSize = roleSizeInstance;
                                 }
                                 
                                 XElement provisionGuestAgentElement = roleListElement.Element(XName.Get("ProvisionGuestAgent", "http://schemas.microsoft.com/windowsazure"));
-                                if (provisionGuestAgentElement != null && string.IsNullOrEmpty(provisionGuestAgentElement.Value) == false)
+                                if (provisionGuestAgentElement != null && provisionGuestAgentElement.IsEmpty == false && string.IsNullOrEmpty(provisionGuestAgentElement.Value) == false)
                                 {
                                     bool provisionGuestAgentInstance = bool.Parse(provisionGuestAgentElement.Value);
                                     roleInstance.ProvisionGuestAgent = provisionGuestAgentInstance;
                                 }
                                 
                                 XElement defaultWinRmCertificateThumbprintElement = roleListElement.Element(XName.Get("DefaultWinRmCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                if (defaultWinRmCertificateThumbprintElement != null)
+                                if (defaultWinRmCertificateThumbprintElement != null && defaultWinRmCertificateThumbprintElement.IsEmpty == false)
                                 {
                                     string defaultWinRmCertificateThumbprintInstance = defaultWinRmCertificateThumbprintElement.Value;
                                     roleInstance.DefaultWinRmCertificateThumbprint = defaultWinRmCertificateThumbprintInstance;
@@ -5837,49 +7335,49 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement sdkVersionElement = deploymentElement.Element(XName.Get("SdkVersion", "http://schemas.microsoft.com/windowsazure"));
-                        if (sdkVersionElement != null)
+                        if (sdkVersionElement != null && sdkVersionElement.IsEmpty == false)
                         {
                             string sdkVersionInstance = sdkVersionElement.Value;
                             result.SdkVersion = sdkVersionInstance;
                         }
                         
                         XElement lockedElement = deploymentElement.Element(XName.Get("Locked", "http://schemas.microsoft.com/windowsazure"));
-                        if (lockedElement != null)
+                        if (lockedElement != null && lockedElement.IsEmpty == false)
                         {
                             bool lockedInstance = bool.Parse(lockedElement.Value);
                             result.Locked = lockedInstance;
                         }
                         
                         XElement rollbackAllowedElement = deploymentElement.Element(XName.Get("RollbackAllowed", "http://schemas.microsoft.com/windowsazure"));
-                        if (rollbackAllowedElement != null)
+                        if (rollbackAllowedElement != null && rollbackAllowedElement.IsEmpty == false)
                         {
                             bool rollbackAllowedInstance = bool.Parse(rollbackAllowedElement.Value);
                             result.RollbackAllowed = rollbackAllowedInstance;
                         }
                         
                         XElement createdTimeElement = deploymentElement.Element(XName.Get("CreatedTime", "http://schemas.microsoft.com/windowsazure"));
-                        if (createdTimeElement != null)
+                        if (createdTimeElement != null && createdTimeElement.IsEmpty == false)
                         {
                             DateTime createdTimeInstance = DateTime.Parse(createdTimeElement.Value, CultureInfo.InvariantCulture);
                             result.CreatedTime = createdTimeInstance;
                         }
                         
                         XElement lastModifiedTimeElement = deploymentElement.Element(XName.Get("LastModifiedTime", "http://schemas.microsoft.com/windowsazure"));
-                        if (lastModifiedTimeElement != null)
+                        if (lastModifiedTimeElement != null && lastModifiedTimeElement.IsEmpty == false)
                         {
                             DateTime lastModifiedTimeInstance = DateTime.Parse(lastModifiedTimeElement.Value, CultureInfo.InvariantCulture);
                             result.LastModifiedTime = lastModifiedTimeInstance;
                         }
                         
                         XElement virtualNetworkNameElement = deploymentElement.Element(XName.Get("VirtualNetworkName", "http://schemas.microsoft.com/windowsazure"));
-                        if (virtualNetworkNameElement != null)
+                        if (virtualNetworkNameElement != null && virtualNetworkNameElement.IsEmpty == false)
                         {
                             string virtualNetworkNameInstance = virtualNetworkNameElement.Value;
                             result.VirtualNetworkName = virtualNetworkNameInstance;
                         }
                         
                         XElement extendedPropertiesSequenceElement = deploymentElement.Element(XName.Get("ExtendedProperties", "http://schemas.microsoft.com/windowsazure"));
-                        if (extendedPropertiesSequenceElement != null)
+                        if (extendedPropertiesSequenceElement != null && extendedPropertiesSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement extendedPropertiesElement in extendedPropertiesSequenceElement.Elements(XName.Get("ExtendedProperty", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5890,35 +7388,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement persistentVMDowntimeElement = deploymentElement.Element(XName.Get("PersistentVMDowntime", "http://schemas.microsoft.com/windowsazure"));
-                        if (persistentVMDowntimeElement != null)
+                        if (persistentVMDowntimeElement != null && persistentVMDowntimeElement.IsEmpty == false)
                         {
                             PersistentVMDowntime persistentVMDowntimeInstance = new PersistentVMDowntime();
                             result.PersistentVMDowntime = persistentVMDowntimeInstance;
                             
                             XElement startTimeElement = persistentVMDowntimeElement.Element(XName.Get("StartTime", "http://schemas.microsoft.com/windowsazure"));
-                            if (startTimeElement != null)
+                            if (startTimeElement != null && startTimeElement.IsEmpty == false)
                             {
                                 DateTime startTimeInstance = DateTime.Parse(startTimeElement.Value, CultureInfo.InvariantCulture);
                                 persistentVMDowntimeInstance.StartTime = startTimeInstance;
                             }
                             
                             XElement endTimeElement = persistentVMDowntimeElement.Element(XName.Get("EndTime", "http://schemas.microsoft.com/windowsazure"));
-                            if (endTimeElement != null)
+                            if (endTimeElement != null && endTimeElement.IsEmpty == false)
                             {
                                 DateTime endTimeInstance = DateTime.Parse(endTimeElement.Value, CultureInfo.InvariantCulture);
                                 persistentVMDowntimeInstance.EndTime = endTimeInstance;
                             }
                             
-                            XElement statusElement2 = persistentVMDowntimeElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
-                            if (statusElement2 != null)
+                            XElement statusElement6 = persistentVMDowntimeElement.Element(XName.Get("Status", "http://schemas.microsoft.com/windowsazure"));
+                            if (statusElement6 != null && statusElement6.IsEmpty == false)
                             {
-                                string statusInstance2 = statusElement2.Value;
-                                persistentVMDowntimeInstance.Status = statusInstance2;
+                                string statusInstance6 = statusElement6.Value;
+                                persistentVMDowntimeInstance.Status = statusInstance6;
                             }
                         }
                         
                         XElement virtualIPsSequenceElement = deploymentElement.Element(XName.Get("VirtualIPs", "http://schemas.microsoft.com/windowsazure"));
-                        if (virtualIPsSequenceElement != null)
+                        if (virtualIPsSequenceElement != null && virtualIPsSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement virtualIPsElement in virtualIPsSequenceElement.Elements(XName.Get("VirtualIP", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5926,21 +7424,21 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.VirtualIPAddresses.Add(virtualIPInstance);
                                 
                                 XElement addressElement = virtualIPsElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                                if (addressElement != null)
+                                if (addressElement != null && addressElement.IsEmpty == false)
                                 {
                                     string addressInstance = addressElement.Value;
                                     virtualIPInstance.Address = addressInstance;
                                 }
                                 
-                                XElement nameElement5 = virtualIPsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                if (nameElement5 != null)
+                                XElement nameElement7 = virtualIPsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                if (nameElement7 != null && nameElement7.IsEmpty == false)
                                 {
-                                    string nameInstance5 = nameElement5.Value;
-                                    virtualIPInstance.Name = nameInstance5;
+                                    string nameInstance7 = nameElement7.Value;
+                                    virtualIPInstance.Name = nameInstance7;
                                 }
                                 
                                 XElement isDnsProgrammedElement = virtualIPsElement.Element(XName.Get("IsDnsProgrammed", "http://schemas.microsoft.com/windowsazure"));
-                                if (isDnsProgrammedElement != null && string.IsNullOrEmpty(isDnsProgrammedElement.Value) == false)
+                                if (isDnsProgrammedElement != null && isDnsProgrammedElement.IsEmpty == false && string.IsNullOrEmpty(isDnsProgrammedElement.Value) == false)
                                 {
                                     bool isDnsProgrammedInstance = bool.Parse(isDnsProgrammedElement.Value);
                                     virtualIPInstance.IsDnsProgrammed = isDnsProgrammedInstance;
@@ -5949,35 +7447,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement reservedIPNameElement = deploymentElement.Element(XName.Get("ReservedIPName", "http://schemas.microsoft.com/windowsazure"));
-                        if (reservedIPNameElement != null)
+                        if (reservedIPNameElement != null && reservedIPNameElement.IsEmpty == false)
                         {
                             string reservedIPNameInstance = reservedIPNameElement.Value;
                             result.ReservedIPName = reservedIPNameInstance;
                         }
                         
                         XElement dnsElement = deploymentElement.Element(XName.Get("Dns", "http://schemas.microsoft.com/windowsazure"));
-                        if (dnsElement != null)
+                        if (dnsElement != null && dnsElement.IsEmpty == false)
                         {
                             DnsSettings dnsInstance = new DnsSettings();
                             result.DnsSettings = dnsInstance;
                             
                             XElement dnsServersSequenceElement = dnsElement.Element(XName.Get("DnsServers", "http://schemas.microsoft.com/windowsazure"));
-                            if (dnsServersSequenceElement != null)
+                            if (dnsServersSequenceElement != null && dnsServersSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement dnsServersElement in dnsServersSequenceElement.Elements(XName.Get("DnsServer", "http://schemas.microsoft.com/windowsazure")))
                                 {
                                     DnsServer dnsServerInstance = new DnsServer();
                                     dnsInstance.DnsServers.Add(dnsServerInstance);
                                     
-                                    XElement nameElement6 = dnsServersElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                    if (nameElement6 != null)
+                                    XElement nameElement8 = dnsServersElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
+                                    if (nameElement8 != null && nameElement8.IsEmpty == false)
                                     {
-                                        string nameInstance6 = nameElement6.Value;
-                                        dnsServerInstance.Name = nameInstance6;
+                                        string nameInstance8 = nameElement8.Value;
+                                        dnsServerInstance.Name = nameInstance8;
                                     }
                                     
                                     XElement addressElement2 = dnsServersElement.Element(XName.Get("Address", "http://schemas.microsoft.com/windowsazure"));
-                                    if (addressElement2 != null)
+                                    if (addressElement2 != null && addressElement2.IsEmpty == false)
                                     {
                                         string addressInstance2 = addressElement2.Value;
                                         dnsServerInstance.Address = addressInstance2;
@@ -5987,13 +7485,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         }
                         
                         XElement extensionConfigurationElement = deploymentElement.Element(XName.Get("ExtensionConfiguration", "http://schemas.microsoft.com/windowsazure"));
-                        if (extensionConfigurationElement != null)
+                        if (extensionConfigurationElement != null && extensionConfigurationElement.IsEmpty == false)
                         {
                             ExtensionConfiguration extensionConfigurationInstance = new ExtensionConfiguration();
                             result.ExtensionConfiguration = extensionConfigurationInstance;
                             
                             XElement allRolesSequenceElement = extensionConfigurationElement.Element(XName.Get("AllRoles", "http://schemas.microsoft.com/windowsazure"));
-                            if (allRolesSequenceElement != null)
+                            if (allRolesSequenceElement != null && allRolesSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement allRolesElement in allRolesSequenceElement.Elements(XName.Get("Extension", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -6001,7 +7499,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     extensionConfigurationInstance.AllRoles.Add(extensionInstance);
                                     
                                     XElement idElement = allRolesElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                                    if (idElement != null)
+                                    if (idElement != null && idElement.IsEmpty == false)
                                     {
                                         string idInstance = idElement.Value;
                                         extensionInstance.Id = idInstance;
@@ -6010,7 +7508,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             }
                             
                             XElement namedRolesSequenceElement = extensionConfigurationElement.Element(XName.Get("NamedRoles", "http://schemas.microsoft.com/windowsazure"));
-                            if (namedRolesSequenceElement != null)
+                            if (namedRolesSequenceElement != null && namedRolesSequenceElement.IsEmpty == false)
                             {
                                 foreach (XElement namedRolesElement in namedRolesSequenceElement.Elements(XName.Get("Role", "http://schemas.microsoft.com/windowsazure")))
                                 {
@@ -6018,14 +7516,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     extensionConfigurationInstance.NamedRoles.Add(roleInstance2);
                                     
                                     XElement roleNameElement3 = namedRolesElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                                    if (roleNameElement3 != null)
+                                    if (roleNameElement3 != null && roleNameElement3.IsEmpty == false)
                                     {
                                         string roleNameInstance3 = roleNameElement3.Value;
                                         roleInstance2.RoleName = roleNameInstance3;
                                     }
                                     
                                     XElement extensionsSequenceElement = namedRolesElement.Element(XName.Get("Extensions", "http://schemas.microsoft.com/windowsazure"));
-                                    if (extensionsSequenceElement != null)
+                                    if (extensionsSequenceElement != null && extensionsSequenceElement.IsEmpty == false)
                                     {
                                         foreach (XElement extensionsElement in extensionsSequenceElement.Elements(XName.Get("Extension", "http://schemas.microsoft.com/windowsazure")))
                                         {
@@ -6033,7 +7531,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             roleInstance2.Extensions.Add(extensionInstance2);
                                             
                                             XElement idElement2 = extensionsElement.Element(XName.Get("Id", "http://schemas.microsoft.com/windowsazure"));
-                                            if (idElement2 != null)
+                                            if (idElement2 != null && idElement2.IsEmpty == false)
                                             {
                                                 string idInstance2 = idElement2.Value;
                                                 extensionInstance2.Id = idInstance2;
@@ -6075,25 +7573,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Get Package operation retrieves a cloud service package for a
-        /// deployment and stores the package files in Windows Azure Blob
-        /// storage.  The following package files are placed in storage:
-        /// Service configuration file - The cloud service configuration file
-        /// (.cscfg) provides configuration settings for the cloud service and
-        /// individual roles, including the number of role instances.
-        /// Service package - The service package (.cspkg) contains the
-        /// application code and the service definition file.  (see
+        /// The Get Package By Name operation retrieves a cloud service package
+        /// for a deployment and stores the package files in Azure Blob
+        /// storage. The following package files are placed in storage: the
+        /// cloud service configuration file (.cscfg), providing configuration
+        /// settings for the cloud service and individual roles, including the
+        /// number of role instances; and the service package (.cspkg),
+        /// containing the application code and the service definition file.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154121.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Package operation.
+        /// Required. Parameters supplied to the Get Package By Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6136,12 +7634,23 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/package?";
-            url = url + "containerUri=" + Uri.EscapeUriString(parameters.ContainerUri.ToString()) + " +";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/package?";
+            url = url + "containerUri=" + Uri.EscapeUriString(parameters.ContainerUri.AbsoluteUri) + " +";
             if (parameters.OverwriteExisting != null)
             {
                 url = url + "&overwriteExisting=" + Uri.EscapeUriString(parameters.OverwriteExisting.Value.ToString().ToLower());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -6152,7 +7661,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -6217,25 +7726,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Get Package operation retrieves a cloud service package for a
-        /// deployment and stores the package files in Windows Azure Blob
-        /// storage.  The following package files are placed in storage:
-        /// Service configuration file - The cloud service configuration file
-        /// (.cscfg) provides configuration settings for the cloud service and
-        /// individual roles, including the number of role instances.
-        /// Service package - The service package (.cspkg) contains the
-        /// application code and the service definition file.  (see
+        /// The Get Package By Slot operation retrieves a cloud service package
+        /// for a deployment and stores the package files in Azure Blob
+        /// storage. The following package files are placed in storage: the
+        /// cloud service configuration file (.cscfg), providing configuration
+        /// settings for the cloud service and individual roles, including the
+        /// number of role instances; and the service package (.cspkg),
+        /// containing the application code and the service definition file.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154121.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Get Package operation.
+        /// Required. Parameters supplied to the Get Package By Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6274,12 +7783,23 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/package?";
-            url = url + "containerUri=" + Uri.EscapeUriString(parameters.ContainerUri.ToString()) + " +";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/package?";
+            url = url + "containerUri=" + Uri.EscapeUriString(parameters.ContainerUri.AbsoluteUri) + " +";
             if (parameters.OverwriteExisting != null)
             {
                 url = url + "&overwriteExisting=" + Uri.EscapeUriString(parameters.OverwriteExisting.Value.ToString().ToLower());
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -6290,7 +7810,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -6355,24 +7875,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reboot Role Instance operation requests a reboot of a role
-        /// instance that is running in a deployment.  The Reboot Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Reboot Role Instance By Deployment Name operation requests a
+        /// reboot of a role instance that is running in a deployment. This
+        /// operation is an asynchronous operation. To determine whether the
+        /// Management service has finished processing the request, call Get
+        /// Operation Status. For more information on asynchronous operations,
+        /// see Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441298.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6381,14 +7902,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> RebootRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, string roleInstanceName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> RebootRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, string roleInstanceName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6412,7 +7933,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginRebootingRoleInstanceByDeploymentNameAsync(serviceName, deploymentName, roleInstanceName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6464,24 +7985,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reboot Role Instance operation requests a reboot of a role
-        /// instance that is running in a deployment.  The Reboot Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Reboot Role Instance By Deployment Slot operation requests a
+        /// reboot of a role instance that is running in a deployment. This
+        /// operation is an asynchronous operation. To determine whether the
+        /// Management service has finished processing the request, call Get
+        /// Operation Status. For more information on asynchronous operations,
+        /// see Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441298.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6490,14 +8012,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> RebootRoleInstanceByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, string roleInstanceName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> RebootRoleInstanceByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, string roleInstanceName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6521,7 +8043,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginRebootingRoleInstanceByDeploymentSlotAsync(serviceName, deploymentSlot, roleInstanceName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6573,24 +8095,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reimage Role Instance operation requests a reimage of a role
-        /// instance that is running in a deployment.  The Reimage Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Reimage Role Instance By Deployment Name operation requests a
+        /// reimage of a role instance that is running in a deployment.This
+        /// operation is an asynchronous operation. To determine whether the
+        /// Management service has finished processing the request, call Get
+        /// Operation Status. For more information on asynchronous operations,
+        /// see Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441292.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6599,14 +8122,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ReimageRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, string roleInstanceName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ReimageRoleInstanceByDeploymentNameAsync(string serviceName, string deploymentName, string roleInstanceName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6630,7 +8153,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginReimagingRoleInstanceByDeploymentNameAsync(serviceName, deploymentName, roleInstanceName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6682,24 +8205,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Reimage Role Instance operation requests a reimage of a role
-        /// instance that is running in a deployment.  The Reimage Role
-        /// Instance operation is an asynchronous operation. To determine
-        /// whether the Management service has finished processing the
-        /// request, call Get Operation Status. For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  (see
+        /// The Reimage Role Instance By Deployment Slot operation requests a
+        /// reimage of a role instance that is running in a deployment. This
+        /// operation is an asynchronous operation. To determine whether the
+        /// Management service has finished processing the request, call Get
+        /// Operation Status. For more information on asynchronous operations,
+        /// see Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/gg441292.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='roleInstanceName'>
-        /// The name of your role instance.
+        /// Required. The name of your role instance.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6708,14 +8232,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ReimageRoleInstanceByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, string roleInstanceName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ReimageRoleInstanceByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, string roleInstanceName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6739,7 +8263,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginReimagingRoleInstanceByDeploymentSlotAsync(serviceName, deploymentSlot, roleInstanceName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6791,25 +8315,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Rollback Update Or Upgrade operation cancels an in-progress
-        /// configuration update and returns the deployment to its state
-        /// before the update was started.  The Rollback Update Or Upgrade
-        /// operation can only be called when an update is in progress on the
-        /// deployment. The deployment status can be detected by calling the
-        /// Get Deployment operation or Get Hosted Service Properties
-        /// operation and inspecting the RollbackAllowed element. If the value
-        /// returned is true a rollback can be performed.  (see
+        /// The Rollback Update Or Upgrade By Deployment Name operation cancels
+        /// an in-progress configuration update and returns the deployment to
+        /// its state before the update was started. This operation can only
+        /// be called when an update is in progress on the deployment. The
+        /// deployment status can be detected by calling the Get Deployment
+        /// operation or Get Hosted Service Properties operation and
+        /// inspecting the RollbackAllowed element. If the value returned is
+        /// true a rollback can be performed.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/hh403977.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Rollback Update Or Upgrade operation.
+        /// Required. Parameters supplied to the Rollback Update Or Upgrade By
+        /// Deployment Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6849,7 +8374,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/?comp=rollback";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/?comp=rollback";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -6860,7 +8396,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -6944,25 +8480,26 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Rollback Update Or Upgrade operation cancels an in-progress
-        /// configuration update and returns the deployment to its state
-        /// before the update was started.  The Rollback Update Or Upgrade
-        /// operation can only be called when an update is in progress on the
-        /// deployment. The deployment status can be detected by calling the
-        /// Get Deployment operation or Get Hosted Service Properties
-        /// operation and inspecting the RollbackAllowed element. If the value
-        /// returned is true a rollback can be performed.  (see
+        /// The Rollback Update Or Upgrade By Deployment Slot operation cancels
+        /// an in-progress configuration update and returns the deployment to
+        /// its state before the update was started. This operation can only
+        /// be called when an update is in progress on the deployment. The
+        /// deployment status can be detected by calling the Get Deployment
+        /// operation or Get Hosted Service Properties operation and
+        /// inspecting the RollbackAllowed element. If the value returned is
+        /// true a rollback can be performed.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/hh403977.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Rollback Update Or Upgrade operation.
+        /// Required. Parameters supplied to the Rollback Update Or Upgrade By
+        /// Deployment Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6998,7 +8535,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deploymentslots/" + deploymentSlot + "/?comp=rollback";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deploymentslots/" + deploymentSlot + "/?comp=rollback";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -7009,7 +8557,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -7099,15 +8647,17 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// environment, it will be swapped to the production environment. If
         /// it is running in the production environment, it will be swapped to
         /// staging. For more information on this type of upgrade, see
-        /// Performing Virtual IP Swap Upgrades.  (see
+        /// Performing Virtual IP Swap Upgrades at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee517253.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460814.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Swap Deployment operation.
+        /// Required. Parameters supplied to the Swap Deployment operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7116,14 +8666,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> SwapAsync(string serviceName, DeploymentSwapParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> SwapAsync(string serviceName, DeploymentSwapParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7146,7 +8696,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginSwappingAsync(serviceName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7198,24 +8748,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Update Deployment Status operation initiates a change in the
-        /// running status of a deployment. The status of a deployment can be
-        /// running or suspended.  The Update Deployment Status operation is
-        /// an asynchronous operation. To determine whether the Management
+        /// The Update Deployment Status By Deployment Name operation initiates
+        /// a change in the running status of a deployment. The status of a
+        /// deployment can be running or suspended. This operation is an
+        /// asynchronous operation. To determine whether the Management
         /// service has finished processing the request, call Get Operation
         /// Status. For more information on asynchronous operations, see
-        /// Tracking Asynchronous Service Management Requests.  (see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460808.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Deployment Status operation.
+        /// Required. Parameters supplied to the Update Deployment Status By
+        /// Deployment Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7224,14 +8777,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpdateStatusByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentUpdateStatusParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpdateStatusByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentUpdateStatusParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7255,7 +8808,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginUpdatingStatusByDeploymentNameAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7307,24 +8860,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Update Deployment Status operation initiates a change in the
-        /// running status of a deployment. The status of a deployment can be
-        /// running or suspended.  The Update Deployment Status operation is
-        /// an asynchronous operation. To determine whether the Management
+        /// The Update Deployment Status By Deployment Slot operation initiates
+        /// a change in the running status of a deployment. The status of a
+        /// deployment can be running or suspended. This operation is an
+        /// asynchronous operation. To determine whether the Management
         /// service has finished processing the request, call Get Operation
         /// Status. For more information on asynchronous operations, see
-        /// Tracking Asynchronous Service Management Requests.  (see
+        /// Tracking Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460808.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to swap deployments for.
+        /// Required. The cloud service to swap deployments for.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Deployment Status operation.
+        /// Required. Parameters supplied to the Update Deployment Status By
+        /// Deployment Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7333,14 +8889,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpdateStatusByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentUpdateStatusParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpdateStatusByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentUpdateStatusParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7364,7 +8920,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginUpdatingStatusByDeploymentSlotAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7416,46 +8972,52 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Upgrade Deployment operation initiates an update of role
-        /// instances in a deployment using the package and configuration that
-        /// you specify. For more information about updating role instances,
-        /// see Update a Windows Azure Service.  The Upgrade Deployment
-        /// operation is an asynchronous operation. To determine whether the
-        /// request has been processed, call Get Operation Status. For more
-        /// information on asynchronous operations, see Tracking Asynchronous
-        /// Service Management Requests.To perform an automatic update of a
-        /// deployment, call Upgrade Deployment or Change Deployment
-        /// Configuration with the Mode element set to automatic. The update
-        /// proceeds from that point without a need for further input. You can
-        /// call Get Operation Status to determine when the update is
-        /// complete.  To perform a manual update, first call Upgrade
-        /// Deployment with the Mode element set to manual. Next, call Walk
-        /// Upgrade Domain to update each domain within the deployment. You
-        /// should make sure that the operation is complete by calling Get
-        /// Operation Status before updating the next domain.  Important: An
-        /// update that adds or removes role instances will result in a
-        /// configuration update to all roles that are deployed in the cloud
-        /// service. Existing role instances need to be notified of new role
-        /// instances so that all role instances can communicate together in
-        /// the cloud service.  By default, a cloud service is deployed with
-        /// five update domains, which are updated one at a time during an
-        /// in-place update. For information on modifying the number of update
-        /// domains in the service definition file, see Windows Azure Service
-        /// Definition Schema (.csdef File).  To determine the update domain
-        /// in which a particular instance is running in Windows Azure, use
-        /// the UpdateDomain property of the RoleInstance class. See the
-        /// Windows Azure Managed Library Reference for more information.
-        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
+        /// The Upgrade Deployment By Name operation initiates an update of
+        /// role instances in a deployment using the package and configuration
+        /// that you specify. For more information about updating role
+        /// instances, see Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the request has been processed, call Get Operation Status. For
+        /// more information on asynchronous operations, see Tracking
+        /// Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// To perform an automatic update of a deployment, call Upgrade
+        /// Deployment or Change Deployment Configuration with the Mode
+        /// element set to automatic. The update proceeds from that point
+        /// without a need for further input. You can call Get Operation
+        /// Status to determine when the update is complete. To perform a
+        /// manual update, first call Upgrade Deployment with the Mode element
+        /// set to manual. Next, call Walk Upgrade Domain to update each
+        /// domain within the deployment. You should make sure that the
+        /// operation is complete by calling Get Operation Status before
+        /// updating the next domain. Important: An update that adds or
+        /// removes role instances will result in a configuration update to
+        /// all roles that are deployed in the cloud service. Existing role
+        /// instances need to be notified of new role instances so that all
+        /// role instances can communicate together in the cloud service. By
+        /// default, a cloud service is deployed with five update domains,
+        /// which are updated one at a time during an in-place update. For
+        /// information on modifying the number of update domains in the
+        /// service definition file, see the Azure Service Definition Schema
+        /// (.csdef File). To determine the update domain in which a
+        /// particular instance is running in Windows Azure, use the
+        /// UpdateDomain property of the RoleInstance class. See the Azure
+        /// Managed Library Reference at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179380.aspx
+        /// for more information.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to upgrade.
+        /// Required. The cloud service to upgrade.
         /// </param>
         /// <param name='deploymentName'>
-        /// The deployment to upgrade.
+        /// Required. The deployment to upgrade.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Upgrade Deployment operation.
+        /// Required. Parameters supplied to the Upgrade Deployment By Name
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7464,14 +9026,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpgradeByNameAsync(string serviceName, string deploymentName, DeploymentUpgradeParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpgradeByNameAsync(string serviceName, string deploymentName, DeploymentUpgradeParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7495,7 +9057,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginUpgradingByNameAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7547,46 +9109,52 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Upgrade Deployment operation initiates an update of role
-        /// instances in a deployment using the package and configuration that
-        /// you specify. For more information about updating role instances,
-        /// see Update a Windows Azure Service.  The Upgrade Deployment
-        /// operation is an asynchronous operation. To determine whether the
-        /// request has been processed, call Get Operation Status. For more
-        /// information on asynchronous operations, see Tracking Asynchronous
-        /// Service Management Requests.To perform an automatic update of a
-        /// deployment, call Upgrade Deployment or Change Deployment
-        /// Configuration with the Mode element set to automatic. The update
-        /// proceeds from that point without a need for further input. You can
-        /// call Get Operation Status to determine when the update is
-        /// complete.  To perform a manual update, first call Upgrade
-        /// Deployment with the Mode element set to manual. Next, call Walk
-        /// Upgrade Domain to update each domain within the deployment. You
-        /// should make sure that the operation is complete by calling Get
-        /// Operation Status before updating the next domain.  Important: An
-        /// update that adds or removes role instances will result in a
-        /// configuration update to all roles that are deployed in the cloud
-        /// service. Existing role instances need to be notified of new role
-        /// instances so that all role instances can communicate together in
-        /// the cloud service.  By default, a cloud service is deployed with
-        /// five update domains, which are updated one at a time during an
-        /// in-place update. For information on modifying the number of update
-        /// domains in the service definition file, see Windows Azure Service
-        /// Definition Schema (.csdef File).  To determine the update domain
-        /// in which a particular instance is running in Windows Azure, use
-        /// the UpdateDomain property of the RoleInstance class. See the
-        /// Windows Azure Managed Library Reference for more information.
-        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
+        /// The Upgrade Deployment By Slot operation initiates an update of
+        /// role instances in a deployment using the package and configuration
+        /// that you specify. For more information about updating role
+        /// instances, see Update an Azure Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the request has been processed, call Get Operation Status. For
+        /// more information on asynchronous operations, see Tracking
+        /// Asynchronous Service Management Requests at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// To perform an automatic update of a deployment, call Upgrade
+        /// Deployment or Change Deployment Configuration with the Mode
+        /// element set to automatic. The update proceeds from that point
+        /// without a need for further input. You can call Get Operation
+        /// Status to determine when the update is complete. To perform a
+        /// manual update, first call Upgrade Deployment with the Mode element
+        /// set to manual. Next, call Walk Upgrade Domain to update each
+        /// domain within the deployment. You should make sure that the
+        /// operation is complete by calling Get Operation Status before
+        /// updating the next domain. Important: An update that adds or
+        /// removes role instances will result in a configuration update to
+        /// all roles that are deployed in the cloud service. Existing role
+        /// instances need to be notified of new role instances so that all
+        /// role instances can communicate together in the cloud service. By
+        /// default, a cloud service is deployed with five update domains,
+        /// which are updated one at a time during an in-place update. For
+        /// information on modifying the number of update domains in the
+        /// service definition file, see the Azure Service Definition Schema
+        /// (.csdef File). To determine the update domain in which a
+        /// particular instance is running in Windows Azure, use the
+        /// UpdateDomain property of the RoleInstance class. See the Azure
+        /// Managed Library Reference at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dd179380.aspx
+        /// for more information.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460793.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The cloud service to upgrade.
+        /// Required. The cloud service to upgrade.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The slot to upgrade.
+        /// Required. The slot to upgrade.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Upgrade Deployment operation.
+        /// Required. Parameters supplied to the Upgrade Deployment By Slot
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7595,14 +9163,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpgradeBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentUpgradeParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpgradeBySlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentUpgradeParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7626,7 +9194,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginUpgradingBySlotAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7678,46 +9246,50 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Walk Upgrade Domain operation specifies an update domain in
-        /// which a role instance must be updated. For more information about
-        /// updating role instances, see Update a Windows Azure Service.  The
-        /// Walk Upgrade Domain operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status.  For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  Prior to calling the Walk Upgrade Domain
-        /// operation you must have called Upgrade Deployment, Change
-        /// Deployment Configuration, or Rollback Update Or Upgrade.  By
-        /// default, a service is deployed with five update domains, which are
-        /// updated one at a time during an in-place update. For information
-        /// on modifying the number of update domains in the service
-        /// definition file, see Windows Azure Service Definition Schema
-        /// (.csdef File).  To perform a manual update of your deployment,
-        /// proceed in this order:  Call Upgrade Deployment with the Mode
-        /// element set to manual.   Call Walk Upgrade Domain to update each
-        /// domain within the deployment. Update domains must be updated in
-        /// order. For example, begin with domain 0, proceed to domain 1, and
-        /// so on.  Important: An update that adds or removes role instances
-        /// will result in a configuration update to all roles that are
-        /// deployed in the cloud service. Existing role instances need to be
-        /// notified of new role instances so that all role instances can
-        /// communicate together in the cloud service.  While an update is in
-        /// progress, call Get Deployment to determine its status. If the
-        /// update is in progress, Get Deployment returns an UpgradeStatus
-        /// element that contains information about the update. If the update
-        /// is complete, or if no update is in progress, then the
-        /// UpgradeStatus element is null.  (see
+        /// The Walk Upgrade Domain By Deployment Name operation specifies an
+        /// update domain in which a role instance must be updated. For more
+        /// information about updating role instances, see Update an Azure
+        /// Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the Management service has finished processing the request, call
+        /// Get Operation Status. For more information on asynchronous
+        /// operations, see Tracking Asynchronous Service Management Requests
+        /// at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// Prior to calling the Walk Upgrade Domain operation you must have
+        /// called Upgrade Deployment, Change Deployment Configuration, or
+        /// Rollback Update Or Upgrade. By default, a service is deployed with
+        /// five update domains, which are updated one at a time during an
+        /// in-place update. For information on modifying the number of update
+        /// domains in the service definition file, see the Azure Service
+        /// Definition Schema (.csdef File). To perform a manual update of
+        /// your deployment, proceed in this order: Call Upgrade Deployment
+        /// with the Mode element set to manual. Call Walk Upgrade Domain to
+        /// update each domain within the deployment. Update domains must be
+        /// updated in order. For example, begin with domain 0, proceed to
+        /// domain 1, and so on. Important: An update that adds or removes
+        /// role instances will result in a configuration update to all roles
+        /// that are deployed in the cloud service. Existing role instances
+        /// need to be notified of new role instances so that all role
+        /// instances can communicate together in the cloud service. While an
+        /// update is in progress, call Get Deployment to determine its
+        /// status. If the update is in progress, Get Deployment returns an
+        /// UpgradeStatus element that contains information about the update.
+        /// If the update is complete, or if no update is in progress, then
+        /// the UpgradeStatus element is null.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460800.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Walk Upgrade Domain operation.
+        /// Required. Parameters supplied to the Walk Upgrade Domain By
+        /// Deployment Name operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7726,14 +9298,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> WalkUpgradeDomainByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentWalkUpgradeDomainParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> WalkUpgradeDomainByDeploymentNameAsync(string serviceName, string deploymentName, DeploymentWalkUpgradeDomainParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7757,7 +9329,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginWalkingUpgradeDomainByDeploymentNameAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -7809,46 +9381,50 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Walk Upgrade Domain operation specifies an update domain in
-        /// which a role instance must be updated. For more information about
-        /// updating role instances, see Update a Windows Azure Service.  The
-        /// Walk Upgrade Domain operation is an asynchronous operation. To
-        /// determine whether the Management service has finished processing
-        /// the request, call Get Operation Status.  For more information on
-        /// asynchronous operations, see Tracking Asynchronous Service
-        /// Management Requests.  Prior to calling the Walk Upgrade Domain
-        /// operation you must have called Upgrade Deployment, Change
-        /// Deployment Configuration, or Rollback Update Or Upgrade.  By
-        /// default, a service is deployed with five update domains, which are
-        /// updated one at a time during an in-place update. For information
-        /// on modifying the number of update domains in the service
-        /// definition file, see Windows Azure Service Definition Schema
-        /// (.csdef File).  To perform a manual update of your deployment,
-        /// proceed in this order:  Call Upgrade Deployment with the Mode
-        /// element set to manual.   Call Walk Upgrade Domain to update each
-        /// domain within the deployment. Update domains must be updated in
-        /// order. For example, begin with domain 0, proceed to domain 1, and
-        /// so on.  Important: An update that adds or removes role instances
-        /// will result in a configuration update to all roles that are
-        /// deployed in the cloud service. Existing role instances need to be
-        /// notified of new role instances so that all role instances can
-        /// communicate together in the cloud service.  While an update is in
-        /// progress, call Get Deployment to determine its status. If the
-        /// update is in progress, Get Deployment returns an UpgradeStatus
-        /// element that contains information about the update. If the update
-        /// is complete, or if no update is in progress, then the
-        /// UpgradeStatus element is null.  (see
+        /// The Walk Upgrade Domain By Deployment Slot operation specifies an
+        /// update domain in which a role instance must be updated. For more
+        /// information about updating role instances, see Update an Azure
+        /// Service at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/hh472157.aspx.
+        /// This operation is an asynchronous operation. To determine whether
+        /// the Management service has finished processing the request, call
+        /// Get Operation Status. For more information on asynchronous
+        /// operations, see Tracking Asynchronous Service Management Requests
+        /// at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460791.aspx.
+        /// Prior to calling the Walk Upgrade Domain operation you must have
+        /// called Upgrade Deployment, Change Deployment Configuration, or
+        /// Rollback Update Or Upgrade. By default, a service is deployed with
+        /// five update domains, which are updated one at a time during an
+        /// in-place update. For information on modifying the number of update
+        /// domains in the service definition file, see the Azure Service
+        /// Definition Schema (.csdef File). To perform a manual update of
+        /// your deployment, proceed in this order: Call Upgrade Deployment
+        /// with the Mode element set to manual. Call Walk Upgrade Domain to
+        /// update each domain within the deployment. Update domains must be
+        /// updated in order. For example, begin with domain 0, proceed to
+        /// domain 1, and so on. Important: An update that adds or removes
+        /// role instances will result in a configuration update to all roles
+        /// that are deployed in the cloud service. Existing role instances
+        /// need to be notified of new role instances so that all role
+        /// instances can communicate together in the cloud service. While an
+        /// update is in progress, call Get Deployment to determine its
+        /// status. If the update is in progress, Get Deployment returns an
+        /// UpgradeStatus element that contains information about the update.
+        /// If the update is complete, or if no update is in progress, then
+        /// the UpgradeStatus element is null.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460800.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of the cloud service.
+        /// Required. The name of the cloud service.
         /// </param>
         /// <param name='deploymentSlot'>
-        /// The deployment slot.
+        /// Required. The deployment slot.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Walk Upgrade Domain operation.
+        /// Required. Parameters supplied to the Walk Upgrade Domain By
+        /// Deployment Slot operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -7857,14 +9433,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> WalkUpgradeDomainByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentWalkUpgradeDomainParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> WalkUpgradeDomainByDeploymentSlotAsync(string serviceName, DeploymentSlot deploymentSlot, DeploymentWalkUpgradeDomainParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -7888,7 +9464,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.Deployments.BeginWalkingUpgradeDomainByDeploymentSlotAsync(serviceName, deploymentSlot, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {

@@ -22,21 +22,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using Microsoft.WindowsAzure;
 
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
     /// A response that indicates the availability of a static IP address, and
-    /// if not, provide a list of suggestions.
+    /// if not, provides a list of suggestions.
     /// </summary>
     public partial class NetworkStaticIPAvailabilityResponse : OperationResponse
     {
         private IList<string> _availableAddresses;
         
         /// <summary>
-        /// The list of the available IP addresses.
+        /// Optional. The list of the available IP addresses.
         /// </summary>
         public IList<string> AvailableAddresses
         {
@@ -47,7 +46,7 @@ namespace Microsoft.WindowsAzure.Management.Network.Models
         private bool _isAvailable;
         
         /// <summary>
-        /// Whether the IP address is available.
+        /// Optional. Whether the IP address is available.
         /// </summary>
         public bool IsAvailable
         {

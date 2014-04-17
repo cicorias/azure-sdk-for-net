@@ -59,7 +59,7 @@ namespace Microsoft.WindowsAzure.WebSitesExtensions
         /// <summary>
         /// Operations for managing the repositories.
         /// </summary>
-        IDeploymentOperations Deployment
+        IDeploymentOperations Deployments
         {
             get; 
         }

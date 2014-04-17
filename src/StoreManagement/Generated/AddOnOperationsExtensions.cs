@@ -23,6 +23,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Management.Store;
 using Microsoft.WindowsAzure.Management.Store.Models;
 
@@ -43,17 +44,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -66,23 +68,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse BeginCreating(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
+        public static OperationStatusResponse BeginCreating(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginCreatingAsync(cloudServiceName, resourceName, addOnName, parameters).Result;
+                return ((IAddOnOperations)s).BeginCreatingAsync(cloudServiceName, resourceName, addOnName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -94,17 +86,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -117,7 +110,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> BeginCreatingAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
+        public static Task<OperationStatusResponse> BeginCreatingAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
         {
             return operations.BeginCreatingAsync(cloudServiceName, resourceName, addOnName, parameters, CancellationToken.None);
         }
@@ -131,17 +124,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -154,23 +147,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse BeginDeleting(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
+        public static OperationStatusResponse BeginDeleting(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginDeletingAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName).Result;
+                return ((IAddOnOperations)s).BeginDeletingAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -182,17 +165,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -205,7 +188,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> BeginDeletingAsync(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
+        public static Task<OperationStatusResponse> BeginDeletingAsync(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
         {
             return operations.BeginDeletingAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName, CancellationToken.None);
         }
@@ -219,17 +202,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -242,23 +226,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse Create(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
+        public static OperationStatusResponse Create(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(cloudServiceName, resourceName, addOnName, parameters).Result;
+                return ((IAddOnOperations)s).CreateAsync(cloudServiceName, resourceName, addOnName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -270,17 +244,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The add on name.
+        /// Required. The add on name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -293,7 +268,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> CreateAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
+        public static Task<OperationStatusResponse> CreateAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnCreateParameters parameters)
         {
             return operations.CreateAsync(cloudServiceName, resourceName, addOnName, parameters, CancellationToken.None);
         }
@@ -307,17 +282,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -330,23 +305,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse Delete(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
+        public static OperationStatusResponse Delete(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName).Result;
+                return ((IAddOnOperations)s).DeleteAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -358,17 +323,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceProviderNamespace'>
-        /// The namespace in which this store item resides.
+        /// Required. The namespace in which this store item resides.
         /// </param>
         /// <param name='resourceProviderType'>
-        /// The type of store item to be deleted.
+        /// Required. The type of store item to be deleted.
         /// </param>
         /// <param name='resourceProviderName'>
-        /// The name of this resource provider.
+        /// Required. The name of this resource provider.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -381,7 +346,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> DeleteAsync(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
+        public static Task<OperationStatusResponse> DeleteAsync(this IAddOnOperations operations, string cloudServiceName, string resourceProviderNamespace, string resourceProviderType, string resourceProviderName)
         {
             return operations.DeleteAsync(cloudServiceName, resourceProviderNamespace, resourceProviderType, resourceProviderName, CancellationToken.None);
         }
@@ -395,17 +360,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The addon name.
+        /// Required. The addon name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -418,23 +384,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static AddOnOperationStatusResponse Update(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters)
+        public static OperationStatusResponse Update(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(cloudServiceName, resourceName, addOnName, parameters).Result;
+                return ((IAddOnOperations)s).UpdateAsync(cloudServiceName, resourceName, addOnName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -446,17 +402,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Store.IAddOnOperations.
         /// </param>
         /// <param name='cloudServiceName'>
-        /// The name of the cloud service to which this store item will be
-        /// assigned.
+        /// Required. The name of the cloud service to which this store item
+        /// will be assigned.
         /// </param>
         /// <param name='resourceName'>
-        /// The name of this resource.
+        /// Required. The name of this resource.
         /// </param>
         /// <param name='addOnName'>
-        /// The addon name.
+        /// Required. The addon name.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters used to specify how the Create procedure will function.
+        /// Required. Parameters used to specify how the Create procedure will
+        /// function.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -469,7 +426,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<AddOnOperationStatusResponse> UpdateAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters)
+        public static Task<OperationStatusResponse> UpdateAsync(this IAddOnOperations operations, string cloudServiceName, string resourceName, string addOnName, AddOnUpdateParameters parameters)
         {
             return operations.UpdateAsync(cloudServiceName, resourceName, addOnName, parameters, CancellationToken.None);
         }

@@ -42,28 +42,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Media Services Account operation.
+        /// Required. Parameters supplied to the Create Media Services Account
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Media Services Account operation response.
         /// </returns>
         public static MediaServicesAccountCreateResponse Create(this IAccountOperations operations, MediaServicesAccountCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IAccountOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -77,7 +68,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Media Services Account operation.
+        /// Required. Parameters supplied to the Create Media Services Account
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Media Services Account operation response.
@@ -98,7 +90,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the media services account.
+        /// Required. The name of the media services account.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -106,21 +98,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IAccountOperations operations, string accountName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(accountName).Result;
+                return ((IAccountOperations)s).DeleteAsync(accountName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -134,7 +116,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the media services account.
+        /// Required. The name of the media services account.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -156,28 +138,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the Media Services account.
+        /// Required. The name of the Media Services account.
         /// </param>
         /// <returns>
         /// The Get Media Services Account operation response.
         /// </returns>
         public static MediaServicesAccountGetResponse Get(this IAccountOperations operations, string accountName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(accountName).Result;
+                return ((IAccountOperations)s).GetAsync(accountName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -191,7 +163,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the Media Services account.
+        /// Required. The name of the Media Services account.
         /// </param>
         /// <returns>
         /// The Get Media Services Account operation response.
@@ -217,21 +189,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static MediaServicesAccountListResponse List(this IAccountOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IAccountOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -265,10 +227,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the Media Services Account.
+        /// Required. The name of the Media Services Account.
         /// </param>
         /// <param name='keyType'>
-        /// The type of key to regenerate (primary or secondary)
+        /// Required. The type of key to regenerate (primary or secondary)
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -276,21 +238,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse RegenerateKey(this IAccountOperations operations, string accountName, MediaServicesKeyType keyType)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.RegenerateKeyAsync(accountName, keyType).Result;
+                return ((IAccountOperations)s).RegenerateKeyAsync(accountName, keyType);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -305,10 +257,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.MediaServices.IAccountOperations.
         /// </param>
         /// <param name='accountName'>
-        /// The name of the Media Services Account.
+        /// Required. The name of the Media Services Account.
         /// </param>
         /// <param name='keyType'>
-        /// The type of key to regenerate (primary or secondary)
+        /// Required. The type of key to regenerate (primary or secondary)
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and

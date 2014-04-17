@@ -26,14 +26,14 @@ using Microsoft.WindowsAzure.Management.Network.Models;
 namespace Microsoft.WindowsAzure.Management.Network.Models
 {
     /// <summary>
-    /// The parameters to the Gateway Create request.
+    /// Parameters supplied to the Create Virtual Network Gateway operation.
     /// </summary>
     public partial class GatewayCreateParameters
     {
         private GatewayType _gatewayType;
         
         /// <summary>
-        /// The routing type for this virtual network gateway.
+        /// Optional. The routing type for this virtual network gateway.
         /// </summary>
         public GatewayType GatewayType
         {

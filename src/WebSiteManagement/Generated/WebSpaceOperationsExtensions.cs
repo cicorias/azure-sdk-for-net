@@ -29,69 +29,62 @@ using Microsoft.WindowsAzure.Management.WebSites.Models;
 namespace Microsoft.WindowsAzure
 {
     /// <summary>
-    /// The Windows Azure Web Sites management API provides a RESTful set of
-    /// web services that interact with Windows Azure Web Sites service to
-    /// manage your web sites. The API has entities that capture the
-    /// relationship between an end user and the Windows Azure Web Sites
-    /// service.  (see
+    /// The Web Sites Management API provides a RESTful set of web services
+    /// that interact with the Windows Azure Web Sites service to manage your
+    /// web sites. The API has entities that capture the relationship between
+    /// an end user and Windows Azure Web Sites service.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166981.aspx for
     /// more information)
     /// </summary>
     public static partial class WebSpaceOperationsExtensions
     {
         /// <summary>
-        /// Creates a source control user allowed to publish to this web space.
+        /// Creates a source control user with permissions to publish to this
+        /// web space.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='username'>
-        /// The user name.
+        /// Required. The user name.
         /// </param>
         /// <param name='password'>
-        /// The user password.
+        /// Required. The user password.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Publishing User operation.
+        /// Optional. Parameters supplied to the Create Publishing User
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Publishing User operation response.
         /// </returns>
         public static WebSpacesCreatePublishingUserResponse CreatePublishingUser(this IWebSpaceOperations operations, string username, string password, WebSpacesCreatePublishingUserParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreatePublishingUserAsync(username, password, parameters).Result;
+                return ((IWebSpaceOperations)s).CreatePublishingUserAsync(username, password, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Creates a source control user allowed to publish to this web space.
+        /// Creates a source control user with permissions to publish to this
+        /// web space.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='username'>
-        /// The user name.
+        /// Required. The user name.
         /// </param>
         /// <param name='password'>
-        /// The user password.
+        /// Required. The user password.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Publishing User operation.
+        /// Optional. Parameters supplied to the Create Publishing User
+        /// operation.
         /// </param>
         /// <returns>
         /// The Create Publishing User operation response.
@@ -102,7 +95,7 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// You can retrieve details for a specified webspace name by issuing
+        /// You can retrieve details for a specified web space name by issuing
         /// an HTTP GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn167017.aspx
         /// for more information)
@@ -112,32 +105,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// The Get Web Space Details operation response.
         /// </returns>
         public static WebSpacesGetResponse Get(this IWebSpaceOperations operations, string webSpaceName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(webSpaceName).Result;
+                return ((IWebSpaceOperations)s).GetAsync(webSpaceName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// You can retrieve details for a specified webspace name by issuing
+        /// You can retrieve details for a specified web space name by issuing
         /// an HTTP GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn167017.aspx
         /// for more information)
@@ -147,7 +130,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <returns>
         /// The Get Web Space Details operation response.
@@ -158,7 +141,7 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// Get the dns suffix for this subscription.
+        /// Get the DNS Suffix for this subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
@@ -169,25 +152,15 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static WebSpacesGetDnsSuffixResponse GetDnsSuffix(this IWebSpaceOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetDnsSuffixAsync().Result;
+                return ((IWebSpaceOperations)s).GetDnsSuffixAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Get the dns suffix for this subscription.
+        /// Get the DNS Suffix for this subscription.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
@@ -202,7 +175,7 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// You can list the webspaces under the current subscription by
+        /// You can list the web spaces under the current subscription by
         /// issuing a GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166961.aspx
         /// for more information)
@@ -216,25 +189,15 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static WebSpacesListResponse List(this IWebSpaceOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IWebSpaceOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// You can list the webspaces under the current subscription by
+        /// You can list the web spaces under the current subscription by
         /// issuing a GET request.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/dn166961.aspx
         /// for more information)
@@ -252,43 +215,33 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// Get the available geo regions for this webspace.
+        /// Get the available geo regions for this web space.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <returns>
-        /// The Get DNS Suffix operation response.
+        /// The List Geo Regions operation response.
         /// </returns>
         public static WebSpacesListGeoRegionsResponse ListGeoRegions(this IWebSpaceOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListGeoRegionsAsync().Result;
+                return ((IWebSpaceOperations)s).ListGeoRegionsAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// Get the available geo regions for this webspace.
+        /// Get the available geo regions for this web space.
         /// </summary>
         /// <param name='operations'>
         /// Reference to the
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <returns>
-        /// The Get DNS Suffix operation response.
+        /// The List Geo Regions operation response.
         /// </returns>
         public static Task<WebSpacesListGeoRegionsResponse> ListGeoRegionsAsync(this IWebSpaceOperations operations)
         {
@@ -307,21 +260,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static WebSpacesListPublishingUsersResponse ListPublishingUsers(this IWebSpaceOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListPublishingUsersAsync().Result;
+                return ((IWebSpaceOperations)s).ListPublishingUsersAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -350,31 +293,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The List Web Sites operation response.
         /// </returns>
         public static WebSpacesListWebSitesResponse ListWebSites(this IWebSpaceOperations operations, string webSpaceName, WebSiteListParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListWebSitesAsync(webSpaceName, parameters).Result;
+                return ((IWebSpaceOperations)s).ListWebSitesAsync(webSpaceName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -388,10 +321,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.WebSites.IWebSpaceOperations.
         /// </param>
         /// <param name='webSpaceName'>
-        /// The name of the web space.
+        /// Required. The name of the web space.
         /// </param>
         /// <param name='parameters'>
-        /// Additional parameters.
+        /// Optional. Additional parameters.
         /// </param>
         /// <returns>
         /// The List Web Sites operation response.

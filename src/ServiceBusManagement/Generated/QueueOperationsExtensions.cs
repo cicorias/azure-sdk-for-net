@@ -49,31 +49,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queue'>
-        /// The service bus queue.
+        /// Required. The service bus queue.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.
         /// </returns>
         public static ServiceBusQueueResponse Create(this IQueueOperations operations, string namespaceName, ServiceBusQueueCreateParameters queue)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(namespaceName, queue).Result;
+                return ((IQueueOperations)s).CreateAsync(namespaceName, queue);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -89,10 +79,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queue'>
-        /// The service bus queue.
+        /// Required. The service bus queue.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.
@@ -115,31 +105,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queueName'>
-        /// The queue name.
+        /// Required. The queue name.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.
         /// </returns>
         public static ServiceBusQueueResponse Get(this IQueueOperations operations, string namespaceName, string queueName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(namespaceName, queueName).Result;
+                return ((IQueueOperations)s).GetAsync(namespaceName, queueName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -155,10 +135,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queueName'>
-        /// The queue name.
+        /// Required. The queue name.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.
@@ -176,31 +156,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queueName'>
-        /// The queue name.
+        /// Required. The queue name.
         /// </param>
         /// <returns>
         /// The set of connection details for a service bus entity.
         /// </returns>
         public static ServiceBusConnectionDetailsResponse GetConnectionDetails(this IQueueOperations operations, string namespaceName, string queueName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetConnectionDetailsAsync(namespaceName, queueName).Result;
+                return ((IQueueOperations)s).GetConnectionDetailsAsync(namespaceName, queueName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -211,10 +181,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queueName'>
-        /// The queue name.
+        /// Required. The queue name.
         /// </param>
         /// <returns>
         /// The set of connection details for a service bus entity.
@@ -238,28 +208,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <returns>
         /// A response to a request for a list of queues.
         /// </returns>
         public static ServiceBusQueuesResponse List(this IQueueOperations operations, string namespaceName)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync(namespaceName).Result;
+                return ((IQueueOperations)s).ListAsync(namespaceName);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -276,7 +236,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <returns>
         /// A response to a request for a list of queues.
@@ -297,31 +257,21 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queue'>
-        /// The service bus queue.
+        /// Required. The service bus queue.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.
         /// </returns>
         public static ServiceBusQueueResponse Update(this IQueueOperations operations, string namespaceName, ServiceBusQueue queue)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(namespaceName, queue).Result;
+                return ((IQueueOperations)s).UpdateAsync(namespaceName, queue);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -335,10 +285,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IQueueOperations.
         /// </param>
         /// <param name='namespaceName'>
-        /// The namespace name.
+        /// Required. The namespace name.
         /// </param>
         /// <param name='queue'>
-        /// The service bus queue.
+        /// Required. The service bus queue.
         /// </param>
         /// <returns>
         /// A response to a request for a particular queue.

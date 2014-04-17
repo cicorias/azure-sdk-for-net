@@ -33,15 +33,15 @@ namespace Microsoft.WindowsAzure
     /// The Service Management API provides programmatic access to much of the
     /// functionality available through the Management Portal. The Service
     /// Management API is a REST API. All API operations are performed over
-    /// SSL and mutually authenticated using X.509 v3 certificates.  (see
+    /// SSL, and are mutually authenticated using X.509 v3 certificates.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460799.aspx for
     /// more information)
     /// </summary>
     public static partial class VirtualMachineDiskOperationsExtensions
     {
         /// <summary>
-        /// The Delete Data Disk operation removes the specified data disk from
-        /// a virtual machine.  (see
+        /// The Begin Deleting Data Disk operation removes the specified data
+        /// disk from a virtual machine.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157179.aspx
         /// for more information)
         /// </summary>
@@ -50,19 +50,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to delete the data disk from.
+        /// Required. The name of the role to delete the data disk from.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
@@ -71,26 +71,16 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse BeginDeletingDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, bool deleteFromStorage)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginDeletingDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, deleteFromStorage).Result;
+                return ((IVirtualMachineDiskOperations)s).BeginDeletingDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, deleteFromStorage);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// The Delete Data Disk operation removes the specified data disk from
-        /// a virtual machine.  (see
+        /// The Begin Deleting Data Disk operation removes the specified data
+        /// disk from a virtual machine.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157179.aspx
         /// for more information)
         /// </summary>
@@ -99,19 +89,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to delete the data disk from.
+        /// Required. The name of the role to delete the data disk from.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
@@ -124,23 +114,23 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// The Add Data Disk operation adds a data disk to a virtual machine.
-        /// There are three ways to create the data disk using the Add Data
-        /// Disk operation.  Option 1 – Attach an empty data disk to the role
-        /// by specifying the disk label and location of the disk image.  Do
-        /// not include the DiskName and SourceMediaLink elements in the
-        /// request body.  Include the MediaLink element and reference a blob
-        /// that is in the same geographical region as the role.  You can also
-        /// omit the MediaLink element. In this usage, Windows Azure will
-        /// create the data disk in the storage account configured as default
-        /// for the role.   Option 2 – Attach an existing data disk that is in
-        /// the image repository.  Do not include the DiskName and
-        /// SourceMediaLink elements in the request body.  Specify the data
-        /// disk to use by including the DiskName element.  Note: If included
-        /// the in the response body, the MediaLink and LogicalDiskSizeInGB
-        /// elements are ignored.  Option 3 - Specify the location of a blob
-        /// in your storage account that contain a disk image to use.  Include
-        /// the SourceMediaLink element. Note: If the MediaLink element
+        /// The Create Data Disk operation adds a data disk to a virtual
+        /// machine. There are three ways to create the data disk using the
+        /// Add Data Disk operation. Option 1 – Attach an empty data disk to
+        /// the role by specifying the disk label and location of the disk
+        /// image. Do not include the DiskName and SourceMediaLink elements in
+        /// the request body. Include the MediaLink element and reference a
+        /// blob that is in the same geographical region as the role. You can
+        /// also omit the MediaLink element. In this usage, Azure will create
+        /// the data disk in the storage account configured as default for the
+        /// role. Option 2 – Attach an existing data disk that is in the image
+        /// repository. Do not include the DiskName and SourceMediaLink
+        /// elements in the request body. Specify the data disk to use by
+        /// including the DiskName element. Note: If included the in the
+        /// response body, the MediaLink and LogicalDiskSizeInGB elements are
+        /// ignored. Option 3 - Specify the location of a blob in your storage
+        /// account that contain a disk image to use. Include the
+        /// SourceMediaLink element. Note: If the MediaLink element
         /// isincluded, it is ignored.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157199.aspx
         /// for more information)
@@ -150,17 +140,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to add the data disk to.
+        /// Required. The name of the role to add the data disk to.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Data Disk
-        /// operation.
+        /// Required. Parameters supplied to the Create Virtual Machine Data
+        /// Disk operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -168,41 +158,31 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse CreateDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, VirtualMachineDataDiskCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateDataDiskAsync(serviceName, deploymentName, roleName, parameters).Result;
+                return ((IVirtualMachineDiskOperations)s).CreateDataDiskAsync(serviceName, deploymentName, roleName, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// The Add Data Disk operation adds a data disk to a virtual machine.
-        /// There are three ways to create the data disk using the Add Data
-        /// Disk operation.  Option 1 – Attach an empty data disk to the role
-        /// by specifying the disk label and location of the disk image.  Do
-        /// not include the DiskName and SourceMediaLink elements in the
-        /// request body.  Include the MediaLink element and reference a blob
-        /// that is in the same geographical region as the role.  You can also
-        /// omit the MediaLink element. In this usage, Windows Azure will
-        /// create the data disk in the storage account configured as default
-        /// for the role.   Option 2 – Attach an existing data disk that is in
-        /// the image repository.  Do not include the DiskName and
-        /// SourceMediaLink elements in the request body.  Specify the data
-        /// disk to use by including the DiskName element.  Note: If included
-        /// the in the response body, the MediaLink and LogicalDiskSizeInGB
-        /// elements are ignored.  Option 3 - Specify the location of a blob
-        /// in your storage account that contain a disk image to use.  Include
-        /// the SourceMediaLink element. Note: If the MediaLink element
+        /// The Create Data Disk operation adds a data disk to a virtual
+        /// machine. There are three ways to create the data disk using the
+        /// Add Data Disk operation. Option 1 – Attach an empty data disk to
+        /// the role by specifying the disk label and location of the disk
+        /// image. Do not include the DiskName and SourceMediaLink elements in
+        /// the request body. Include the MediaLink element and reference a
+        /// blob that is in the same geographical region as the role. You can
+        /// also omit the MediaLink element. In this usage, Azure will create
+        /// the data disk in the storage account configured as default for the
+        /// role. Option 2 – Attach an existing data disk that is in the image
+        /// repository. Do not include the DiskName and SourceMediaLink
+        /// elements in the request body. Specify the data disk to use by
+        /// including the DiskName element. Note: If included the in the
+        /// response body, the MediaLink and LogicalDiskSizeInGB elements are
+        /// ignored. Option 3 - Specify the location of a blob in your storage
+        /// account that contain a disk image to use. Include the
+        /// SourceMediaLink element. Note: If the MediaLink element
         /// isincluded, it is ignored.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157199.aspx
         /// for more information)
@@ -212,17 +192,17 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to add the data disk to.
+        /// Required. The name of the role to add the data disk to.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Data Disk
-        /// operation.
+        /// Required. Parameters supplied to the Create Virtual Machine Data
+        /// Disk operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -234,7 +214,7 @@ namespace Microsoft.WindowsAzure
         }
         
         /// <summary>
-        /// The Add Disk operation adds a disk to the user image repository.
+        /// The Create Disk operation adds a disk to the user image repository.
         /// The disk can be an operating system disk or a data disk.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157178.aspx
         /// for more information)
@@ -244,32 +224,23 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Disk operation.
+        /// Required. Parameters supplied to the Create Virtual Machine Disk
+        /// operation.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.
         /// </returns>
         public static VirtualMachineDiskCreateResponse CreateDisk(this IVirtualMachineDiskOperations operations, VirtualMachineDiskCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateDiskAsync(parameters).Result;
+                return ((IVirtualMachineDiskOperations)s).CreateDiskAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// The Add Disk operation adds a disk to the user image repository.
+        /// The Create Disk operation adds a disk to the user image repository.
         /// The disk can be an operating system disk or a data disk.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157178.aspx
         /// for more information)
@@ -279,7 +250,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Disk operation.
+        /// Required. Parameters supplied to the Create Virtual Machine Disk
+        /// operation.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.
@@ -300,49 +272,39 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to delete the data disk from.
+        /// Required. The name of the role to delete the data disk from.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public static ComputeOperationStatusResponse DeleteDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, bool deleteFromStorage)
+        public static OperationStatusResponse DeleteDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, bool deleteFromStorage)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, deleteFromStorage).Result;
+                return ((IVirtualMachineDiskOperations)s).DeleteDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, deleteFromStorage);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -356,33 +318,33 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to delete the data disk from.
+        /// Required. The name of the role to delete the data disk from.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public static Task<ComputeOperationStatusResponse> DeleteDataDiskAsync(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, bool deleteFromStorage)
+        public static Task<OperationStatusResponse> DeleteDataDiskAsync(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, bool deleteFromStorage)
         {
             return operations.DeleteDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, deleteFromStorage, CancellationToken.None);
         }
@@ -398,10 +360,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk to delete.
+        /// Required. The name of the disk to delete.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
@@ -410,21 +372,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse DeleteDisk(this IVirtualMachineDiskOperations operations, string name, bool deleteFromStorage)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteDiskAsync(name, deleteFromStorage).Result;
+                return ((IVirtualMachineDiskOperations)s).DeleteDiskAsync(name, deleteFromStorage);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -438,10 +390,10 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk to delete.
+        /// Required. The name of the disk to delete.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob for the disk should also
+        /// Required. Specifies that the source blob for the disk should also
         /// be deleted from storage.
         /// </param>
         /// <returns>
@@ -464,37 +416,27 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role.
+        /// Required. The name of the role.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <returns>
         /// The Get Data Disk operation response.
         /// </returns>
         public static VirtualMachineDataDiskGetResponse GetDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber).Result;
+                return ((IVirtualMachineDiskOperations)s).GetDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -508,16 +450,16 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role.
+        /// Required. The name of the role.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <returns>
         /// The Get Data Disk operation response.
@@ -539,28 +481,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk.
+        /// Required. The name of the disk.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.
         /// </returns>
         public static VirtualMachineDiskGetResponse GetDisk(this IVirtualMachineDiskOperations operations, string name)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetDiskAsync(name).Result;
+                return ((IVirtualMachineDiskOperations)s).GetDiskAsync(name);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -575,7 +507,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk.
+        /// Required. The name of the disk.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.
@@ -600,21 +532,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static VirtualMachineDiskListResponse ListDisks(this IVirtualMachineDiskOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListDisksAsync().Result;
+                return ((IVirtualMachineDiskOperations)s).ListDisksAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -646,20 +568,20 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to add the data disk to.
+        /// Required. The name of the role to add the data disk to.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine Data Disk
-        /// operation.
+        /// Required. Parameters supplied to the Update Virtual Machine Data
+        /// Disk operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -667,21 +589,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse UpdateDataDisk(this IVirtualMachineDiskOperations operations, string serviceName, string deploymentName, string roleName, int logicalUnitNumber, VirtualMachineDataDiskUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, parameters).Result;
+                return ((IVirtualMachineDiskOperations)s).UpdateDataDiskAsync(serviceName, deploymentName, roleName, logicalUnitNumber, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -695,20 +607,20 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of the deployment.
+        /// Required. The name of the deployment.
         /// </param>
         /// <param name='roleName'>
-        /// The name of the role to add the data disk to.
+        /// Required. The name of the role to add the data disk to.
         /// </param>
         /// <param name='logicalUnitNumber'>
-        /// The logical unit number of the disk.
+        /// Required. The logical unit number of the disk.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine Data Disk
-        /// operation.
+        /// Required. Parameters supplied to the Update Virtual Machine Data
+        /// Disk operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -730,31 +642,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk being updated.
+        /// Required. The name of the disk being updated.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine Disk operation.
+        /// Required. Parameters supplied to the Update Virtual Machine Disk
+        /// operation.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.
         /// </returns>
         public static VirtualMachineDiskUpdateResponse UpdateDisk(this IVirtualMachineDiskOperations operations, string name, VirtualMachineDiskUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateDiskAsync(name, parameters).Result;
+                return ((IVirtualMachineDiskOperations)s).UpdateDiskAsync(name, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -768,10 +671,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.Compute.IVirtualMachineDiskOperations.
         /// </param>
         /// <param name='name'>
-        /// The name of the disk being updated.
+        /// Required. The name of the disk being updated.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine Disk operation.
+        /// Required. Parameters supplied to the Update Virtual Machine Disk
+        /// operation.
         /// </param>
         /// <returns>
         /// A virtual machine disk associated with your subscription.

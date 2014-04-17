@@ -35,7 +35,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private IList<OperatingSystemListFamiliesResponse.OperatingSystemFamily> _operatingSystemFamilies;
         
         /// <summary>
-        /// The operating system families that are valid for your subscription.
+        /// Optional. The operating system families that are valid for your
+        /// subscription.
         /// </summary>
         public IList<OperatingSystemListFamiliesResponse.OperatingSystemFamily> OperatingSystemFamilies
         {
@@ -76,18 +77,18 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private bool _isActive;
             
             /// <summary>
-            /// Indicates whether this operating system version is currently
-            /// active for running a service. If an operating system version
-            /// is active, you can manually configure your service to run on
-            /// that version.  An operating system version may be inactive for
-            /// one of two reasons:  1. It is not yet active as it is in the
-            /// process of being rolled out to Windows Azure data centers. If
-            /// your service is configured to use auto-upgrade, it will be
+            /// Optional. Indicates whether this operating system version is
+            /// currently active for running a service. If an operating system
+            /// version is active, you can manually configure your service to
+            /// run on that version. An operating system version may be
+            /// inactive for one of two reasons: 1. It is not yet active as it
+            /// is in the process of being rolled out to Azure data centers.
+            /// If your service is configured to use auto-upgrade, it will be
             /// upgraded to the new operating system version during the
             /// rollout. If you are manually configuring your operating system
             /// version, you can upgrade to the latest version once it becomes
-            /// active.  2. It is no longer supported for running a service.
-            /// In this case you will either need to manually configure your
+            /// active. 2. It is no longer supported for running a service. In
+            /// this case you will either need to manually configure your
             /// service to run on a newer version, or configure your service
             /// to use auto-upgrade to manage operating system upgrades.
             /// </summary>
@@ -100,14 +101,14 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private bool _isDefault;
             
             /// <summary>
-            /// Indicates whether this operating system version is the default
-            /// version for a service that has not otherwise specified a
-            /// particular version. The default operating system version is
-            /// applied to services that are configured for auto-upgrade. An
-            /// operating system family has exactly one default operating
-            /// system version at any given time, for which the IsDefault
-            /// element is set to true; for all other versions, IsDefault is
-            /// set to false.
+            /// Optional. Indicates whether this operating system version is
+            /// the default version for a service that has not otherwise
+            /// specified a particular version. The default operating system
+            /// version is applied to services that are configured for
+            /// auto-upgrade. An operating system family has exactly one
+            /// default operating system version at any given time, for which
+            /// the IsDefault element is set to true; for all other versions,
+            /// IsDefault is set to false.
             /// </summary>
             public bool IsDefault
             {
@@ -118,7 +119,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private string _label;
             
             /// <summary>
-            /// The label of the operating system version.
+            /// Optional. The label of the operating system version.
             /// </summary>
             public string Label
             {
@@ -129,9 +130,9 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private string _version;
             
             /// <summary>
-            /// The operating system version. This value corresponds to the
-            /// configuration value for specifying that your service is to run
-            /// on a particular version of the Windows Azure guest operating
+            /// Optional. The operating system version. This value corresponds
+            /// to the configuration value for specifying that your service is
+            /// to run on a particular version of the Azure guest operating
             /// system. See Configuring Settings for the Windows Azure Guest
             /// OS for additional details.
             /// </summary>
@@ -157,7 +158,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private string _label;
             
             /// <summary>
-            /// The label of the operating system family.
+            /// Optional. The label of the operating system family.
             /// </summary>
             public string Label
             {
@@ -168,12 +169,12 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private int _name;
             
             /// <summary>
-            /// Indicates which operating system family this version belongs
-            /// to. A value of 1 corresponds to the Windows Azure guest
+            /// Optional. Indicates which operating system family this version
+            /// belongs to. A value of 1 corresponds to the Azure guest
             /// operating system that is substantially compatible with Windows
-            /// Server 2008 SP2. A value of 2 corresponds to the Windows Azure
-            /// guest operating system that is substantially compatible with
-            /// Windows Server 2008 R2.
+            /// Server 2008 SP2. A value of 2 corresponds to the Azure guest
+            /// operating system that is substantially compatible with Windows
+            /// Server 2008 R2.
             /// </summary>
             public int Name
             {
@@ -184,8 +185,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
             private IList<OperatingSystemListFamiliesResponse.OperatingSystem> _operatingSystems;
             
             /// <summary>
-            /// The available operating systems in your subscription belonging
-            /// to this family.
+            /// Optional. The available operating systems in your subscription
+            /// belonging to this family.
             /// </summary>
             public IList<OperatingSystemListFamiliesResponse.OperatingSystem> OperatingSystems
             {

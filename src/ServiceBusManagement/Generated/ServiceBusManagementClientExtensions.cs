@@ -23,6 +23,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Management.ServiceBus;
 using Microsoft.WindowsAzure.Management.ServiceBus.Models;
 
@@ -49,8 +50,9 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IServiceBusManagementClient.
         /// </param>
         /// <param name='requestId'>
-        /// The request ID for the request you wish to track. The request ID is
-        /// returned in the x-ms-request-id response header for every request.
+        /// Required. The request ID for the request you wish to track. The
+        /// request ID is returned in the x-ms-request-id response header for
+        /// every request.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -63,23 +65,13 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static ServiceBusOperationStatusResponse GetOperationStatus(this IServiceBusManagementClient operations, string requestId)
+        public static OperationStatusResponse GetOperationStatus(this IServiceBusManagementClient operations, string requestId)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetOperationStatusAsync(requestId).Result;
+                return ((IServiceBusManagementClient)s).GetOperationStatusAsync(requestId);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -95,8 +87,9 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ServiceBus.IServiceBusManagementClient.
         /// </param>
         /// <param name='requestId'>
-        /// The request ID for the request you wish to track. The request ID is
-        /// returned in the x-ms-request-id response header for every request.
+        /// Required. The request ID for the request you wish to track. The
+        /// request ID is returned in the x-ms-request-id response header for
+        /// every request.
         /// </param>
         /// <returns>
         /// The response body contains the status of the specified asynchronous
@@ -109,7 +102,7 @@ namespace Microsoft.WindowsAzure
         /// status code for the failed request, and also includes error
         /// information regarding the failure.
         /// </returns>
-        public static Task<ServiceBusOperationStatusResponse> GetOperationStatusAsync(this IServiceBusManagementClient operations, string requestId)
+        public static Task<OperationStatusResponse> GetOperationStatusAsync(this IServiceBusManagementClient operations, string requestId)
         {
             return operations.GetOperationStatusAsync(requestId, CancellationToken.None);
         }
@@ -129,21 +122,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ServiceBusRegionsResponse GetServiceBusRegions(this IServiceBusManagementClient operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetServiceBusRegionsAsync().Result;
+                return ((IServiceBusManagementClient)s).GetServiceBusRegionsAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>

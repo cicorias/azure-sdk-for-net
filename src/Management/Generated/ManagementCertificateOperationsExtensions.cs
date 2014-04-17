@@ -33,17 +33,17 @@ namespace Microsoft.WindowsAzure
     /// The Service Management API provides programmatic access to much of the
     /// functionality available through the Management Portal. The Service
     /// Management API is a REST API. All API operations are performed over
-    /// SSL and mutually authenticated using X.509 v3 certificates.  (see
+    /// SSL and are mutually authenticated using X.509 v3 certificates.  (see
     /// http://msdn.microsoft.com/en-us/library/windowsazure/ee460799.aspx for
     /// more information)
     /// </summary>
     public static partial class ManagementCertificateOperationsExtensions
     {
         /// <summary>
-        /// The Add Management Certificate operation adds a certificate to the
-        /// list of management certificates. Management certificates, which
-        /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
+        /// The Create Management Certificate operation adds a certificate to
+        /// the list of management certificates. Management certificates,
+        /// which are also known as subscription certificates, authenticate
+        /// clients attempting to connect to resources associated with your
         /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154123.aspx
         /// for more information)
@@ -53,7 +53,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Management Certificate operation.
+        /// Required. Parameters supplied to the Create Management Certificate
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -61,28 +62,18 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Create(this IManagementCertificateOperations operations, ManagementCertificateCreateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.CreateAsync(parameters).Result;
+                return ((IManagementCertificateOperations)s).CreateAsync(parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
-        /// The Add Management Certificate operation adds a certificate to the
-        /// list of management certificates. Management certificates, which
-        /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
+        /// The Create Management Certificate operation adds a certificate to
+        /// the list of management certificates. Management certificates,
+        /// which are also known as subscription certificates, authenticate
+        /// clients attempting to connect to resources associated with your
         /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154123.aspx
         /// for more information)
@@ -92,7 +83,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Management Certificate operation.
+        /// Required. Parameters supplied to the Create Management Certificate
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -108,7 +100,7 @@ namespace Microsoft.WindowsAzure
         /// from the list of management certificates. Management certificates,
         /// which are also known as subscription certificates, authenticate
         /// clients attempting to connect to resources associated with your
-        /// Windows Azure subscription.  (see
+        /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154127.aspx
         /// for more information)
         /// </summary>
@@ -117,7 +109,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='thumbprint'>
-        /// the thumbprint value of the certificate to delete.
+        /// Required. The thumbprint value of the certificate to delete.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -125,21 +117,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static OperationResponse Delete(this IManagementCertificateOperations operations, string thumbprint)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.DeleteAsync(thumbprint).Result;
+                return ((IManagementCertificateOperations)s).DeleteAsync(thumbprint);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -147,7 +129,7 @@ namespace Microsoft.WindowsAzure
         /// from the list of management certificates. Management certificates,
         /// which are also known as subscription certificates, authenticate
         /// clients attempting to connect to resources associated with your
-        /// Windows Azure subscription.  (see
+        /// Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154127.aspx
         /// for more information)
         /// </summary>
@@ -156,7 +138,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='thumbprint'>
-        /// the thumbprint value of the certificate to delete.
+        /// Required. The thumbprint value of the certificate to delete.
         /// </param>
         /// <returns>
         /// A standard service response including an HTTP status code and
@@ -172,7 +154,7 @@ namespace Microsoft.WindowsAzure
         /// about the management certificate with the specified thumbprint.
         /// Management certificates, which are also known as subscription
         /// certificates, authenticate clients attempting to connect to
-        /// resources associated with your Windows Azure subscription.  (see
+        /// resources associated with your Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154131.aspx
         /// for more information)
         /// </summary>
@@ -181,29 +163,19 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='thumbprint'>
-        /// The thumbprint value of the certificate to retrieve information
-        /// about.
+        /// Required. The thumbprint value of the certificate to retrieve
+        /// information about.
         /// </param>
         /// <returns>
         /// The Get Management Certificate operation response.
         /// </returns>
         public static ManagementCertificateGetResponse Get(this IManagementCertificateOperations operations, string thumbprint)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(thumbprint).Result;
+                return ((IManagementCertificateOperations)s).GetAsync(thumbprint);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -211,7 +183,7 @@ namespace Microsoft.WindowsAzure
         /// about the management certificate with the specified thumbprint.
         /// Management certificates, which are also known as subscription
         /// certificates, authenticate clients attempting to connect to
-        /// resources associated with your Windows Azure subscription.  (see
+        /// resources associated with your Azure subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154131.aspx
         /// for more information)
         /// </summary>
@@ -220,8 +192,8 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.IManagementCertificateOperations.
         /// </param>
         /// <param name='thumbprint'>
-        /// The thumbprint value of the certificate to retrieve information
-        /// about.
+        /// Required. The thumbprint value of the certificate to retrieve
+        /// information about.
         /// </param>
         /// <returns>
         /// The Get Management Certificate operation response.
@@ -236,8 +208,8 @@ namespace Microsoft.WindowsAzure
         /// information about all of the management certificates associated
         /// with the specified subscription. Management certificates, which
         /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
-        /// Azure subscription.  (see
+        /// attempting to connect to resources associated with your Azure
+        /// subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154105.aspx
         /// for more information)
         /// </summary>
@@ -250,21 +222,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ManagementCertificateListResponse List(this IManagementCertificateOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((IManagementCertificateOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -272,8 +234,8 @@ namespace Microsoft.WindowsAzure
         /// information about all of the management certificates associated
         /// with the specified subscription. Management certificates, which
         /// are also known as subscription certificates, authenticate clients
-        /// attempting to connect to resources associated with your Windows
-        /// Azure subscription.  (see
+        /// attempting to connect to resources associated with your Azure
+        /// subscription.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj154105.aspx
         /// for more information)
         /// </summary>

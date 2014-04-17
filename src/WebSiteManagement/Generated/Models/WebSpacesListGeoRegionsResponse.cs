@@ -28,14 +28,14 @@ using Microsoft.WindowsAzure.Management.WebSites.Models;
 namespace Microsoft.WindowsAzure.Management.WebSites.Models
 {
     /// <summary>
-    /// The Get DNS Suffix operation response.
+    /// The List Geo Regions operation response.
     /// </summary>
     public partial class WebSpacesListGeoRegionsResponse : OperationResponse, IEnumerable<WebSpacesListGeoRegionsResponse.GeoRegion>
     {
         private IList<WebSpacesListGeoRegionsResponse.GeoRegion> _geoRegions;
         
         /// <summary>
-        /// The available geo regions.
+        /// Optional. The available geo regions.
         /// </summary>
         public IList<WebSpacesListGeoRegionsResponse.GeoRegion> GeoRegions
         {
@@ -76,7 +76,7 @@ namespace Microsoft.WindowsAzure.Management.WebSites.Models
             private string _description;
             
             /// <summary>
-            /// Geo Region description.
+            /// Optional. Description of the geo region.
             /// </summary>
             public string Description
             {
@@ -87,7 +87,7 @@ namespace Microsoft.WindowsAzure.Management.WebSites.Models
             private string _name;
             
             /// <summary>
-            /// Name of the region.
+            /// Optional. Name of the geo region.
             /// </summary>
             public string Name
             {
@@ -98,7 +98,7 @@ namespace Microsoft.WindowsAzure.Management.WebSites.Models
             private int _sortOrder;
             
             /// <summary>
-            /// Sort order.
+            /// Optional. Sort order for the geo region.
             /// </summary>
             public int SortOrder
             {

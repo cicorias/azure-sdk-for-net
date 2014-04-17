@@ -70,10 +70,10 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// Export DAC into Windows Azure blob storage.
         /// </summary>
         /// <param name='serverName'>
-        /// The name of the server being exported from.
+        /// Required. The name of the server being exported from.
         /// </param>
         /// <param name='parameters'>
-        /// Export parameters.
+        /// Optional. Export parameters.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -135,7 +135,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers/" + serverName + "/DacOperations/Export";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers/" + serverName.Trim() + "/DacOperations/Export";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -171,7 +182,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
                         blobCredentialsElement.Add(typeAttribute);
                         
                         XElement uriElement = new XElement(XName.Get("Uri", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                        uriElement.Value = parameters.BlobCredentials.Uri.ToString();
+                        uriElement.Value = parameters.BlobCredentials.Uri.AbsoluteUri;
                         blobCredentialsElement.Add(uriElement);
                         
                         XElement storageAccessKeyElement = new XElement(XName.Get("StorageAccessKey", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
@@ -241,7 +252,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement guidElement = responseDoc.Element(XName.Get("guid", "http://schemas.microsoft.com/2003/10/Serialization/"));
-                    if (guidElement != null)
+                    if (guidElement != null && guidElement.IsEmpty == false)
                     {
                         result.Guid = guidElement.Value;
                     }
@@ -279,19 +290,19 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// Gets the status of the DAC.
         /// </summary>
         /// <param name='serverName'>
-        /// The name of the server.
+        /// Required. The name of the server.
         /// </param>
         /// <param name='fullyQualifiedServerName'>
-        /// The fully qualified name of the server.
+        /// Required. The fully qualified name of the server.
         /// </param>
         /// <param name='username'>
-        /// The server's username.
+        /// Required. The server's username.
         /// </param>
         /// <param name='password'>
-        /// The server's password.
+        /// Required. The server's password.
         /// </param>
         /// <param name='requestId'>
-        /// The request ID of the operation being queried.
+        /// Required. The request ID of the operation being queried.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -339,11 +350,22 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers/" + serverName + "/DacOperations/Status?";
-            url = url + "servername=" + Uri.EscapeUriString(fullyQualifiedServerName);
-            url = url + "&username=" + Uri.EscapeUriString(username);
-            url = url + "&password=" + Uri.EscapeUriString(password);
-            url = url + "&reqId=" + Uri.EscapeUriString(requestId);
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers/" + serverName.Trim() + "/DacOperations/Status?";
+            url = url + "servername=" + Uri.EscapeUriString(fullyQualifiedServerName.Trim());
+            url = url + "&username=" + Uri.EscapeUriString(username.Trim());
+            url = url + "&password=" + Uri.EscapeUriString(password.Trim());
+            url = url + "&reqId=" + Uri.EscapeUriString(requestId.Trim());
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -395,31 +417,31 @@ namespace Microsoft.WindowsAzure.Management.Sql
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement arrayOfStatusInfoElement = responseDoc.Element(XName.Get("ArrayOfStatusInfo", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                    if (arrayOfStatusInfoElement != null)
+                    if (arrayOfStatusInfoElement != null && arrayOfStatusInfoElement.IsEmpty == false)
                     {
-                        if (arrayOfStatusInfoElement != null)
+                        if (arrayOfStatusInfoElement != null && arrayOfStatusInfoElement.IsEmpty == false)
                         {
                             foreach (XElement statusInfoElement in arrayOfStatusInfoElement.Elements(XName.Get("StatusInfo", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes")))
                             {
-                                DacGetStatusResponse.StatusInfo statusInfoInstance = new DacGetStatusResponse.StatusInfo();
+                                StatusInfo statusInfoInstance = new StatusInfo();
                                 result.StatusInfoList.Add(statusInfoInstance);
                                 
                                 XElement blobUriElement = statusInfoElement.Element(XName.Get("BlobUri", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (blobUriElement != null)
+                                if (blobUriElement != null && blobUriElement.IsEmpty == false)
                                 {
                                     Uri blobUriInstance = TypeConversion.TryParseUri(blobUriElement.Value);
                                     statusInfoInstance.BlobUri = blobUriInstance;
                                 }
                                 
                                 XElement databaseNameElement = statusInfoElement.Element(XName.Get("DatabaseName", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (databaseNameElement != null)
+                                if (databaseNameElement != null && databaseNameElement.IsEmpty == false)
                                 {
                                     string databaseNameInstance = databaseNameElement.Value;
                                     statusInfoInstance.DatabaseName = databaseNameInstance;
                                 }
                                 
                                 XElement errorMessageElement = statusInfoElement.Element(XName.Get("ErrorMessage", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (errorMessageElement != null)
+                                if (errorMessageElement != null && errorMessageElement.IsEmpty == false)
                                 {
                                     bool isNil = false;
                                     XAttribute nilAttribute = errorMessageElement.Attribute(XName.Get("nil", "http://www.w3.org/2001/XMLSchema-instance"));
@@ -435,42 +457,42 @@ namespace Microsoft.WindowsAzure.Management.Sql
                                 }
                                 
                                 XElement lastModifiedTimeElement = statusInfoElement.Element(XName.Get("LastModifiedTime", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (lastModifiedTimeElement != null)
+                                if (lastModifiedTimeElement != null && lastModifiedTimeElement.IsEmpty == false)
                                 {
                                     DateTime lastModifiedTimeInstance = DateTime.Parse(lastModifiedTimeElement.Value, CultureInfo.InvariantCulture);
                                     statusInfoInstance.LastModifiedTime = lastModifiedTimeInstance;
                                 }
                                 
                                 XElement queuedTimeElement = statusInfoElement.Element(XName.Get("QueuedTime", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (queuedTimeElement != null)
+                                if (queuedTimeElement != null && queuedTimeElement.IsEmpty == false)
                                 {
                                     DateTime queuedTimeInstance = DateTime.Parse(queuedTimeElement.Value, CultureInfo.InvariantCulture);
                                     statusInfoInstance.QueuedTime = queuedTimeInstance;
                                 }
                                 
                                 XElement requestIdElement = statusInfoElement.Element(XName.Get("RequestId", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (requestIdElement != null)
+                                if (requestIdElement != null && requestIdElement.IsEmpty == false)
                                 {
                                     string requestIdInstance = requestIdElement.Value;
                                     statusInfoInstance.RequestId = requestIdInstance;
                                 }
                                 
                                 XElement requestTypeElement = statusInfoElement.Element(XName.Get("RequestType", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (requestTypeElement != null)
+                                if (requestTypeElement != null && requestTypeElement.IsEmpty == false)
                                 {
                                     string requestTypeInstance = requestTypeElement.Value;
                                     statusInfoInstance.RequestType = requestTypeInstance;
                                 }
                                 
                                 XElement serverNameElement = statusInfoElement.Element(XName.Get("ServerName", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (serverNameElement != null)
+                                if (serverNameElement != null && serverNameElement.IsEmpty == false)
                                 {
                                     string serverNameInstance = serverNameElement.Value;
                                     statusInfoInstance.ServerName = serverNameInstance;
                                 }
                                 
                                 XElement statusElement = statusInfoElement.Element(XName.Get("Status", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                                if (statusElement != null)
+                                if (statusElement != null && statusElement.IsEmpty == false)
                                 {
                                     string statusInstance = statusElement.Value;
                                     statusInfoInstance.Status = statusInstance;
@@ -512,10 +534,10 @@ namespace Microsoft.WindowsAzure.Management.Sql
         /// Import DAC from Windows Azure blob storage.
         /// </summary>
         /// <param name='serverName'>
-        /// The name of the server being imported to.
+        /// Required. The name of the server being imported to.
         /// </param>
         /// <param name='parameters'>
-        /// Import parameters.
+        /// Optional. Import parameters.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -577,7 +599,18 @@ namespace Microsoft.WindowsAzure.Management.Sql
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/sqlservers/servers/" + serverName + "/DacOperations/Import";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/sqlservers/servers/" + serverName.Trim() + "/DacOperations/Import";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -620,7 +653,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
                         blobCredentialsElement.Add(typeAttribute);
                         
                         XElement uriElement = new XElement(XName.Get("Uri", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
-                        uriElement.Value = parameters.BlobCredentials.Uri.ToString();
+                        uriElement.Value = parameters.BlobCredentials.Uri.AbsoluteUri;
                         blobCredentialsElement.Add(uriElement);
                         
                         XElement storageAccessKeyElement = new XElement(XName.Get("StorageAccessKey", "http://schemas.datacontract.org/2004/07/Microsoft.SqlServer.Management.Dac.ServiceTypes"));
@@ -694,7 +727,7 @@ namespace Microsoft.WindowsAzure.Management.Sql
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement guidElement = responseDoc.Element(XName.Get("guid", "http://schemas.microsoft.com/2003/10/Serialization/"));
-                    if (guidElement != null)
+                    if (guidElement != null && guidElement.IsEmpty == false)
                     {
                         result.Guid = guidElement.Value;
                     }

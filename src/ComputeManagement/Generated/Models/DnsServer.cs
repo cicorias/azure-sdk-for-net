@@ -21,7 +21,6 @@
 
 using System;
 using System.Linq;
-using System.Net;
 
 namespace Microsoft.WindowsAzure.Management.Compute.Models
 {
@@ -33,7 +32,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _address;
         
         /// <summary>
-        /// The DNS server address.
+        /// Optional. The DNS server address.
         /// </summary>
         public string Address
         {
@@ -44,7 +43,7 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _name;
         
         /// <summary>
-        /// The name of the DNS server.
+        /// Optional. The name of the DNS server.
         /// </summary>
         public string Name
         {

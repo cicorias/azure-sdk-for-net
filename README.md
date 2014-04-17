@@ -23,21 +23,23 @@ complete SDK, please see the [Windows Azure .NET Developer Center](http://www.wi
     - Advanced Queue Operations
 
 - Configuration Manager
-- Management Libraries (Preview)
+- Management Libraries
   - Compute
     - Virtual Machines
     - Hosted Services
   - Infrastructure
   - Media Services Management
-  - Monitoring Services
   - Scheduler Client & Management
-  - Service Bus Management
   - Storage
-  - Windows Azure Store
-  - SQL Database
-  - Virtual Network
+  - Network
   - Web Sites
 - Media Services
+
+- Management Libraries (Preview)
+  - Service Bus Management
+  - Monitoring Services
+  - Windows Azure Store
+  - SQL Database
 
     > Available in the separate [Media Services repository](http://github.com/WindowsAzure/azure-sdk-for-media-services/tree/master/src/net/Client)
 
@@ -138,7 +140,7 @@ peopleTable.Create();
 
 Automate, configure and command your Windows Azure deployments, infrastructure and accounts with the Windows Azure Management Libraries.
 
-> *Preview:* At this time the Windows Azure Management Libraries are in the preview state as the teams gather feedback and prepare for the initial release. Please enjoy using the libraries and source in any capacity, but understand that there may be breaking changes with the 1.0 release.
+> *Preview:* At this time some of the Windows Azure Management Libraries are still in the preview state as the teams gather feedback and prepare for the initial release. Please enjoy using the libraries and source in any capacity, but understand that there may be breaking changes with the 1.0 release.
 
 ## Download & Install
 
@@ -163,7 +165,7 @@ To get all of the management libraries setup in your project:
 
 ### Code Samples
 
-This code would result with a list of the regions in the Windows Azure fabric. The location object provided in the result provides properties to define which assets are supported by each region. 
+This code would result with a list of the regions in the Windows Azure. The location object provided in the result provides properties to define which assets are supported by each region. 
 
 ```csharp
 using (ManagementClient client = CloudContext.Clients.CreateManagementClient(Credentials))
@@ -219,7 +221,7 @@ using (StorageManagementClient client =
 }
 ```
 
-The following code will create a new (empty) Cloud Service in the Windows Azure fabric. 
+The following code will create a new (empty) Cloud Service in the Windows Azure subscription. 
 
 ```csharp
 var cloudServiceName = "MyCloudService";

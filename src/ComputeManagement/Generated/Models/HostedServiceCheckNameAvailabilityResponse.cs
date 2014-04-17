@@ -33,9 +33,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private bool _isAvailable;
         
         /// <summary>
-        /// A boolean value that indicates whether the name is available for
-        /// you to use. True if the name is available; otherwise false.  The
-        /// operation returns false for reserved or profane words.
+        /// Optional. Indicates whether the name is available for you to use.
+        /// The operation returns false for reserved or profane words.
         /// </summary>
         public bool IsAvailable
         {
@@ -46,7 +45,8 @@ namespace Microsoft.WindowsAzure.Management.Compute.Models
         private string _reason;
         
         /// <summary>
-        /// Describes why the name cannot be used to create the cloud service.
+        /// Optional. Describes why the name cannot be used to create the cloud
+        /// service.
         /// </summary>
         public string Reason
         {

@@ -69,7 +69,8 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
         /// for more information)
         /// </summary>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Media Services Account operation.
+        /// Required. Parameters supplied to the Create Media Services Account
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -156,7 +157,18 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/mediaservices/Accounts";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/mediaservices/Accounts";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -185,7 +197,7 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                 accountCreationRequestElement.Add(accountNameElement);
                 
                 XElement blobStorageEndpointUriElement = new XElement(XName.Get("BlobStorageEndpointUri", "http://schemas.datacontract.org/2004/07/Microsoft.Cloud.Media.Management.ResourceProvider.Models"));
-                blobStorageEndpointUriElement.Value = parameters.BlobStorageEndpointUri.ToString();
+                blobStorageEndpointUriElement.Value = parameters.BlobStorageEndpointUri.AbsoluteUri;
                 accountCreationRequestElement.Add(blobStorageEndpointUriElement);
                 
                 XElement regionElement = new XElement(XName.Get("Region", "http://schemas.datacontract.org/2004/07/Microsoft.Cloud.Media.Management.ResourceProvider.Models"));
@@ -236,7 +248,11 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new MediaServicesAccountCreateResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -246,21 +262,21 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                         JToken accountIdValue = responseDoc["AccountId"];
                         if (accountIdValue != null && accountIdValue.Type != JTokenType.Null)
                         {
-                            string accountIdInstance = (string)accountIdValue;
+                            string accountIdInstance = ((string)accountIdValue);
                             accountInstance.AccountId = accountIdInstance;
                         }
                         
                         JToken accountNameValue = responseDoc["AccountName"];
                         if (accountNameValue != null && accountNameValue.Type != JTokenType.Null)
                         {
-                            string accountNameInstance = (string)accountNameValue;
+                            string accountNameInstance = ((string)accountNameValue);
                             accountInstance.AccountName = accountNameInstance;
                         }
                         
                         JToken subscriptionValue = responseDoc["Subscription"];
                         if (subscriptionValue != null && subscriptionValue.Type != JTokenType.Null)
                         {
-                            string subscriptionInstance = (string)subscriptionValue;
+                            string subscriptionInstance = ((string)subscriptionValue);
                             accountInstance.SubscriptionId = subscriptionInstance;
                         }
                     }
@@ -301,7 +317,7 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
         /// for more information)
         /// </summary>
         /// <param name='accountName'>
-        /// The name of the media services account.
+        /// Required. The name of the media services account.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -330,7 +346,18 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/mediaservices/Accounts/" + accountName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/mediaservices/Accounts/" + accountName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -412,7 +439,7 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
         /// for more information)
         /// </summary>
         /// <param name='accountName'>
-        /// The name of the Media Services account.
+        /// Required. The name of the Media Services account.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -440,7 +467,18 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/mediaservices/Accounts/" + accountName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/mediaservices/Accounts/" + accountName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -489,7 +527,11 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                     cancellationToken.ThrowIfCancellationRequested();
                     string responseContent = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
                     result = new MediaServicesAccountGetResponse();
-                    JToken responseDoc = JToken.Parse(responseContent);
+                    JToken responseDoc = null;
+                    if (string.IsNullOrEmpty(responseContent) == false)
+                    {
+                        responseDoc = JToken.Parse(responseContent);
+                    }
                     
                     if (responseDoc != null && responseDoc.Type != JTokenType.Null)
                     {
@@ -499,14 +541,14 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                         JToken accountNameValue = responseDoc["AccountName"];
                         if (accountNameValue != null && accountNameValue.Type != JTokenType.Null)
                         {
-                            string accountNameInstance = (string)accountNameValue;
+                            string accountNameInstance = ((string)accountNameValue);
                             accountInstance.AccountName = accountNameInstance;
                         }
                         
                         JToken accountKeyValue = responseDoc["AccountKey"];
                         if (accountKeyValue != null && accountKeyValue.Type != JTokenType.Null)
                         {
-                            string accountKeyInstance = (string)accountKeyValue;
+                            string accountKeyInstance = ((string)accountKeyValue);
                             accountInstance.AccountKey = accountKeyInstance;
                         }
                         
@@ -519,14 +561,14 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                             JToken primaryValue = accountKeysValue["Primary"];
                             if (primaryValue != null && primaryValue.Type != JTokenType.Null)
                             {
-                                string primaryInstance = (string)primaryValue;
+                                string primaryInstance = ((string)primaryValue);
                                 accountKeysInstance.Primary = primaryInstance;
                             }
                             
                             JToken secondaryValue = accountKeysValue["Secondary"];
                             if (secondaryValue != null && secondaryValue.Type != JTokenType.Null)
                             {
-                                string secondaryInstance = (string)secondaryValue;
+                                string secondaryInstance = ((string)secondaryValue);
                                 accountKeysInstance.Secondary = secondaryInstance;
                             }
                         }
@@ -534,14 +576,14 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                         JToken accountRegionValue = responseDoc["AccountRegion"];
                         if (accountRegionValue != null && accountRegionValue.Type != JTokenType.Null)
                         {
-                            string accountRegionInstance = (string)accountRegionValue;
+                            string accountRegionInstance = ((string)accountRegionValue);
                             accountInstance.AccountRegion = accountRegionInstance;
                         }
                         
                         JToken storageAccountNameValue = responseDoc["StorageAccountName"];
                         if (storageAccountNameValue != null && storageAccountNameValue.Type != JTokenType.Null)
                         {
-                            string storageAccountNameInstance = (string)storageAccountNameValue;
+                            string storageAccountNameInstance = ((string)storageAccountNameValue);
                             accountInstance.StorageAccountName = storageAccountNameInstance;
                         }
                     }
@@ -603,7 +645,18 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/mediaservices/Accounts";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/mediaservices/Accounts";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -655,7 +708,7 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement serviceResourcesSequenceElement = responseDoc.Element(XName.Get("ServiceResources", "http://schemas.microsoft.com/windowsazure"));
-                    if (serviceResourcesSequenceElement != null)
+                    if (serviceResourcesSequenceElement != null && serviceResourcesSequenceElement.IsEmpty == false)
                     {
                         foreach (XElement serviceResourcesElement in serviceResourcesSequenceElement.Elements(XName.Get("ServiceResource", "http://schemas.microsoft.com/windowsazure")))
                         {
@@ -663,42 +716,42 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
                             result.Accounts.Add(serviceResourceInstance);
                             
                             XElement nameElement = serviceResourcesElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                            if (nameElement != null)
+                            if (nameElement != null && nameElement.IsEmpty == false)
                             {
                                 string nameInstance = nameElement.Value;
                                 serviceResourceInstance.Name = nameInstance;
                             }
                             
                             XElement typeElement = serviceResourcesElement.Element(XName.Get("Type", "http://schemas.microsoft.com/windowsazure"));
-                            if (typeElement != null)
+                            if (typeElement != null && typeElement.IsEmpty == false)
                             {
                                 string typeInstance = typeElement.Value;
                                 serviceResourceInstance.Type = typeInstance;
                             }
                             
                             XElement stateElement = serviceResourcesElement.Element(XName.Get("State", "http://schemas.microsoft.com/windowsazure"));
-                            if (stateElement != null)
+                            if (stateElement != null && stateElement.IsEmpty == false)
                             {
                                 string stateInstance = stateElement.Value;
                                 serviceResourceInstance.State = stateInstance;
                             }
                             
                             XElement selfLinkElement = serviceResourcesElement.Element(XName.Get("SelfLink", "http://schemas.microsoft.com/windowsazure"));
-                            if (selfLinkElement != null)
+                            if (selfLinkElement != null && selfLinkElement.IsEmpty == false)
                             {
                                 Uri selfLinkInstance = TypeConversion.TryParseUri(selfLinkElement.Value);
                                 serviceResourceInstance.Uri = selfLinkInstance;
                             }
                             
                             XElement parentLinkElement = serviceResourcesElement.Element(XName.Get("ParentLink", "http://schemas.microsoft.com/windowsazure"));
-                            if (parentLinkElement != null)
+                            if (parentLinkElement != null && parentLinkElement.IsEmpty == false)
                             {
                                 Uri parentLinkInstance = TypeConversion.TryParseUri(parentLinkElement.Value);
                                 serviceResourceInstance.ParentUri = parentLinkInstance;
                             }
                             
                             XElement accountIdElement = serviceResourcesElement.Element(XName.Get("AccountId", "http://schemas.microsoft.com/windowsazure"));
-                            if (accountIdElement != null)
+                            if (accountIdElement != null && accountIdElement.IsEmpty == false)
                             {
                                 string accountIdInstance = accountIdElement.Value;
                                 serviceResourceInstance.AccountId = accountIdInstance;
@@ -743,10 +796,10 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
         /// for more information)
         /// </summary>
         /// <param name='accountName'>
-        /// The name of the Media Services Account.
+        /// Required. The name of the Media Services Account.
         /// </param>
         /// <param name='keyType'>
-        /// The type of key to regenerate (primary or secondary)
+        /// Required. The type of key to regenerate (primary or secondary)
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -776,7 +829,18 @@ namespace Microsoft.WindowsAzure.Management.MediaServices
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/mediaservices/Accounts/" + accountName + "/AccountKeys/" + keyType + "/Regenerate";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/mediaservices/Accounts/" + accountName.Trim() + "/AccountKeys/" + keyType + "/Regenerate";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;

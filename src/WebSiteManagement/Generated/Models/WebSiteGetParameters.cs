@@ -26,14 +26,15 @@ using System.Linq;
 namespace Microsoft.WindowsAzure.Management.WebSites.Models
 {
     /// <summary>
-    /// The Get Web Site operation parameters.
+    /// Parameters supplied to the Get Web Site operation.
     /// </summary>
     public partial class WebSiteGetParameters
     {
         private IList<string> _propertiesToInclude;
         
         /// <summary>
-        /// Specifies a list of the names of any addtional parameters to return.
+        /// Optional. Specifies a list of the names of any addtional parameters
+        /// to return.
         /// </summary>
         public IList<string> PropertiesToInclude
         {

@@ -48,7 +48,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key of the dedicated circuit.
+        /// Required. Service key of the dedicated circuit.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -56,21 +56,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginNew(this ICrossConnectionOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginNewAsync(serviceKey).Result;
+                return ((ICrossConnectionOperations)s).BeginNewAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -82,7 +72,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key of the dedicated circuit.
+        /// Required. Service key of the dedicated circuit.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -102,11 +92,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update CrossConnection operation.
+        /// Required. Parameters supplied to the Update CrossConnection
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -114,21 +105,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static ExpressRouteOperationResponse BeginUpdate(this ICrossConnectionOperations operations, string serviceKey, CrossConnectionUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.BeginUpdateAsync(serviceKey, parameters).Result;
+                return ((ICrossConnectionOperations)s).BeginUpdateAsync(serviceKey, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -140,11 +121,12 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update CrossConnection operation.
+        /// Required. Parameters supplied to the Update CrossConnection
+        /// operation.
         /// </param>
         /// <returns>
         /// A standard express route gateway response including an HTTP status
@@ -165,28 +147,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The servicee key representing the dedicated circuit.
+        /// Required. The servicee key representing the dedicated circuit.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.
         /// </returns>
         public static CrossConnectionGetResponse Get(this ICrossConnectionOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.GetAsync(serviceKey).Result;
+                return ((ICrossConnectionOperations)s).GetAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -199,7 +171,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The servicee key representing the dedicated circuit.
+        /// Required. The servicee key representing the dedicated circuit.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.
@@ -222,21 +194,11 @@ namespace Microsoft.WindowsAzure
         /// </returns>
         public static CrossConnectionListResponse List(this ICrossConnectionOperations operations)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.ListAsync().Result;
+                return ((ICrossConnectionOperations)s).ListAsync();
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -264,28 +226,18 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key of the dedicated circuit.
+        /// Required. Service key of the dedicated circuit.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.
         /// </returns>
         public static CrossConnectionGetResponse New(this ICrossConnectionOperations operations, string serviceKey)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.NewAsync(serviceKey).Result;
+                return ((ICrossConnectionOperations)s).NewAsync(serviceKey);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -297,7 +249,7 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// Service key of the dedicated circuit.
+        /// Required. Service key of the dedicated circuit.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.
@@ -316,32 +268,22 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.
         /// </returns>
         public static CrossConnectionGetResponse Update(this ICrossConnectionOperations operations, string serviceKey, CrossConnectionUpdateParameters parameters)
         {
-            try
+            return Task.Factory.StartNew((object s) => 
             {
-                return operations.UpdateAsync(serviceKey, parameters).Result;
+                return ((ICrossConnectionOperations)s).UpdateAsync(serviceKey, parameters);
             }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerExceptions.Count > 1)
-                {
-                    throw;
-                }
-                else
-                {
-                    throw ex.InnerException;
-                }
-            }
+            , operations, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Unwrap().GetAwaiter().GetResult();
         }
         
         /// <summary>
@@ -353,11 +295,11 @@ namespace Microsoft.WindowsAzure
         /// Microsoft.WindowsAzure.Management.ExpressRoute.ICrossConnectionOperations.
         /// </param>
         /// <param name='serviceKey'>
-        /// The service key representing the relationship between Azure and the
-        /// customer.
+        /// Required. The service key representing the relationship between
+        /// Azure and the customer.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Bgp Peering operation.
+        /// Required. Parameters supplied to the Update Bgp Peering operation.
         /// </param>
         /// <returns>
         /// The Get Cross Connection Operation Response.

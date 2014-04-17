@@ -69,30 +69,35 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Capture Role operation creates a copy of the operating system
-        /// virtual hard disk (VHD) that is deployed in the virtual machine,
-        /// saves the VHD copy in the same storage location as the operating
-        /// system VHD, and registers the copy as an image in your image
-        /// gallery. From the captured image, you can create additional
+        /// The Begin Capturing Role operation creates a copy of the operating
+        /// system virtual hard disk (VHD) that is deployed in the virtual
+        /// machine, saves the VHD copy in the same storage location as the
+        /// operating system VHD, and registers the copy as an image in your
+        /// image gallery. From the captured image, you can create additional
         /// customized virtual machines. For more information about images and
-        /// disks, see Manage Disks and Images. For more information about
-        /// capturing images, see How to Capture an Image of a Virtual Machine
-        /// Running Windows Server 2008 R2 or How to Capture an Image of a
-        /// Virtual Machine Running Linux.  (see
+        /// disks, see Manage Disks and Images at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj672979.aspx.
+        /// For more information about capturing images, see How to Capture an
+        /// Image of a Virtual Machine Running Windows Server 2008 R2 at
+        /// http://www.windowsazure.com/en-us/documentation/articles/virtual-machines-capture-image-windows-server/
+        /// or How to Capture an Image of a Virtual Machine Running Linux at
+        /// http://www.windowsazure.com/en-us/documentation/articles/virtual-machines-linux-capture-image/.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157201.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to restart.
+        /// Required. The name of the virtual machine to restart.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Capture Virtual Machine operation.
+        /// Required. Parameters supplied to the Begin Capturing Virtual
+        /// Machine operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -101,7 +106,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// A standard service response including an HTTP status code and
         /// request ID.
         /// </returns>
-        public async System.Threading.Tasks.Task<OperationResponse> BeginCapturingAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationResponse> BeginCapturingOSImageAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureOSImageParameters parameters, CancellationToken cancellationToken)
         {
             // Validate
             if (serviceName == null)
@@ -226,11 +231,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 tracingParameters.Add("deploymentName", deploymentName);
                 tracingParameters.Add("virtualMachineName", virtualMachineName);
                 tracingParameters.Add("parameters", parameters);
-                Tracing.Enter(invocationId, this, "BeginCapturingAsync", tracingParameters);
+                Tracing.Enter(invocationId, this, "BeginCapturingOSImageAsync", tracingParameters);
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + virtualMachineName + "/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -241,7 +257,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -651,6 +667,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             sSHElement.Add(keyPairsSequenceElement);
                         }
                     }
+                    
+                    if (parameters.ProvisioningConfiguration.CustomData != null)
+                    {
+                        XElement customDataElement = new XElement(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                        customDataElement.Value = parameters.ProvisioningConfiguration.CustomData;
+                        provisioningConfigurationElement.Add(customDataElement);
+                    }
                 }
                 
                 XElement targetImageLabelElement = new XElement(XName.Get("TargetImageLabel", "http://schemas.microsoft.com/windowsazure"));
@@ -724,30 +747,211 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Add Role operation adds a virtual machine to an existing
-        /// deployment.  You can refer to the OSDisk in the Add Role operation
-        /// in the following ways.  Platform/User Image – Set the
+        /// Begin capturing role as VM template.
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of your service.
+        /// </param>
+        /// <param name='deploymentName'>
+        /// Required. The name of your deployment.
+        /// </param>
+        /// <param name='virtualMachineName'>
+        /// Required. The name of the virtual machine to restart.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. Parameters supplied to the Capture Virtual Machine
+        /// operation.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// A standard service response including an HTTP status code and
+        /// request ID.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationResponse> BeginCapturingVMImageAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureVMImageParameters parameters, CancellationToken cancellationToken)
+        {
+            // Validate
+            if (serviceName == null)
+            {
+                throw new ArgumentNullException("serviceName");
+            }
+            if (deploymentName == null)
+            {
+                throw new ArgumentNullException("deploymentName");
+            }
+            if (virtualMachineName == null)
+            {
+                throw new ArgumentNullException("virtualMachineName");
+            }
+            if (parameters == null)
+            {
+                throw new ArgumentNullException("parameters");
+            }
+            
+            // Tracing
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentName", deploymentName);
+                tracingParameters.Add("virtualMachineName", virtualMachineName);
+                tracingParameters.Add("parameters", parameters);
+                Tracing.Enter(invocationId, this, "BeginCapturingVMImageAsync", tracingParameters);
+            }
+            
+            // Construct URL
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
+            
+            // Create HTTP transport objects
+            HttpRequestMessage httpRequest = null;
+            try
+            {
+                httpRequest = new HttpRequestMessage();
+                httpRequest.Method = HttpMethod.Post;
+                httpRequest.RequestUri = new Uri(url);
+                
+                // Set Headers
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
+                
+                // Set Credentials
+                cancellationToken.ThrowIfCancellationRequested();
+                await this.Client.Credentials.ProcessHttpRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                
+                // Serialize Request
+                string requestContent = null;
+                XDocument requestDoc = new XDocument();
+                
+                XElement captureRoleAsVMImageOperationElement = new XElement(XName.Get("CaptureRoleAsVMImageOperation", "http://schemas.microsoft.com/windowsazure"));
+                requestDoc.Add(captureRoleAsVMImageOperationElement);
+                
+                XElement operationTypeElement = new XElement(XName.Get("OperationType", "http://schemas.microsoft.com/windowsazure"));
+                operationTypeElement.Value = "CaptureRoleAsVMImageOperation";
+                captureRoleAsVMImageOperationElement.Add(operationTypeElement);
+                
+                if (parameters.OSState != null)
+                {
+                    XElement oSStateElement = new XElement(XName.Get("OSState", "http://schemas.microsoft.com/windowsazure"));
+                    oSStateElement.Value = parameters.OSState;
+                    captureRoleAsVMImageOperationElement.Add(oSStateElement);
+                }
+                
+                if (parameters.VMImageName != null)
+                {
+                    XElement vMImageNameElement = new XElement(XName.Get("VMImageName", "http://schemas.microsoft.com/windowsazure"));
+                    vMImageNameElement.Value = parameters.VMImageName;
+                    captureRoleAsVMImageOperationElement.Add(vMImageNameElement);
+                }
+                
+                if (parameters.VMImageLabel != null)
+                {
+                    XElement vMImageLabelElement = new XElement(XName.Get("VMImageLabel", "http://schemas.microsoft.com/windowsazure"));
+                    vMImageLabelElement.Value = parameters.VMImageLabel;
+                    captureRoleAsVMImageOperationElement.Add(vMImageLabelElement);
+                }
+                
+                requestContent = requestDoc.ToString();
+                httpRequest.Content = new StringContent(requestContent, Encoding.UTF8);
+                httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/xml");
+                
+                // Send Request
+                HttpResponseMessage httpResponse = null;
+                try
+                {
+                    if (shouldTrace)
+                    {
+                        Tracing.SendRequest(invocationId, httpRequest);
+                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    httpResponse = await this.Client.HttpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
+                    if (shouldTrace)
+                    {
+                        Tracing.ReceiveResponse(invocationId, httpResponse);
+                    }
+                    HttpStatusCode statusCode = httpResponse.StatusCode;
+                    if (statusCode != HttpStatusCode.Accepted)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        CloudException ex = CloudException.Create(httpRequest, requestContent, httpResponse, await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false), CloudExceptionType.Xml);
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    
+                    // Create Result
+                    OperationResponse result = null;
+                    result = new OperationResponse();
+                    result.StatusCode = statusCode;
+                    if (httpResponse.Headers.Contains("x-ms-request-id"))
+                    {
+                        result.RequestId = httpResponse.Headers.GetValues("x-ms-request-id").FirstOrDefault();
+                    }
+                    
+                    if (shouldTrace)
+                    {
+                        Tracing.Exit(invocationId, result);
+                    }
+                    return result;
+                }
+                finally
+                {
+                    if (httpResponse != null)
+                    {
+                        httpResponse.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (httpRequest != null)
+                {
+                    httpRequest.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Begin Creating Role operation adds a virtual machine to an
+        /// existing deployment. You can refer to the OSDisk in the Add Role
+        /// operation in the following ways: Platform/User Image – Set the
         /// SourceImageName to a platform or user image. You can optionally
         /// specify the DiskName and MediaLink values as part the operation to
-        /// control the name and location of target disk.  When DiskName and
+        /// control the name and location of target disk. When DiskName and
         /// MediaLink are specified in this mode, they must not already exist
-        /// in the system, otherwise a conflict fault is returned.  UserDisk –
+        /// in the system, otherwise a conflict fault is returned; UserDisk –
         /// Set DiskName to a user supplied image in image repository.
         /// SourceImageName must be set to NULL. All other properties are
-        /// ignored.  Blob in a Storage Account – Set MediaLink to a blob
+        /// ignored; or Blob in a Storage Account – Set MediaLink to a blob
         /// containing the image. SourceImageName and DiskName are set to
         /// NULL.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157186.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine operation.
+        /// Required. Parameters supplied to the Begin Creating Virtual Machine
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -879,7 +1083,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roles";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roles";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -890,7 +1105,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -1303,6 +1518,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 sSHElement.Add(keyPairsSequenceElement);
                             }
                         }
+                        
+                        if (configurationSetsItem.CustomData != null)
+                        {
+                            XElement customDataElement = new XElement(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                            customDataElement.Value = configurationSetsItem.CustomData;
+                            configurationSetElement.Add(customDataElement);
+                        }
                     }
                     persistentVMRoleElement.Add(configurationSetsSequenceElement);
                 }
@@ -1392,6 +1614,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     persistentVMRoleElement.Add(resourceExtensionReferencesSequenceElement);
                 }
                 
+                if (parameters.VMImageName != null)
+                {
+                    XElement vMImageNameElement = new XElement(XName.Get("VMImageName", "http://schemas.microsoft.com/windowsazure"));
+                    vMImageNameElement.Value = parameters.VMImageName;
+                    persistentVMRoleElement.Add(vMImageNameElement);
+                }
+                
                 if (parameters.DataVirtualHardDisks != null)
                 {
                     XElement dataVirtualHardDisksSequenceElement = new XElement(XName.Get("DataVirtualHardDisks", "http://schemas.microsoft.com/windowsazure"));
@@ -1407,10 +1636,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             dataVirtualHardDiskElement.Add(hostCachingElement);
                         }
                         
-                        if (dataVirtualHardDisksItem.DiskLabel != null)
+                        if (dataVirtualHardDisksItem.Label != null)
                         {
                             XElement diskLabelElement = new XElement(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                            diskLabelElement.Value = dataVirtualHardDisksItem.DiskLabel;
+                            diskLabelElement.Value = dataVirtualHardDisksItem.Label;
                             dataVirtualHardDiskElement.Add(diskLabelElement);
                         }
                         
@@ -1428,15 +1657,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             dataVirtualHardDiskElement.Add(lunElement);
                         }
                         
-                        XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                        logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
-                        dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                        if (dataVirtualHardDisksItem.LogicalDiskSizeInGB != null)
+                        {
+                            XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
+                            logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
+                            dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                        }
                         
                         if (dataVirtualHardDisksItem.MediaLink != null)
                         {
                             XElement mediaLinkElement = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                            mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.ToString();
+                            mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.AbsoluteUri;
                             dataVirtualHardDiskElement.Add(mediaLinkElement);
+                        }
+                        
+                        if (dataVirtualHardDisksItem.SourceMediaLink != null)
+                        {
+                            XElement sourceMediaLinkElement = new XElement(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                            sourceMediaLinkElement.Value = dataVirtualHardDisksItem.SourceMediaLink.AbsoluteUri;
+                            dataVirtualHardDiskElement.Add(sourceMediaLinkElement);
                         }
                     }
                     persistentVMRoleElement.Add(dataVirtualHardDisksSequenceElement);
@@ -1471,7 +1710,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     if (parameters.OSVirtualHardDisk.MediaLink != null)
                     {
                         XElement mediaLinkElement2 = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                        mediaLinkElement2.Value = parameters.OSVirtualHardDisk.MediaLink.ToString();
+                        mediaLinkElement2.Value = parameters.OSVirtualHardDisk.MediaLink.AbsoluteUri;
                         oSVirtualHardDiskElement.Add(mediaLinkElement2);
                     }
                     
@@ -1567,23 +1806,23 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Create Virtual Machine Deployment operation provisions a
-        /// virtual machine based on the supplied configuration.  When you
+        /// The Begin Creating Virtual Machine Deployment operation provisions
+        /// a virtual machine based on the supplied configuration. When you
         /// create a deployment of a virtual machine, you should make sure
         /// that the cloud service and the disk or image that you use are
         /// located in the same region. For example, if the cloud service was
         /// created in the West US region, the disk or image that you use
-        /// should also be located in a stor4age account in the West US
-        /// region.  (see
+        /// should also be located in a storage account in the West US region.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157194.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Begin Creating Virtual Machine
+        /// Deployment operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -1728,7 +1967,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -1739,7 +1989,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2183,6 +2433,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     sSHElement.Add(keyPairsSequenceElement);
                                 }
                             }
+                            
+                            if (configurationSetsItem.CustomData != null)
+                            {
+                                XElement customDataElement = new XElement(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                                customDataElement.Value = configurationSetsItem.CustomData;
+                                configurationSetElement.Add(customDataElement);
+                            }
                         }
                         roleElement.Add(configurationSetsSequenceElement);
                     }
@@ -2265,6 +2522,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         roleElement.Add(resourceExtensionReferencesSequenceElement);
                     }
                     
+                    if (roleListItem.VMImageName != null)
+                    {
+                        XElement vMImageNameElement = new XElement(XName.Get("VMImageName", "http://schemas.microsoft.com/windowsazure"));
+                        vMImageNameElement.Value = roleListItem.VMImageName;
+                        roleElement.Add(vMImageNameElement);
+                    }
+                    
                     if (roleListItem.AvailabilitySetName != null)
                     {
                         XElement availabilitySetNameElement = new XElement(XName.Get("AvailabilitySetName", "http://schemas.microsoft.com/windowsazure"));
@@ -2287,10 +2551,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 dataVirtualHardDiskElement.Add(hostCachingElement);
                             }
                             
-                            if (dataVirtualHardDisksItem.DiskLabel != null)
+                            if (dataVirtualHardDisksItem.Label != null)
                             {
                                 XElement diskLabelElement = new XElement(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                diskLabelElement.Value = dataVirtualHardDisksItem.DiskLabel;
+                                diskLabelElement.Value = dataVirtualHardDisksItem.Label;
                                 dataVirtualHardDiskElement.Add(diskLabelElement);
                             }
                             
@@ -2308,15 +2572,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 dataVirtualHardDiskElement.Add(lunElement);
                             }
                             
-                            XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                            logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
-                            dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                            if (dataVirtualHardDisksItem.LogicalDiskSizeInGB != null)
+                            {
+                                XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
+                                logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
+                                dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                            }
                             
                             if (dataVirtualHardDisksItem.MediaLink != null)
                             {
                                 XElement mediaLinkElement = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.ToString();
+                                mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.AbsoluteUri;
                                 dataVirtualHardDiskElement.Add(mediaLinkElement);
+                            }
+                            
+                            if (dataVirtualHardDisksItem.SourceMediaLink != null)
+                            {
+                                XElement sourceMediaLinkElement = new XElement(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                                sourceMediaLinkElement.Value = dataVirtualHardDisksItem.SourceMediaLink.AbsoluteUri;
+                                dataVirtualHardDiskElement.Add(sourceMediaLinkElement);
                             }
                         }
                         roleElement.Add(dataVirtualHardDisksSequenceElement);
@@ -2358,7 +2632,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                         if (roleListItem.OSVirtualHardDisk.MediaLink != null)
                         {
                             XElement mediaLinkElement2 = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                            mediaLinkElement2.Value = roleListItem.OSVirtualHardDisk.MediaLink.ToString();
+                            mediaLinkElement2.Value = roleListItem.OSVirtualHardDisk.MediaLink.AbsoluteUri;
                             oSVirtualHardDiskElement.Add(mediaLinkElement2);
                         }
                         
@@ -2508,22 +2782,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Delete Role operation deletes the specified virtual machine.
-        /// (see
+        /// The Begin Deleting Role operation deletes the specified virtual
+        /// machine.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157184.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to delete.
+        /// Required. The name of the virtual machine to delete.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob(s) for the virtual machine
+        /// Required. Specifies that the source blob(s) for the virtual machine
         /// should also be deleted from storage.
         /// </param>
         /// <param name='cancellationToken'>
@@ -2564,11 +2838,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roles/" + virtualMachineName + "?";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roles/" + virtualMachineName.Trim() + "?";
             if (deleteFromStorage == true)
             {
                 url = url + "comp=media";
             }
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2579,7 +2864,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2644,19 +2929,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Restart role operation restarts the specified virtual machine.
-        /// (see
+        /// The Begin Restarting role operation restarts the specified virtual
+        /// machine.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157197.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to restart.
+        /// Required. The name of the virtual machine to restart.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2695,7 +2980,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + virtualMachineName + "/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2706,7 +3002,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2782,16 +3078,16 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to shutdown.
+        /// Required. The name of the virtual machine to shutdown.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the shutdown vm operation.
+        /// Required. The parameters for the shutdown vm operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2835,7 +3131,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + virtualMachineName + "/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2846,7 +3153,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2930,18 +3237,20 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Shutdown Roles operation stops the specified set of virtual
-        /// machines.
+        /// The Begin Shutting Down Roles operation stops the specified set of
+        /// virtual machines.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469421.aspx
+        /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// The set of virtual machine roles to shutdown and their post
-        /// shutdown state.
+        /// Required. Parameters to pass to the Begin Shutting Down Roles
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -2980,7 +3289,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/Roles/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/Roles/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -2991,7 +3311,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3090,18 +3410,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Start Role operation starts the specified virtual machine.
-        /// (see http://msdn.microsoft.com/en-us/library/windowsazure/jj157189.aspx
+        /// The Begin Starting Role operation starts the specified virtual
+        /// machine.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157189.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to start.
+        /// Required. The name of the virtual machine to start.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3140,7 +3461,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + virtualMachineName + "/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3151,7 +3483,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3221,17 +3553,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Start Roles operation starts the specified set of virtual
-        /// machines.
+        /// The Begin Starting Roles operation starts the specified set of
+        /// virtual machines.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469419.aspx
+        /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// The set of virtual machine roles to start.
+        /// Required. Parameters to pass to the Begin Starting Roles operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3270,7 +3604,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/Roles/Operations";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/Roles/Operations";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3281,7 +3626,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3373,22 +3718,23 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Update Role operation adds a virtual machine to an existing
-        /// deployment.  (see
+        /// The Begin Updating Role operation adds a virtual machine to an
+        /// existing deployment.  (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157187.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of your virtual machine.
+        /// Required. The name of your virtual machine.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine operation.
+        /// Required. Parameters supplied to the Begin Updating Virtual Machine
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -3529,7 +3875,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roles/" + virtualMachineName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roles/" + virtualMachineName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -3540,7 +3897,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -3953,6 +4310,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 sSHElement.Add(keyPairsSequenceElement);
                             }
                         }
+                        
+                        if (configurationSetsItem.CustomData != null)
+                        {
+                            XElement customDataElement = new XElement(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                            customDataElement.Value = configurationSetsItem.CustomData;
+                            configurationSetElement.Add(customDataElement);
+                        }
                     }
                     persistentVMRoleElement.Add(configurationSetsSequenceElement);
                 }
@@ -4057,10 +4421,10 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             dataVirtualHardDiskElement.Add(hostCachingElement);
                         }
                         
-                        if (dataVirtualHardDisksItem.DiskLabel != null)
+                        if (dataVirtualHardDisksItem.Label != null)
                         {
                             XElement diskLabelElement = new XElement(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                            diskLabelElement.Value = dataVirtualHardDisksItem.DiskLabel;
+                            diskLabelElement.Value = dataVirtualHardDisksItem.Label;
                             dataVirtualHardDiskElement.Add(diskLabelElement);
                         }
                         
@@ -4078,15 +4442,25 @@ namespace Microsoft.WindowsAzure.Management.Compute
                             dataVirtualHardDiskElement.Add(lunElement);
                         }
                         
-                        XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                        logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
-                        dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                        if (dataVirtualHardDisksItem.LogicalDiskSizeInGB != null)
+                        {
+                            XElement logicalDiskSizeInGBElement = new XElement(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
+                            logicalDiskSizeInGBElement.Value = dataVirtualHardDisksItem.LogicalDiskSizeInGB.ToString();
+                            dataVirtualHardDiskElement.Add(logicalDiskSizeInGBElement);
+                        }
                         
                         if (dataVirtualHardDisksItem.MediaLink != null)
                         {
                             XElement mediaLinkElement = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                            mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.ToString();
+                            mediaLinkElement.Value = dataVirtualHardDisksItem.MediaLink.AbsoluteUri;
                             dataVirtualHardDiskElement.Add(mediaLinkElement);
+                        }
+                        
+                        if (dataVirtualHardDisksItem.SourceMediaLink != null)
+                        {
+                            XElement sourceMediaLinkElement = new XElement(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                            sourceMediaLinkElement.Value = dataVirtualHardDisksItem.SourceMediaLink.AbsoluteUri;
+                            dataVirtualHardDiskElement.Add(sourceMediaLinkElement);
                         }
                     }
                     persistentVMRoleElement.Add(dataVirtualHardDisksSequenceElement);
@@ -4119,7 +4493,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 if (parameters.OSVirtualHardDisk.MediaLink != null)
                 {
                     XElement mediaLinkElement2 = new XElement(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                    mediaLinkElement2.Value = parameters.OSVirtualHardDisk.MediaLink.ToString();
+                    mediaLinkElement2.Value = parameters.OSVirtualHardDisk.MediaLink.AbsoluteUri;
                     oSVirtualHardDiskElement.Add(mediaLinkElement2);
                 }
                 
@@ -4214,20 +4588,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The UpdateLoadBalancedEndpointSet operation changes the specified
-        /// load-balanced InputEndpoints on all the roles of an Infrastructure
-        /// as a Service deployment. Non load-balanced endpoints must be
-        /// changed using UpdateRole.
+        /// The Begin Updating Load Balanced Endpoint Set operation changes the
+        /// specified load-balanced InputEndpoints on all the roles of an
+        /// Infrastructure as a Service deployment. Non-load-balanced
+        /// endpoints must be changed using UpdateRole.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/dn469417.aspx
+        /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Load Balanced Endpoint Set
-        /// operation.
+        /// Required. Parameters supplied to the Begin Updating Load Balanced
+        /// Endpoint Set operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4276,7 +4652,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "?comp=UpdateLbSet";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "?comp=UpdateLbSet";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -4287,7 +4674,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -4501,24 +4888,29 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// system VHD, and registers the copy as an image in your image
         /// gallery. From the captured image, you can create additional
         /// customized virtual machines. For more information about images and
-        /// disks, see Manage Disks and Images. For more information about
-        /// capturing images, see How to Capture an Image of a Virtual Machine
-        /// Running Windows Server 2008 R2 or How to Capture an Image of a
-        /// Virtual Machine Running Linux.  (see
+        /// disks, see Manage Disks and Images at
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj672979.aspx.
+        /// For more information about capturing images, see How to Capture an
+        /// Image of a Virtual Machine Running Windows Server 2008 R2 at
+        /// http://www.windowsazure.com/en-us/documentation/articles/virtual-machines-capture-image-windows-server/
+        /// or How to Capture an Image of a Virtual Machine Running Linux at
+        /// http://www.windowsazure.com/en-us/documentation/articles/virtual-machines-linux-capture-image/.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157201.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to restart.
+        /// Required. The name of the virtual machine to restart.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Capture Virtual Machine operation.
+        /// Required. Parameters supplied to the Capture Virtual Machine
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4527,14 +4919,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> CaptureAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CaptureOSImageAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureOSImageParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -4547,7 +4939,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 tracingParameters.Add("deploymentName", deploymentName);
                 tracingParameters.Add("virtualMachineName", virtualMachineName);
                 tracingParameters.Add("parameters", parameters);
-                Tracing.Enter(invocationId, this, "CaptureAsync", tracingParameters);
+                Tracing.Enter(invocationId, this, "CaptureOSImageAsync", tracingParameters);
             }
             try
             {
@@ -4557,9 +4949,9 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
-                OperationResponse response = await client.VirtualMachines.BeginCapturingAsync(serviceName, deploymentName, virtualMachineName, parameters, cancellationToken).ConfigureAwait(false);
+                OperationResponse response = await client.VirtualMachines.BeginCapturingOSImageAsync(serviceName, deploymentName, virtualMachineName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -4611,30 +5003,20 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The Add Role operation adds a virtual machine to an existing
-        /// deployment.  You can refer to the OSDisk in the Add Role operation
-        /// in the following ways.  Platform/User Image – Set the
-        /// SourceImageName to a platform or user image. You can optionally
-        /// specify the DiskName and MediaLink values as part the operation to
-        /// control the name and location of target disk.  When DiskName and
-        /// MediaLink are specified in this mode, they must not already exist
-        /// in the system, otherwise a conflict fault is returned.  UserDisk –
-        /// Set DiskName to a user supplied image in image repository.
-        /// SourceImageName must be set to NULL. All other properties are
-        /// ignored.  Blob in a Storage Account – Set MediaLink to a blob
-        /// containing the image. SourceImageName and DiskName are set to
-        /// NULL.  (see
-        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157186.aspx
-        /// for more information)
+        /// Capture role as VM template.
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
+        /// </param>
+        /// <param name='virtualMachineName'>
+        /// Required. The name of the virtual machine to restart.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine operation.
+        /// Required. Parameters supplied to the Capture Virtual Machine
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4643,14 +5025,131 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> CreateAsync(string serviceName, string deploymentName, VirtualMachineCreateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CaptureVMImageAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineCaptureVMImageParameters parameters, CancellationToken cancellationToken)
+        {
+            ComputeManagementClient client = this.Client;
+            bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
+            string invocationId = null;
+            if (shouldTrace)
+            {
+                invocationId = Tracing.NextInvocationId.ToString();
+                Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
+                tracingParameters.Add("serviceName", serviceName);
+                tracingParameters.Add("deploymentName", deploymentName);
+                tracingParameters.Add("virtualMachineName", virtualMachineName);
+                tracingParameters.Add("parameters", parameters);
+                Tracing.Enter(invocationId, this, "CaptureVMImageAsync", tracingParameters);
+            }
+            try
+            {
+                if (shouldTrace)
+                {
+                    client = this.Client.WithHandler(new ClientRequestTrackingHandler(invocationId));
+                }
+                
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationResponse response = await client.VirtualMachines.BeginCapturingVMImageAsync(serviceName, deploymentName, virtualMachineName, parameters, cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                int delayInSeconds = 30;
+                while ((result.Status != OperationStatus.InProgress) == false)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await TaskEx.Delay(delayInSeconds * 1000, cancellationToken).ConfigureAwait(false);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                    delayInSeconds = 30;
+                }
+                
+                if (shouldTrace)
+                {
+                    Tracing.Exit(invocationId, result);
+                }
+                
+                if (result.Status != OperationStatus.Succeeded)
+                {
+                    if (result.Error != null)
+                    {
+                        CloudException ex = new CloudException(result.Error.Code + " : " + result.Error.Message);
+                        ex.ErrorCode = result.Error.Code;
+                        ex.ErrorMessage = result.Error.Message;
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                    else
+                    {
+                        CloudException ex = new CloudException("");
+                        if (shouldTrace)
+                        {
+                            Tracing.Error(invocationId, ex);
+                        }
+                        throw ex;
+                    }
+                }
+                
+                return result;
+            }
+            finally
+            {
+                if (client != null && shouldTrace)
+                {
+                    client.Dispose();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// The Create Role operation adds a virtual machine to an existing
+        /// deployment. You can refer to the OSDisk in the Add Role operation
+        /// in the following ways: Platform/User Image – Set the
+        /// SourceImageName to a platform or user image. You can optionally
+        /// specify the DiskName and MediaLink values as part the operation to
+        /// control the name and location of target disk. When DiskName and
+        /// MediaLink are specified in this mode, they must not already exist
+        /// in the system, otherwise a conflict fault is returned; UserDisk –
+        /// Set DiskName to a user supplied image in image repository.
+        /// SourceImageName must be set to NULL. All other properties are
+        /// ignored; or Blob in a Storage Account – Set MediaLink to a blob
+        /// containing the image. SourceImageName and DiskName are set to
+        /// NULL.  (see
+        /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157186.aspx
+        /// for more information)
+        /// </summary>
+        /// <param name='serviceName'>
+        /// Required. The name of your service.
+        /// </param>
+        /// <param name='deploymentName'>
+        /// Required. The name of your deployment.
+        /// </param>
+        /// <param name='parameters'>
+        /// Required. Parameters supplied to the Create Virtual Machine
+        /// operation.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// Cancellation token.
+        /// </param>
+        /// <returns>
+        /// The response body contains the status of the specified asynchronous
+        /// operation, indicating whether it has succeeded, is inprogress, or
+        /// has failed. Note that this status is distinct from the HTTP status
+        /// code returned for the Get Operation Status operation itself. If
+        /// the asynchronous operation succeeded, the response body includes
+        /// the HTTP status code for the successful request. If the
+        /// asynchronous operation failed, the response body includes the HTTP
+        /// status code for the failed request and error information regarding
+        /// the failure.
+        /// </returns>
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateAsync(string serviceName, string deploymentName, VirtualMachineCreateParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -4674,7 +5173,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginCreatingAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -4727,22 +5226,22 @@ namespace Microsoft.WindowsAzure.Management.Compute
         
         /// <summary>
         /// The Create Virtual Machine Deployment operation provisions a
-        /// virtual machine based on the supplied configuration.  When you
+        /// virtual machine based on the supplied configuration. When you
         /// create a deployment of a virtual machine, you should make sure
         /// that the cloud service and the disk or image that you use are
         /// located in the same region. For example, if the cloud service was
         /// created in the West US region, the disk or image that you use
-        /// should also be located in a stor4age account in the West US
-        /// region.  (see
+        /// should also be located in a storage account in the West US region.
+        /// (see
         /// http://msdn.microsoft.com/en-us/library/windowsazure/jj157194.aspx
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Create Virtual Machine Deployment
-        /// operation.
+        /// Required. Parameters supplied to the Create Virtual Machine
+        /// Deployment operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4751,14 +5250,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> CreateDeploymentAsync(string serviceName, VirtualMachineCreateDeploymentParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> CreateDeploymentAsync(string serviceName, VirtualMachineCreateDeploymentParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -4781,7 +5280,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginCreatingDeploymentAsync(serviceName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -4839,16 +5338,16 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to delete.
+        /// Required. The name of the virtual machine to delete.
         /// </param>
         /// <param name='deleteFromStorage'>
-        /// Optional. Specifies that the source blob(s) for the virtual machine
+        /// Required. Specifies that the source blob(s) for the virtual machine
         /// should also be deleted from storage.
         /// </param>
         /// <param name='cancellationToken'>
@@ -4858,14 +5357,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> DeleteAsync(string serviceName, string deploymentName, string virtualMachineName, bool deleteFromStorage, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> DeleteAsync(string serviceName, string deploymentName, string virtualMachineName, bool deleteFromStorage, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -4890,7 +5389,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginDeletingAsync(serviceName, deploymentName, virtualMachineName, deleteFromStorage, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -4948,13 +5447,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine.
+        /// Required. The name of the virtual machine.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -4992,7 +5491,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roles/" + virtualMachineName;
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roles/" + virtualMachineName.Trim();
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -5003,7 +5513,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -5044,52 +5554,52 @@ namespace Microsoft.WindowsAzure.Management.Compute
                     XDocument responseDoc = XDocument.Parse(responseContent);
                     
                     XElement persistentVMRoleElement = responseDoc.Element(XName.Get("PersistentVMRole", "http://schemas.microsoft.com/windowsazure"));
-                    if (persistentVMRoleElement != null)
+                    if (persistentVMRoleElement != null && persistentVMRoleElement.IsEmpty == false)
                     {
                         XElement roleNameElement = persistentVMRoleElement.Element(XName.Get("RoleName", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleNameElement != null)
+                        if (roleNameElement != null && roleNameElement.IsEmpty == false)
                         {
                             string roleNameInstance = roleNameElement.Value;
                             result.RoleName = roleNameInstance;
                         }
                         
                         XElement osVersionElement = persistentVMRoleElement.Element(XName.Get("OsVersion", "http://schemas.microsoft.com/windowsazure"));
-                        if (osVersionElement != null)
+                        if (osVersionElement != null && osVersionElement.IsEmpty == false)
                         {
                             string osVersionInstance = osVersionElement.Value;
                             result.OsVersion = osVersionInstance;
                         }
                         
                         XElement roleTypeElement = persistentVMRoleElement.Element(XName.Get("RoleType", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleTypeElement != null)
+                        if (roleTypeElement != null && roleTypeElement.IsEmpty == false)
                         {
-                            VirtualMachineRoleType roleTypeInstance = (VirtualMachineRoleType)Enum.Parse(typeof(VirtualMachineRoleType), roleTypeElement.Value, false);
+                            VirtualMachineRoleType roleTypeInstance = ((VirtualMachineRoleType)Enum.Parse(typeof(VirtualMachineRoleType), roleTypeElement.Value, true));
                             result.RoleType = roleTypeInstance;
                         }
                         
                         XElement availabilitySetNameElement = persistentVMRoleElement.Element(XName.Get("AvailabilitySetName", "http://schemas.microsoft.com/windowsazure"));
-                        if (availabilitySetNameElement != null)
+                        if (availabilitySetNameElement != null && availabilitySetNameElement.IsEmpty == false)
                         {
                             string availabilitySetNameInstance = availabilitySetNameElement.Value;
                             result.AvailabilitySetName = availabilitySetNameInstance;
                         }
                         
                         XElement roleSizeElement = persistentVMRoleElement.Element(XName.Get("RoleSize", "http://schemas.microsoft.com/windowsazure"));
-                        if (roleSizeElement != null)
+                        if (roleSizeElement != null && roleSizeElement.IsEmpty == false)
                         {
                             string roleSizeInstance = roleSizeElement.Value;
                             result.RoleSize = roleSizeInstance;
                         }
                         
                         XElement defaultWinRmCertificateThumbprintElement = persistentVMRoleElement.Element(XName.Get("DefaultWinRmCertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                        if (defaultWinRmCertificateThumbprintElement != null)
+                        if (defaultWinRmCertificateThumbprintElement != null && defaultWinRmCertificateThumbprintElement.IsEmpty == false)
                         {
                             string defaultWinRmCertificateThumbprintInstance = defaultWinRmCertificateThumbprintElement.Value;
                             result.DefaultWinRmCertificateThumbprint = defaultWinRmCertificateThumbprintInstance;
                         }
                         
                         XElement configurationSetsSequenceElement = persistentVMRoleElement.Element(XName.Get("ConfigurationSets", "http://schemas.microsoft.com/windowsazure"));
-                        if (configurationSetsSequenceElement != null)
+                        if (configurationSetsSequenceElement != null && configurationSetsSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement configurationSetsElement in configurationSetsSequenceElement.Elements(XName.Get("ConfigurationSet", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5097,14 +5607,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.ConfigurationSets.Add(configurationSetInstance);
                                 
                                 XElement configurationSetTypeElement = configurationSetsElement.Element(XName.Get("ConfigurationSetType", "http://schemas.microsoft.com/windowsazure"));
-                                if (configurationSetTypeElement != null)
+                                if (configurationSetTypeElement != null && configurationSetTypeElement.IsEmpty == false)
                                 {
                                     string configurationSetTypeInstance = configurationSetTypeElement.Value;
                                     configurationSetInstance.ConfigurationSetType = configurationSetTypeInstance;
                                 }
                                 
                                 XElement inputEndpointsSequenceElement = configurationSetsElement.Element(XName.Get("InputEndpoints", "http://schemas.microsoft.com/windowsazure"));
-                                if (inputEndpointsSequenceElement != null)
+                                if (inputEndpointsSequenceElement != null && inputEndpointsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement inputEndpointsElement in inputEndpointsSequenceElement.Elements(XName.Get("InputEndpoint", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5112,69 +5622,69 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         configurationSetInstance.InputEndpoints.Add(inputEndpointInstance);
                                         
                                         XElement loadBalancedEndpointSetNameElement = inputEndpointsElement.Element(XName.Get("LoadBalancedEndpointSetName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (loadBalancedEndpointSetNameElement != null)
+                                        if (loadBalancedEndpointSetNameElement != null && loadBalancedEndpointSetNameElement.IsEmpty == false)
                                         {
                                             string loadBalancedEndpointSetNameInstance = loadBalancedEndpointSetNameElement.Value;
                                             inputEndpointInstance.LoadBalancedEndpointSetName = loadBalancedEndpointSetNameInstance;
                                         }
                                         
                                         XElement localPortElement = inputEndpointsElement.Element(XName.Get("LocalPort", "http://schemas.microsoft.com/windowsazure"));
-                                        if (localPortElement != null && string.IsNullOrEmpty(localPortElement.Value) == false)
+                                        if (localPortElement != null && localPortElement.IsEmpty == false && string.IsNullOrEmpty(localPortElement.Value) == false)
                                         {
                                             int localPortInstance = int.Parse(localPortElement.Value, CultureInfo.InvariantCulture);
                                             inputEndpointInstance.LocalPort = localPortInstance;
                                         }
                                         
                                         XElement nameElement = inputEndpointsElement.Element(XName.Get("Name", "http://schemas.microsoft.com/windowsazure"));
-                                        if (nameElement != null)
+                                        if (nameElement != null && nameElement.IsEmpty == false)
                                         {
                                             string nameInstance = nameElement.Value;
                                             inputEndpointInstance.Name = nameInstance;
                                         }
                                         
                                         XElement portElement = inputEndpointsElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                        if (portElement != null && string.IsNullOrEmpty(portElement.Value) == false)
+                                        if (portElement != null && portElement.IsEmpty == false && string.IsNullOrEmpty(portElement.Value) == false)
                                         {
                                             int portInstance = int.Parse(portElement.Value, CultureInfo.InvariantCulture);
                                             inputEndpointInstance.Port = portInstance;
                                         }
                                         
                                         XElement loadBalancerProbeElement = inputEndpointsElement.Element(XName.Get("LoadBalancerProbe", "http://schemas.microsoft.com/windowsazure"));
-                                        if (loadBalancerProbeElement != null)
+                                        if (loadBalancerProbeElement != null && loadBalancerProbeElement.IsEmpty == false)
                                         {
                                             LoadBalancerProbe loadBalancerProbeInstance = new LoadBalancerProbe();
                                             inputEndpointInstance.LoadBalancerProbe = loadBalancerProbeInstance;
                                             
                                             XElement pathElement = loadBalancerProbeElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                            if (pathElement != null)
+                                            if (pathElement != null && pathElement.IsEmpty == false)
                                             {
                                                 string pathInstance = pathElement.Value;
                                                 loadBalancerProbeInstance.Path = pathInstance;
                                             }
                                             
                                             XElement portElement2 = loadBalancerProbeElement.Element(XName.Get("Port", "http://schemas.microsoft.com/windowsazure"));
-                                            if (portElement2 != null)
+                                            if (portElement2 != null && portElement2.IsEmpty == false)
                                             {
                                                 int portInstance2 = int.Parse(portElement2.Value, CultureInfo.InvariantCulture);
                                                 loadBalancerProbeInstance.Port = portInstance2;
                                             }
                                             
                                             XElement protocolElement = loadBalancerProbeElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                            if (protocolElement != null)
+                                            if (protocolElement != null && protocolElement.IsEmpty == false)
                                             {
                                                 LoadBalancerProbeTransportProtocol protocolInstance = ComputeManagementClient.ParseLoadBalancerProbeTransportProtocol(protocolElement.Value);
                                                 loadBalancerProbeInstance.Protocol = protocolInstance;
                                             }
                                             
                                             XElement intervalInSecondsElement = loadBalancerProbeElement.Element(XName.Get("IntervalInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                            if (intervalInSecondsElement != null && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
+                                            if (intervalInSecondsElement != null && intervalInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(intervalInSecondsElement.Value) == false)
                                             {
                                                 int intervalInSecondsInstance = int.Parse(intervalInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                 loadBalancerProbeInstance.IntervalInSeconds = intervalInSecondsInstance;
                                             }
                                             
                                             XElement timeoutInSecondsElement = loadBalancerProbeElement.Element(XName.Get("TimeoutInSeconds", "http://schemas.microsoft.com/windowsazure"));
-                                            if (timeoutInSecondsElement != null && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
+                                            if (timeoutInSecondsElement != null && timeoutInSecondsElement.IsEmpty == false && string.IsNullOrEmpty(timeoutInSecondsElement.Value) == false)
                                             {
                                                 int timeoutInSecondsInstance = int.Parse(timeoutInSecondsElement.Value, CultureInfo.InvariantCulture);
                                                 loadBalancerProbeInstance.TimeoutInSeconds = timeoutInSecondsInstance;
@@ -5182,34 +5692,34 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                         
                                         XElement protocolElement2 = inputEndpointsElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                        if (protocolElement2 != null)
+                                        if (protocolElement2 != null && protocolElement2.IsEmpty == false)
                                         {
                                             string protocolInstance2 = protocolElement2.Value;
                                             inputEndpointInstance.Protocol = protocolInstance2;
                                         }
                                         
                                         XElement vipElement = inputEndpointsElement.Element(XName.Get("Vip", "http://schemas.microsoft.com/windowsazure"));
-                                        if (vipElement != null)
+                                        if (vipElement != null && vipElement.IsEmpty == false)
                                         {
                                             string vipInstance = vipElement.Value;
                                             inputEndpointInstance.VirtualIPAddress = vipInstance;
                                         }
                                         
                                         XElement enableDirectServerReturnElement = inputEndpointsElement.Element(XName.Get("EnableDirectServerReturn", "http://schemas.microsoft.com/windowsazure"));
-                                        if (enableDirectServerReturnElement != null && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
+                                        if (enableDirectServerReturnElement != null && enableDirectServerReturnElement.IsEmpty == false && string.IsNullOrEmpty(enableDirectServerReturnElement.Value) == false)
                                         {
                                             bool enableDirectServerReturnInstance = bool.Parse(enableDirectServerReturnElement.Value);
                                             inputEndpointInstance.EnableDirectServerReturn = enableDirectServerReturnInstance;
                                         }
                                         
                                         XElement endpointAclElement = inputEndpointsElement.Element(XName.Get("EndpointAcl", "http://schemas.microsoft.com/windowsazure"));
-                                        if (endpointAclElement != null)
+                                        if (endpointAclElement != null && endpointAclElement.IsEmpty == false)
                                         {
                                             EndpointAcl endpointAclInstance = new EndpointAcl();
                                             inputEndpointInstance.EndpointAcl = endpointAclInstance;
                                             
                                             XElement rulesSequenceElement = endpointAclElement.Element(XName.Get("Rules", "http://schemas.microsoft.com/windowsazure"));
-                                            if (rulesSequenceElement != null)
+                                            if (rulesSequenceElement != null && rulesSequenceElement.IsEmpty == false)
                                             {
                                                 foreach (XElement rulesElement in rulesSequenceElement.Elements(XName.Get("Rule", "http://schemas.microsoft.com/windowsazure")))
                                                 {
@@ -5217,28 +5727,28 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                                     endpointAclInstance.Rules.Add(ruleInstance);
                                                     
                                                     XElement orderElement = rulesElement.Element(XName.Get("Order", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (orderElement != null && string.IsNullOrEmpty(orderElement.Value) == false)
+                                                    if (orderElement != null && orderElement.IsEmpty == false && string.IsNullOrEmpty(orderElement.Value) == false)
                                                     {
                                                         int orderInstance = int.Parse(orderElement.Value, CultureInfo.InvariantCulture);
                                                         ruleInstance.Order = orderInstance;
                                                     }
                                                     
                                                     XElement actionElement = rulesElement.Element(XName.Get("Action", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (actionElement != null)
+                                                    if (actionElement != null && actionElement.IsEmpty == false)
                                                     {
                                                         string actionInstance = actionElement.Value;
                                                         ruleInstance.Action = actionInstance;
                                                     }
                                                     
                                                     XElement remoteSubnetElement = rulesElement.Element(XName.Get("RemoteSubnet", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (remoteSubnetElement != null)
+                                                    if (remoteSubnetElement != null && remoteSubnetElement.IsEmpty == false)
                                                     {
                                                         string remoteSubnetInstance = remoteSubnetElement.Value;
                                                         ruleInstance.RemoteSubnet = remoteSubnetInstance;
                                                     }
                                                     
                                                     XElement descriptionElement = rulesElement.Element(XName.Get("Description", "http://schemas.microsoft.com/windowsazure"));
-                                                    if (descriptionElement != null)
+                                                    if (descriptionElement != null && descriptionElement.IsEmpty == false)
                                                     {
                                                         string descriptionInstance = descriptionElement.Value;
                                                         ruleInstance.Description = descriptionInstance;
@@ -5250,7 +5760,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement subnetNamesSequenceElement = configurationSetsElement.Element(XName.Get("SubnetNames", "http://schemas.microsoft.com/windowsazure"));
-                                if (subnetNamesSequenceElement != null)
+                                if (subnetNamesSequenceElement != null && subnetNamesSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement subnetNamesElement in subnetNamesSequenceElement.Elements(XName.Get("SubnetName", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5259,75 +5769,75 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement staticVirtualNetworkIPAddressElement = configurationSetsElement.Element(XName.Get("StaticVirtualNetworkIPAddress", "http://schemas.microsoft.com/windowsazure"));
-                                if (staticVirtualNetworkIPAddressElement != null)
+                                if (staticVirtualNetworkIPAddressElement != null && staticVirtualNetworkIPAddressElement.IsEmpty == false)
                                 {
                                     string staticVirtualNetworkIPAddressInstance = staticVirtualNetworkIPAddressElement.Value;
                                     configurationSetInstance.StaticVirtualNetworkIPAddress = staticVirtualNetworkIPAddressInstance;
                                 }
                                 
                                 XElement computerNameElement = configurationSetsElement.Element(XName.Get("ComputerName", "http://schemas.microsoft.com/windowsazure"));
-                                if (computerNameElement != null)
+                                if (computerNameElement != null && computerNameElement.IsEmpty == false)
                                 {
                                     string computerNameInstance = computerNameElement.Value;
                                     configurationSetInstance.ComputerName = computerNameInstance;
                                 }
                                 
                                 XElement adminPasswordElement = configurationSetsElement.Element(XName.Get("AdminPassword", "http://schemas.microsoft.com/windowsazure"));
-                                if (adminPasswordElement != null)
+                                if (adminPasswordElement != null && adminPasswordElement.IsEmpty == false)
                                 {
                                     string adminPasswordInstance = adminPasswordElement.Value;
                                     configurationSetInstance.AdminPassword = adminPasswordInstance;
                                 }
                                 
                                 XElement resetPasswordOnFirstLogonElement = configurationSetsElement.Element(XName.Get("ResetPasswordOnFirstLogon", "http://schemas.microsoft.com/windowsazure"));
-                                if (resetPasswordOnFirstLogonElement != null && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
+                                if (resetPasswordOnFirstLogonElement != null && resetPasswordOnFirstLogonElement.IsEmpty == false && string.IsNullOrEmpty(resetPasswordOnFirstLogonElement.Value) == false)
                                 {
                                     bool resetPasswordOnFirstLogonInstance = bool.Parse(resetPasswordOnFirstLogonElement.Value);
                                     configurationSetInstance.ResetPasswordOnFirstLogon = resetPasswordOnFirstLogonInstance;
                                 }
                                 
                                 XElement enableAutomaticUpdatesElement = configurationSetsElement.Element(XName.Get("EnableAutomaticUpdates", "http://schemas.microsoft.com/windowsazure"));
-                                if (enableAutomaticUpdatesElement != null && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
+                                if (enableAutomaticUpdatesElement != null && enableAutomaticUpdatesElement.IsEmpty == false && string.IsNullOrEmpty(enableAutomaticUpdatesElement.Value) == false)
                                 {
                                     bool enableAutomaticUpdatesInstance = bool.Parse(enableAutomaticUpdatesElement.Value);
                                     configurationSetInstance.EnableAutomaticUpdates = enableAutomaticUpdatesInstance;
                                 }
                                 
                                 XElement timeZoneElement = configurationSetsElement.Element(XName.Get("TimeZone", "http://schemas.microsoft.com/windowsazure"));
-                                if (timeZoneElement != null)
+                                if (timeZoneElement != null && timeZoneElement.IsEmpty == false)
                                 {
                                     string timeZoneInstance = timeZoneElement.Value;
                                     configurationSetInstance.TimeZone = timeZoneInstance;
                                 }
                                 
                                 XElement domainJoinElement = configurationSetsElement.Element(XName.Get("DomainJoin", "http://schemas.microsoft.com/windowsazure"));
-                                if (domainJoinElement != null)
+                                if (domainJoinElement != null && domainJoinElement.IsEmpty == false)
                                 {
                                     DomainJoinSettings domainJoinInstance = new DomainJoinSettings();
                                     configurationSetInstance.DomainJoin = domainJoinInstance;
                                     
                                     XElement credentialsElement = domainJoinElement.Element(XName.Get("Credentials", "http://schemas.microsoft.com/windowsazure"));
-                                    if (credentialsElement != null)
+                                    if (credentialsElement != null && credentialsElement.IsEmpty == false)
                                     {
                                         DomainJoinCredentials credentialsInstance = new DomainJoinCredentials();
                                         domainJoinInstance.Credentials = credentialsInstance;
                                         
                                         XElement domainElement = credentialsElement.Element(XName.Get("Domain", "http://schemas.microsoft.com/windowsazure"));
-                                        if (domainElement != null)
+                                        if (domainElement != null && domainElement.IsEmpty == false)
                                         {
                                             string domainInstance = domainElement.Value;
                                             credentialsInstance.Domain = domainInstance;
                                         }
                                         
                                         XElement usernameElement = credentialsElement.Element(XName.Get("Username", "http://schemas.microsoft.com/windowsazure"));
-                                        if (usernameElement != null)
+                                        if (usernameElement != null && usernameElement.IsEmpty == false)
                                         {
                                             string usernameInstance = usernameElement.Value;
                                             credentialsInstance.UserName = usernameInstance;
                                         }
                                         
                                         XElement passwordElement = credentialsElement.Element(XName.Get("Password", "http://schemas.microsoft.com/windowsazure"));
-                                        if (passwordElement != null)
+                                        if (passwordElement != null && passwordElement.IsEmpty == false)
                                         {
                                             string passwordInstance = passwordElement.Value;
                                             credentialsInstance.Password = passwordInstance;
@@ -5335,27 +5845,27 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                     
                                     XElement joinDomainElement = domainJoinElement.Element(XName.Get("JoinDomain", "http://schemas.microsoft.com/windowsazure"));
-                                    if (joinDomainElement != null)
+                                    if (joinDomainElement != null && joinDomainElement.IsEmpty == false)
                                     {
                                         string joinDomainInstance = joinDomainElement.Value;
                                         domainJoinInstance.DomainToJoin = joinDomainInstance;
                                     }
                                     
                                     XElement machineObjectOUElement = domainJoinElement.Element(XName.Get("MachineObjectOU", "http://schemas.microsoft.com/windowsazure"));
-                                    if (machineObjectOUElement != null)
+                                    if (machineObjectOUElement != null && machineObjectOUElement.IsEmpty == false)
                                     {
                                         string machineObjectOUInstance = machineObjectOUElement.Value;
                                         domainJoinInstance.LdapMachineObjectOU = machineObjectOUInstance;
                                     }
                                     
                                     XElement provisioningElement = domainJoinElement.Element(XName.Get("Provisioning", "http://schemas.microsoft.com/windowsazure"));
-                                    if (provisioningElement != null)
+                                    if (provisioningElement != null && provisioningElement.IsEmpty == false)
                                     {
                                         DomainJoinProvisioning provisioningInstance = new DomainJoinProvisioning();
                                         domainJoinInstance.Provisioning = provisioningInstance;
                                         
                                         XElement accountDataElement = provisioningElement.Element(XName.Get("AccountData", "http://schemas.microsoft.com/windowsazure"));
-                                        if (accountDataElement != null)
+                                        if (accountDataElement != null && accountDataElement.IsEmpty == false)
                                         {
                                             string accountDataInstance = accountDataElement.Value;
                                             provisioningInstance.AccountData = accountDataInstance;
@@ -5364,7 +5874,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement storedCertificateSettingsSequenceElement = configurationSetsElement.Element(XName.Get("StoredCertificateSettings", "http://schemas.microsoft.com/windowsazure"));
-                                if (storedCertificateSettingsSequenceElement != null)
+                                if (storedCertificateSettingsSequenceElement != null && storedCertificateSettingsSequenceElement.IsEmpty == false)
                                 {
                                     foreach (XElement storedCertificateSettingsElement in storedCertificateSettingsSequenceElement.Elements(XName.Get("CertificateSetting", "http://schemas.microsoft.com/windowsazure")))
                                     {
@@ -5372,19 +5882,19 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         configurationSetInstance.StoredCertificateSettings.Add(certificateSettingInstance);
                                         
                                         XElement storeLocationElement = storedCertificateSettingsElement.Element(XName.Get("StoreLocation", "http://schemas.microsoft.com/windowsazure"));
-                                        if (storeLocationElement != null)
+                                        if (storeLocationElement != null && storeLocationElement.IsEmpty == false)
                                         {
                                         }
                                         
                                         XElement storeNameElement = storedCertificateSettingsElement.Element(XName.Get("StoreName", "http://schemas.microsoft.com/windowsazure"));
-                                        if (storeNameElement != null)
+                                        if (storeNameElement != null && storeNameElement.IsEmpty == false)
                                         {
                                             string storeNameInstance = storeNameElement.Value;
                                             certificateSettingInstance.StoreName = storeNameInstance;
                                         }
                                         
                                         XElement thumbprintElement = storedCertificateSettingsElement.Element(XName.Get("Thumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                        if (thumbprintElement != null)
+                                        if (thumbprintElement != null && thumbprintElement.IsEmpty == false)
                                         {
                                             string thumbprintInstance = thumbprintElement.Value;
                                             certificateSettingInstance.Thumbprint = thumbprintInstance;
@@ -5393,13 +5903,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement winRMElement = configurationSetsElement.Element(XName.Get("WinRM", "http://schemas.microsoft.com/windowsazure"));
-                                if (winRMElement != null)
+                                if (winRMElement != null && winRMElement.IsEmpty == false)
                                 {
                                     WindowsRemoteManagementSettings winRMInstance = new WindowsRemoteManagementSettings();
                                     configurationSetInstance.WindowsRemoteManagement = winRMInstance;
                                     
                                     XElement listenersSequenceElement = winRMElement.Element(XName.Get("Listeners", "http://schemas.microsoft.com/windowsazure"));
-                                    if (listenersSequenceElement != null)
+                                    if (listenersSequenceElement != null && listenersSequenceElement.IsEmpty == false)
                                     {
                                         foreach (XElement listenersElement in listenersSequenceElement.Elements(XName.Get("Listener", "http://schemas.microsoft.com/windowsazure")))
                                         {
@@ -5407,14 +5917,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             winRMInstance.Listeners.Add(listenerInstance);
                                             
                                             XElement protocolElement3 = listenersElement.Element(XName.Get("Protocol", "http://schemas.microsoft.com/windowsazure"));
-                                            if (protocolElement3 != null)
+                                            if (protocolElement3 != null && protocolElement3.IsEmpty == false)
                                             {
-                                                VirtualMachineWindowsRemoteManagementListenerType protocolInstance3 = (VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement3.Value, false);
+                                                VirtualMachineWindowsRemoteManagementListenerType protocolInstance3 = ((VirtualMachineWindowsRemoteManagementListenerType)Enum.Parse(typeof(VirtualMachineWindowsRemoteManagementListenerType), protocolElement3.Value, true));
                                                 listenerInstance.ListenerType = protocolInstance3;
                                             }
                                             
                                             XElement certificateThumbprintElement = listenersElement.Element(XName.Get("CertificateThumbprint", "http://schemas.microsoft.com/windowsazure"));
-                                            if (certificateThumbprintElement != null)
+                                            if (certificateThumbprintElement != null && certificateThumbprintElement.IsEmpty == false)
                                             {
                                                 string certificateThumbprintInstance = certificateThumbprintElement.Value;
                                                 listenerInstance.CertificateThumbprint = certificateThumbprintInstance;
@@ -5424,48 +5934,48 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 }
                                 
                                 XElement adminUsernameElement = configurationSetsElement.Element(XName.Get("AdminUsername", "http://schemas.microsoft.com/windowsazure"));
-                                if (adminUsernameElement != null)
+                                if (adminUsernameElement != null && adminUsernameElement.IsEmpty == false)
                                 {
                                     string adminUsernameInstance = adminUsernameElement.Value;
                                     configurationSetInstance.AdminUserName = adminUsernameInstance;
                                 }
                                 
                                 XElement hostNameElement = configurationSetsElement.Element(XName.Get("HostName", "http://schemas.microsoft.com/windowsazure"));
-                                if (hostNameElement != null)
+                                if (hostNameElement != null && hostNameElement.IsEmpty == false)
                                 {
                                     string hostNameInstance = hostNameElement.Value;
                                     configurationSetInstance.HostName = hostNameInstance;
                                 }
                                 
                                 XElement userNameElement = configurationSetsElement.Element(XName.Get("UserName", "http://schemas.microsoft.com/windowsazure"));
-                                if (userNameElement != null)
+                                if (userNameElement != null && userNameElement.IsEmpty == false)
                                 {
                                     string userNameInstance = userNameElement.Value;
                                     configurationSetInstance.UserName = userNameInstance;
                                 }
                                 
                                 XElement userPasswordElement = configurationSetsElement.Element(XName.Get("UserPassword", "http://schemas.microsoft.com/windowsazure"));
-                                if (userPasswordElement != null)
+                                if (userPasswordElement != null && userPasswordElement.IsEmpty == false)
                                 {
                                     string userPasswordInstance = userPasswordElement.Value;
                                     configurationSetInstance.UserPassword = userPasswordInstance;
                                 }
                                 
                                 XElement disableSshPasswordAuthenticationElement = configurationSetsElement.Element(XName.Get("DisableSshPasswordAuthentication", "http://schemas.microsoft.com/windowsazure"));
-                                if (disableSshPasswordAuthenticationElement != null && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
+                                if (disableSshPasswordAuthenticationElement != null && disableSshPasswordAuthenticationElement.IsEmpty == false && string.IsNullOrEmpty(disableSshPasswordAuthenticationElement.Value) == false)
                                 {
                                     bool disableSshPasswordAuthenticationInstance = bool.Parse(disableSshPasswordAuthenticationElement.Value);
                                     configurationSetInstance.DisableSshPasswordAuthentication = disableSshPasswordAuthenticationInstance;
                                 }
                                 
                                 XElement sSHElement = configurationSetsElement.Element(XName.Get("SSH", "http://schemas.microsoft.com/windowsazure"));
-                                if (sSHElement != null)
+                                if (sSHElement != null && sSHElement.IsEmpty == false)
                                 {
                                     SshSettings sSHInstance = new SshSettings();
                                     configurationSetInstance.SshSettings = sSHInstance;
                                     
                                     XElement publicKeysSequenceElement = sSHElement.Element(XName.Get("PublicKeys", "http://schemas.microsoft.com/windowsazure"));
-                                    if (publicKeysSequenceElement != null)
+                                    if (publicKeysSequenceElement != null && publicKeysSequenceElement.IsEmpty == false)
                                     {
                                         foreach (XElement publicKeysElement in publicKeysSequenceElement.Elements(XName.Get("PublicKey", "http://schemas.microsoft.com/windowsazure")))
                                         {
@@ -5473,14 +5983,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             sSHInstance.PublicKeys.Add(publicKeyInstance);
                                             
                                             XElement fingerprintElement = publicKeysElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                            if (fingerprintElement != null)
+                                            if (fingerprintElement != null && fingerprintElement.IsEmpty == false)
                                             {
                                                 string fingerprintInstance = fingerprintElement.Value;
                                                 publicKeyInstance.Fingerprint = fingerprintInstance;
                                             }
                                             
                                             XElement pathElement2 = publicKeysElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                            if (pathElement2 != null)
+                                            if (pathElement2 != null && pathElement2.IsEmpty == false)
                                             {
                                                 string pathInstance2 = pathElement2.Value;
                                                 publicKeyInstance.Path = pathInstance2;
@@ -5489,7 +5999,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                     }
                                     
                                     XElement keyPairsSequenceElement = sSHElement.Element(XName.Get("KeyPairs", "http://schemas.microsoft.com/windowsazure"));
-                                    if (keyPairsSequenceElement != null)
+                                    if (keyPairsSequenceElement != null && keyPairsSequenceElement.IsEmpty == false)
                                     {
                                         foreach (XElement keyPairsElement in keyPairsSequenceElement.Elements(XName.Get("KeyPair", "http://schemas.microsoft.com/windowsazure")))
                                         {
@@ -5497,14 +6007,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                             sSHInstance.KeyPairs.Add(keyPairInstance);
                                             
                                             XElement fingerprintElement2 = keyPairsElement.Element(XName.Get("Fingerprint", "http://schemas.microsoft.com/windowsazure"));
-                                            if (fingerprintElement2 != null)
+                                            if (fingerprintElement2 != null && fingerprintElement2.IsEmpty == false)
                                             {
                                                 string fingerprintInstance2 = fingerprintElement2.Value;
                                                 keyPairInstance.Fingerprint = fingerprintInstance2;
                                             }
                                             
                                             XElement pathElement3 = keyPairsElement.Element(XName.Get("Path", "http://schemas.microsoft.com/windowsazure"));
-                                            if (pathElement3 != null)
+                                            if (pathElement3 != null && pathElement3.IsEmpty == false)
                                             {
                                                 string pathInstance3 = pathElement3.Value;
                                                 keyPairInstance.Path = pathInstance3;
@@ -5512,11 +6022,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                         }
                                     }
                                 }
+                                
+                                XElement customDataElement = configurationSetsElement.Element(XName.Get("CustomData", "http://schemas.microsoft.com/windowsazure"));
+                                if (customDataElement != null && customDataElement.IsEmpty == false)
+                                {
+                                    string customDataInstance = customDataElement.Value;
+                                    configurationSetInstance.CustomData = customDataInstance;
+                                }
                             }
                         }
                         
                         XElement dataVirtualHardDisksSequenceElement = persistentVMRoleElement.Element(XName.Get("DataVirtualHardDisks", "http://schemas.microsoft.com/windowsazure"));
-                        if (dataVirtualHardDisksSequenceElement != null)
+                        if (dataVirtualHardDisksSequenceElement != null && dataVirtualHardDisksSequenceElement.IsEmpty == false)
                         {
                             foreach (XElement dataVirtualHardDisksElement in dataVirtualHardDisksSequenceElement.Elements(XName.Get("DataVirtualHardDisk", "http://schemas.microsoft.com/windowsazure")))
                             {
@@ -5524,92 +6041,99 @@ namespace Microsoft.WindowsAzure.Management.Compute
                                 result.DataVirtualHardDisks.Add(dataVirtualHardDiskInstance);
                                 
                                 XElement hostCachingElement = dataVirtualHardDisksElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                                if (hostCachingElement != null && string.IsNullOrEmpty(hostCachingElement.Value) == false)
+                                if (hostCachingElement != null && hostCachingElement.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement.Value) == false)
                                 {
-                                    VirtualHardDiskHostCaching hostCachingInstance = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, false);
+                                    VirtualHardDiskHostCaching hostCachingInstance = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement.Value, true));
                                     dataVirtualHardDiskInstance.HostCaching = hostCachingInstance;
                                 }
                                 
                                 XElement diskLabelElement = dataVirtualHardDisksElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                                if (diskLabelElement != null)
+                                if (diskLabelElement != null && diskLabelElement.IsEmpty == false)
                                 {
                                     string diskLabelInstance = diskLabelElement.Value;
-                                    dataVirtualHardDiskInstance.DiskLabel = diskLabelInstance;
+                                    dataVirtualHardDiskInstance.Label = diskLabelInstance;
                                 }
                                 
                                 XElement diskNameElement = dataVirtualHardDisksElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                                if (diskNameElement != null)
+                                if (diskNameElement != null && diskNameElement.IsEmpty == false)
                                 {
                                     string diskNameInstance = diskNameElement.Value;
                                     dataVirtualHardDiskInstance.Name = diskNameInstance;
                                 }
                                 
                                 XElement lunElement = dataVirtualHardDisksElement.Element(XName.Get("Lun", "http://schemas.microsoft.com/windowsazure"));
-                                if (lunElement != null && string.IsNullOrEmpty(lunElement.Value) == false)
+                                if (lunElement != null && lunElement.IsEmpty == false && string.IsNullOrEmpty(lunElement.Value) == false)
                                 {
                                     int lunInstance = int.Parse(lunElement.Value, CultureInfo.InvariantCulture);
                                     dataVirtualHardDiskInstance.LogicalUnitNumber = lunInstance;
                                 }
                                 
                                 XElement logicalDiskSizeInGBElement = dataVirtualHardDisksElement.Element(XName.Get("LogicalDiskSizeInGB", "http://schemas.microsoft.com/windowsazure"));
-                                if (logicalDiskSizeInGBElement != null)
+                                if (logicalDiskSizeInGBElement != null && logicalDiskSizeInGBElement.IsEmpty == false && string.IsNullOrEmpty(logicalDiskSizeInGBElement.Value) == false)
                                 {
                                     int logicalDiskSizeInGBInstance = int.Parse(logicalDiskSizeInGBElement.Value, CultureInfo.InvariantCulture);
                                     dataVirtualHardDiskInstance.LogicalDiskSizeInGB = logicalDiskSizeInGBInstance;
                                 }
                                 
                                 XElement mediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                                if (mediaLinkElement != null)
+                                if (mediaLinkElement != null && mediaLinkElement.IsEmpty == false)
                                 {
                                     Uri mediaLinkInstance = TypeConversion.TryParseUri(mediaLinkElement.Value);
                                     dataVirtualHardDiskInstance.MediaLink = mediaLinkInstance;
+                                }
+                                
+                                XElement sourceMediaLinkElement = dataVirtualHardDisksElement.Element(XName.Get("SourceMediaLink", "http://schemas.microsoft.com/windowsazure"));
+                                if (sourceMediaLinkElement != null && sourceMediaLinkElement.IsEmpty == false)
+                                {
+                                    Uri sourceMediaLinkInstance = TypeConversion.TryParseUri(sourceMediaLinkElement.Value);
+                                    dataVirtualHardDiskInstance.SourceMediaLink = sourceMediaLinkInstance;
                                 }
                             }
                         }
                         
                         XElement oSVirtualHardDiskElement = persistentVMRoleElement.Element(XName.Get("OSVirtualHardDisk", "http://schemas.microsoft.com/windowsazure"));
-                        if (oSVirtualHardDiskElement != null)
+                        if (oSVirtualHardDiskElement != null && oSVirtualHardDiskElement.IsEmpty == false)
                         {
                             OSVirtualHardDisk oSVirtualHardDiskInstance = new OSVirtualHardDisk();
                             result.OSVirtualHardDisk = oSVirtualHardDiskInstance;
                             
                             XElement hostCachingElement2 = oSVirtualHardDiskElement.Element(XName.Get("HostCaching", "http://schemas.microsoft.com/windowsazure"));
-                            if (hostCachingElement2 != null && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
+                            if (hostCachingElement2 != null && hostCachingElement2.IsEmpty == false && string.IsNullOrEmpty(hostCachingElement2.Value) == false)
                             {
-                                VirtualHardDiskHostCaching hostCachingInstance2 = (VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, false);
+                                VirtualHardDiskHostCaching hostCachingInstance2 = ((VirtualHardDiskHostCaching)Enum.Parse(typeof(VirtualHardDiskHostCaching), hostCachingElement2.Value, true));
                                 oSVirtualHardDiskInstance.HostCaching = hostCachingInstance2;
                             }
                             
                             XElement diskLabelElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskLabel", "http://schemas.microsoft.com/windowsazure"));
-                            if (diskLabelElement2 != null)
+                            if (diskLabelElement2 != null && diskLabelElement2.IsEmpty == false)
                             {
                                 string diskLabelInstance2 = diskLabelElement2.Value;
                                 oSVirtualHardDiskInstance.Label = diskLabelInstance2;
                             }
                             
                             XElement diskNameElement2 = oSVirtualHardDiskElement.Element(XName.Get("DiskName", "http://schemas.microsoft.com/windowsazure"));
-                            if (diskNameElement2 != null)
+                            if (diskNameElement2 != null && diskNameElement2.IsEmpty == false)
                             {
                                 string diskNameInstance2 = diskNameElement2.Value;
                                 oSVirtualHardDiskInstance.Name = diskNameInstance2;
                             }
                             
                             XElement mediaLinkElement2 = oSVirtualHardDiskElement.Element(XName.Get("MediaLink", "http://schemas.microsoft.com/windowsazure"));
-                            if (mediaLinkElement2 != null)
+                            if (mediaLinkElement2 != null && mediaLinkElement2.IsEmpty == false)
                             {
                                 Uri mediaLinkInstance2 = TypeConversion.TryParseUri(mediaLinkElement2.Value);
                                 oSVirtualHardDiskInstance.MediaLink = mediaLinkInstance2;
                             }
                             
                             XElement sourceImageNameElement = oSVirtualHardDiskElement.Element(XName.Get("SourceImageName", "http://schemas.microsoft.com/windowsazure"));
-                            if (sourceImageNameElement != null)
+                            if (sourceImageNameElement != null && sourceImageNameElement.IsEmpty == false)
                             {
                                 string sourceImageNameInstance = sourceImageNameElement.Value;
                                 oSVirtualHardDiskInstance.SourceImageName = sourceImageNameInstance;
                             }
                             
                             XElement osElement = oSVirtualHardDiskElement.Element(XName.Get("OS", "http://schemas.microsoft.com/windowsazure"));
-                            if (osElement != null)
+                            if (osElement != null && osElement.IsEmpty == false)
                             {
                                 string osInstance = osElement.Value;
                                 oSVirtualHardDiskInstance.OperatingSystem = osInstance;
@@ -5654,13 +6178,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine.
+        /// Required. The name of the virtual machine.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -5698,7 +6222,18 @@ namespace Microsoft.WindowsAzure.Management.Compute
             }
             
             // Construct URL
-            string url = new Uri(this.Client.BaseUri, "/").ToString() + this.Client.Credentials.SubscriptionId + "/services/hostedservices/" + serviceName + "/deployments/" + deploymentName + "/roleinstances/" + virtualMachineName + "/ModelFile?FileType=RDP";
+            string baseUrl = this.Client.BaseUri.AbsoluteUri;
+            string url = "/" + this.Client.Credentials.SubscriptionId.Trim() + "/services/hostedservices/" + serviceName.Trim() + "/deployments/" + deploymentName.Trim() + "/roleinstances/" + virtualMachineName.Trim() + "/ModelFile?FileType=RDP";
+            // Trim '/' character from the end of baseUrl and beginning of url.
+            if (baseUrl[baseUrl.Length - 1] == '/')
+            {
+                baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+            }
+            if (url[0] == '/')
+            {
+                url = url.Substring(1);
+            }
+            url = baseUrl + "/" + url;
             
             // Create HTTP transport objects
             HttpRequestMessage httpRequest = null;
@@ -5709,7 +6244,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 httpRequest.RequestUri = new Uri(url);
                 
                 // Set Headers
-                httpRequest.Headers.Add("x-ms-version", "2013-11-01");
+                httpRequest.Headers.Add("x-ms-version", "2014-04-01");
                 
                 // Set Credentials
                 cancellationToken.ThrowIfCancellationRequested();
@@ -5785,13 +6320,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to restart.
+        /// Required. The name of the virtual machine to restart.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -5800,14 +6335,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> RestartAsync(string serviceName, string deploymentName, string virtualMachineName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> RestartAsync(string serviceName, string deploymentName, string virtualMachineName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -5831,7 +6366,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginRestartingAsync(serviceName, deploymentName, virtualMachineName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -5889,16 +6424,16 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to shutdown.
+        /// Required. The name of the virtual machine to shutdown.
         /// </param>
         /// <param name='parameters'>
-        /// The parameters for the shutdown vm operation.
+        /// Required. The parameters for the shutdown virtual machine operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -5907,14 +6442,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ShutdownAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineShutdownParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ShutdownAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineShutdownParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -5939,7 +6474,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginShutdownAsync(serviceName, deploymentName, virtualMachineName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -5995,14 +6530,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// machines.
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// The set of virtual machine roles to shutdown and their post
-        /// shutdown state.
+        /// Required. Parameters to pass to the Shutdown Roles operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6011,14 +6545,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> ShutdownRolesAsync(string serviceName, string deploymentName, VirtualMachineShutdownRolesParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> ShutdownRolesAsync(string serviceName, string deploymentName, VirtualMachineShutdownRolesParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6042,7 +6576,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginShuttingDownRolesAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6099,13 +6633,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of the virtual machine to start.
+        /// Required. The name of the virtual machine to start.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6114,14 +6648,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> StartAsync(string serviceName, string deploymentName, string virtualMachineName, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> StartAsync(string serviceName, string deploymentName, string virtualMachineName, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6145,7 +6679,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginStartingAsync(serviceName, deploymentName, virtualMachineName, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6201,13 +6735,13 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// machines.
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// The set of virtual machine roles to start.
+        /// Required. Parameters to pass to the Start Roles operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6216,14 +6750,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> StartRolesAsync(string serviceName, string deploymentName, VirtualMachineStartRolesParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> StartRolesAsync(string serviceName, string deploymentName, VirtualMachineStartRolesParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6247,7 +6781,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginStartingRolesAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6305,16 +6839,17 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// for more information)
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='virtualMachineName'>
-        /// The name of your virtual machine.
+        /// Required. The name of your virtual machine.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Virtual Machine operation.
+        /// Required. Parameters supplied to the Update Virtual Machine
+        /// operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6323,14 +6858,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpdateAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineUpdateParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpdateAsync(string serviceName, string deploymentName, string virtualMachineName, VirtualMachineUpdateParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6355,7 +6890,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginUpdatingAsync(serviceName, deploymentName, virtualMachineName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
@@ -6407,20 +6942,20 @@ namespace Microsoft.WindowsAzure.Management.Compute
         }
         
         /// <summary>
-        /// The UpdateLoadBalancedEndpointSet operation changes the specified
-        /// load-balanced InputEndpoints on all the roles of an Infrastructure
-        /// as a Service deployment. Non load-balanced endpoints must be
-        /// changed using UpdateRole.
+        /// The Update Load Balanced Endpoint Set operation changes the
+        /// specified load-balanced InputEndpoints on all the roles of an
+        /// Infrastructure as a Service deployment. Non-load-balanced
+        /// endpoints must be changed using UpdateRole.
         /// </summary>
         /// <param name='serviceName'>
-        /// The name of your service.
+        /// Required. The name of your service.
         /// </param>
         /// <param name='deploymentName'>
-        /// The name of your deployment.
+        /// Required. The name of your deployment.
         /// </param>
         /// <param name='parameters'>
-        /// Parameters supplied to the Update Load Balanced Endpoint Set
-        /// operation.
+        /// Required. Parameters supplied to the Update Load Balanced Endpoint
+        /// Set operation.
         /// </param>
         /// <param name='cancellationToken'>
         /// Cancellation token.
@@ -6429,14 +6964,14 @@ namespace Microsoft.WindowsAzure.Management.Compute
         /// The response body contains the status of the specified asynchronous
         /// operation, indicating whether it has succeeded, is inprogress, or
         /// has failed. Note that this status is distinct from the HTTP status
-        /// code returned for the Get Operation Status operation itself.  If
+        /// code returned for the Get Operation Status operation itself. If
         /// the asynchronous operation succeeded, the response body includes
-        /// the HTTP status code for the successful request.  If the
+        /// the HTTP status code for the successful request. If the
         /// asynchronous operation failed, the response body includes the HTTP
-        /// status code for the failed request, and also includes error
-        /// information regarding the failure.
+        /// status code for the failed request and error information regarding
+        /// the failure.
         /// </returns>
-        public async System.Threading.Tasks.Task<Microsoft.WindowsAzure.Management.Compute.Models.ComputeOperationStatusResponse> UpdateLoadBalancedEndpointSetAsync(string serviceName, string deploymentName, VirtualMachineUpdateLoadBalancedSetParameters parameters, CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<OperationStatusResponse> UpdateLoadBalancedEndpointSetAsync(string serviceName, string deploymentName, VirtualMachineUpdateLoadBalancedSetParameters parameters, CancellationToken cancellationToken)
         {
             ComputeManagementClient client = this.Client;
             bool shouldTrace = CloudContext.Configuration.Tracing.IsEnabled;
@@ -6460,7 +6995,7 @@ namespace Microsoft.WindowsAzure.Management.Compute
                 cancellationToken.ThrowIfCancellationRequested();
                 OperationResponse response = await client.VirtualMachines.BeginUpdatingLoadBalancedEndpointSetAsync(serviceName, deploymentName, parameters, cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
-                ComputeOperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
+                OperationStatusResponse result = await client.GetOperationStatusAsync(response.RequestId, cancellationToken).ConfigureAwait(false);
                 int delayInSeconds = 30;
                 while ((result.Status != OperationStatus.InProgress) == false)
                 {
